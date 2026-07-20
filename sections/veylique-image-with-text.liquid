@@ -1,0 +1,41 @@
+<section class="veylique-page veylique-section" aria-labelledby="VeyliqueEditorialTitle-{{ section.id }}">
+  <div class="veylique-container veylique-editorial">
+    <div class="veylique-editorial__media">
+      {% render 'veylique-responsive-image',
+        image: section.settings.image,
+        fallback: section.settings.fallback,
+        class: 'veylique-media',
+        alt: section.settings.heading,
+        width: 1400
+      %}
+    </div>
+    <div>
+      <p class="veylique-kicker">{{ section.settings.kicker | escape }}</p>
+      <h2 id="VeyliqueEditorialTitle-{{ section.id }}" class="veylique-section-title">{{ section.settings.heading }}</h2>
+      <p class="veylique-text">{{ section.settings.text }}</p>
+      {% if section.settings.button_label != blank %}
+        <a class="veylique-button veylique-button--solid" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
+          {{ section.settings.button_label | escape }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Image with text",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "fallback", "label": "Fallback asset", "default": "manifest-cta.jpg" },
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "The curated edit" },
+    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Everyday polish, softened for comfort" },
+    { "type": "inline_richtext", "id": "text", "label": "Text", "default": "Use this editorial module for a campaign story, founder note, or seasonal look that anchors the collection." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Explore the edit" },
+    { "type": "url", "id": "button_link", "label": "Button link" }
+  ],
+  "presets": [
+    { "name": "Image with text" }
+  ]
+}
+{% endschema %}

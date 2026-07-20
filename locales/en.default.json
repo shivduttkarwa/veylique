@@ -30,6 +30,14 @@
   "collections": {
     "title": "Collections"
   },
+  "contact": {
+    "form": {
+      "email": "Email",
+      "message": "Message",
+      "name": "Name",
+      "submit": "Send message"
+    }
+  },
   "gift_card": {
     "add_to_apple_wallet": "Add to Apple Wallet",
     "card": "Gift card",

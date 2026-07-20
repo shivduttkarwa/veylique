@@ -1,0 +1,37 @@
+{
+  "sections": {
+    "hero": {
+      "type": "veylique-page-hero",
+      "settings": {
+        "kicker": "What we offer",
+        "heading": "Our services",
+        "text": "Personal styling, fit guidance, wardrobe edits, and occasion dressing designed around how you actually live.",
+        "fallback": "hero-3.webp"
+      }
+    },
+    "services": {
+      "type": "veylique-services-list",
+      "settings": {}
+    },
+    "method": {
+      "type": "veylique-process",
+      "settings": {
+        "kicker": "The Veylique method",
+        "heading": "From discovery to daily wear"
+      }
+    },
+    "cta": {
+      "type": "veylique-image-banner",
+      "settings": {
+        "fallback": "hero-4.webp",
+        "heading": "Book a styling session"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "services",
+    "method",
+    "cta"
+  ]
+}

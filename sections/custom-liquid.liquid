@@ -1,0 +1,23 @@
+<section class="veylique-page veylique-section">
+  <div class="veylique-container">
+    {{ section.settings.custom_liquid }}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Custom liquid",
+  "settings": [
+    {
+      "type": "liquid",
+      "id": "custom_liquid",
+      "label": "Custom liquid"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom liquid"
+    }
+  ]
+}
+{% endschema %}

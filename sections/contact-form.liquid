@@ -1,0 +1,47 @@
+<section class="veylique-page veylique-section" aria-labelledby="ContactFormTitle-{{ section.id }}">
+  <div class="veylique-container veylique-editorial">
+    <div>
+      <p class="veylique-kicker">{{ section.settings.kicker | escape }}</p>
+      <h1 id="ContactFormTitle-{{ section.id }}" class="veylique-section-title">{{ page.title | default: section.settings.heading | escape }}</h1>
+      {% if page.content != blank %}
+        <div class="veylique-text">{{ page.content }}</div>
+      {% else %}
+        <p class="veylique-text">{{ section.settings.text | escape }}</p>
+      {% endif %}
+    </div>
+
+    {% form 'contact' %}
+      {{ form.errors | default_errors }}
+
+      {% if form.posted_successfully? %}
+        <p class="veylique-text" tabindex="-1" autofocus>{{ section.settings.success_message | escape }}</p>
+      {% endif %}
+
+      <p>
+        <label for="ContactFormName-{{ section.id }}">{{ 'contact.form.name' | t }}</label>
+        <input id="ContactFormName-{{ section.id }}" type="text" name="contact[name]" value="{{ form.name }}" autocomplete="name">
+      </p>
+      <p>
+        <label for="ContactFormEmail-{{ section.id }}">{{ 'contact.form.email' | t }}</label>
+        <input id="ContactFormEmail-{{ section.id }}" type="email" name="contact[email]" value="{{ form.email }}" autocomplete="email" required>
+      </p>
+      <p>
+        <label for="ContactFormMessage-{{ section.id }}">{{ 'contact.form.message' | t }}</label>
+        <textarea id="ContactFormMessage-{{ section.id }}" name="contact[body]" rows="6">{{ form.body }}</textarea>
+      </p>
+      <button class="veylique-button veylique-button--solid" type="submit">{{ 'contact.form.submit' | t }}</button>
+    {% endform %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Contact form",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Contact" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Contact Veylique" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Send a note for styling help, order questions, collaborations, and customer care." },
+    { "type": "text", "id": "success_message", "label": "Success message", "default": "Thanks for contacting us. We will get back to you as soon as possible." }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,43 @@
+{% doc %}
+  Renders a merchant-selected image with a theme asset fallback.
+
+  @param {image} [image] - Image selected in the theme editor or from a Shopify object.
+  @param {string} fallback - Asset filename used when no image is selected.
+  @param {string} [class] - Image class.
+  @param {string} [alt] - Fallback alt text.
+  @param {number} [width] - Maximum image width.
+  @param {number} [height] - Fallback image height for static assets.
+  @param {string} [loading] - Loading behavior.
+
+  @example
+  {% render 'veylique-responsive-image', image: section.settings.image, fallback: 'hero-1.webp', class: 'veylique-media' %}
+{% enddoc %}
+
+{% liquid
+  assign image_width = width | default: 1800
+  assign fallback_height = height | default: 2200
+  assign image_loading = loading | default: 'lazy'
+  assign image_alt = alt | default: ''
+%}
+
+{% if image != blank %}
+  {{
+    image
+    | image_url: width: image_width
+    | image_tag:
+      class: class,
+      loading: image_loading,
+      widths: '360, 540, 720, 900, 1200, 1600, 2000',
+      sizes: '100vw',
+      alt: image.alt | default: image_alt
+  }}
+{% else %}
+  <img
+    class="{{ class }}"
+    src="{{ fallback | asset_url }}"
+    width="{{ image_width }}"
+    height="{{ fallback_height }}"
+    alt="{{ image_alt | escape }}"
+    loading="{{ image_loading }}"
+  >
+{% endif %}

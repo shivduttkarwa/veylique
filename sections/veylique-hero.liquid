@@ -1,0 +1,170 @@
+{% liquid
+  capture slide_1_url
+    if section.settings.image_1 != blank
+      echo section.settings.image_1 | image_url: width: 2400
+    else
+      echo 'hero-1.webp' | asset_url
+    endif
+  endcapture
+
+  capture slide_2_url
+    if section.settings.image_2 != blank
+      echo section.settings.image_2 | image_url: width: 2400
+    else
+      echo 'hero-2.webp' | asset_url
+    endif
+  endcapture
+
+  capture slide_3_url
+    if section.settings.image_3 != blank
+      echo section.settings.image_3 | image_url: width: 2400
+    else
+      echo 'hero-3.webp' | asset_url
+    endif
+  endcapture
+
+  capture slide_4_url
+    if section.settings.image_4 != blank
+      echo section.settings.image_4 | image_url: width: 2400
+    else
+      echo 'hero-4.webp' | asset_url
+    endif
+  endcapture
+
+  capture slide_5_url
+    if section.settings.image_5 != blank
+      echo section.settings.image_5 | image_url: width: 2400
+    else
+      echo 'hero-5.webp' | asset_url
+    endif
+  endcapture
+%}
+
+<section
+  class="veylique-page veylique-home-hero veylique-full-width"
+  id="VeyliqueHero-{{ section.id }}"
+  aria-labelledby="VeyliqueHeroTitle-{{ section.id }}"
+  data-veylique-hero
+>
+  <div class="veylique-home-hero__fallback">
+    {% render 'veylique-responsive-image',
+      image: section.settings.image_1,
+      fallback: 'hero-1.webp',
+      class: 'veylique-media',
+      alt: section.settings.heading,
+      loading: 'eager',
+      width: 2400,
+      height: 1600
+    %}
+  </div>
+
+  <div class="veylique-home-hero__canvas-wrap" aria-hidden="true">
+    <canvas class="veylique-home-hero__canvas" data-veylique-hero-canvas></canvas>
+  </div>
+
+  <div class="veylique-home-hero__content">
+    <p class="veylique-home-hero__label" data-veylique-hero-label>
+      {{ section.settings.label_1 | escape }}
+    </p>
+
+    {% if section.blocks.size > 0 %}
+      <nav class="veylique-home-hero__subtitles" aria-label="{{ section.settings.category_label | escape }}">
+        {% for block in section.blocks limit: 3 %}
+          <a href="{{ block.settings.link | default: routes.all_products_collection_url }}" {{ block.shopify_attributes }}>
+            {{ block.settings.label | escape }}
+          </a>
+        {% endfor %}
+      </nav>
+    {% endif %}
+
+    <h1 id="VeyliqueHeroTitle-{{ section.id }}" class="veylique-home-hero__title">
+      {{ section.settings.heading }}
+    </h1>
+
+    {% if section.settings.button_label != blank %}
+      <div class="veylique-home-hero__cta">
+        <a class="veylique-home-hero__button" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
+          {{ section.settings.button_label | escape }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+  <button type="button" class="veylique-home-hero__scroll" aria-label="{{ section.settings.scroll_label | escape }}" data-veylique-scroll-down>
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <script type="application/json" data-veylique-hero-config>
+    {
+      "images": [
+        {{ slide_1_url | strip | json }},
+        {{ slide_2_url | strip | json }},
+        {{ slide_3_url | strip | json }},
+        {{ slide_4_url | strip | json }},
+        {{ slide_5_url | strip | json }}
+      ],
+      "labels": [
+        {{ section.settings.label_1 | json }},
+        {{ section.settings.label_2 | json }},
+        {{ section.settings.label_3 | json }},
+        {{ section.settings.label_4 | json }},
+        {{ section.settings.label_5 | json }}
+      ],
+      "slideDuration": {{ section.settings.slide_duration | times: 1000 | json }},
+      "transitionDuration": {{ section.settings.transition_duration | times: 1000 | json }}
+    }
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Slideshow",
+  "tag": "section",
+  "class": "shopify-section--veylique-hero",
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Veylique" },
+    { "type": "text", "id": "category_label", "label": "Category navigation label", "default": "Featured categories" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop collection" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    { "type": "text", "id": "scroll_label", "label": "Scroll button label", "default": "Scroll down" },
+    { "type": "header", "content": "Slides" },
+    { "type": "image_picker", "id": "image_1", "label": "Slide 1 image" },
+    { "type": "text", "id": "label_1", "label": "Slide 1 label", "default": "New" },
+    { "type": "image_picker", "id": "image_2", "label": "Slide 2 image" },
+    { "type": "text", "id": "label_2", "label": "Slide 2 label", "default": "Bold" },
+    { "type": "image_picker", "id": "image_3", "label": "Slide 3 image" },
+    { "type": "text", "id": "label_3", "label": "Slide 3 label", "default": "Chic" },
+    { "type": "image_picker", "id": "image_4", "label": "Slide 4 image" },
+    { "type": "text", "id": "label_4", "label": "Slide 4 label", "default": "Effortless" },
+    { "type": "image_picker", "id": "image_5", "label": "Slide 5 image" },
+    { "type": "text", "id": "label_5", "label": "Slide 5 label", "default": "Fresh" },
+    { "type": "header", "content": "Animation" },
+    { "type": "range", "id": "slide_duration", "label": "Seconds per slide", "min": 2, "max": 8, "step": 1, "default": 3 },
+    { "type": "range", "id": "transition_duration", "label": "Transition seconds", "min": 1, "max": 4, "step": 1, "default": 2 }
+  ],
+  "blocks": [
+    {
+      "type": "link",
+      "name": "Category link",
+      "limit": 3,
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Dresses" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Slideshow",
+      "blocks": [
+        { "type": "link", "settings": { "label": "Dresses" } },
+        { "type": "link", "settings": { "label": "Ethnic wear" } },
+        { "type": "link", "settings": { "label": "Western wear" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

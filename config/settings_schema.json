@@ -1,9 +1,9 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "Skeleton",
+    "theme_name": "Veylique",
     "theme_version": "0.1.0",
-    "theme_author": "Shopify",
+    "theme_author": "Veylique",
     "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
     "theme_support_url": "https://support.shopify.com/"
   },
@@ -59,14 +59,38 @@
       {
         "type": "color",
         "id": "background_color",
-        "default": "#FFFFFF",
+        "default": "#F8F1E8",
         "label": "t:labels.background"
       },
       {
         "type": "color",
         "id": "foreground_color",
-        "default": "#333333",
+        "default": "#241F1A",
         "label": "t:labels.foreground"
+      },
+      {
+        "type": "color",
+        "id": "accent_color",
+        "default": "#C89523",
+        "label": "Accent"
+      },
+      {
+        "type": "color",
+        "id": "accent_foreground_color",
+        "default": "#FFFFFF",
+        "label": "Accent foreground"
+      },
+      {
+        "type": "color",
+        "id": "secondary_accent_color",
+        "default": "#6F7D68",
+        "label": "Secondary accent"
+      },
+      {
+        "type": "color",
+        "id": "secondary_accent_foreground_color",
+        "default": "#FFFFFF",
+        "label": "Secondary accent foreground"
       },
       {
         "type": "range",

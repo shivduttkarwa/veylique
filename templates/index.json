@@ -1,20 +1,129 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
+    "hero": {
+      "type": "veylique-hero",
+      "blocks": {
+        "category_1": {
+          "type": "link",
+          "settings": {
+            "label": "Dresses"
+          }
+        },
+        "category_2": {
+          "type": "link",
+          "settings": {
+            "label": "Ethnic wear"
+          }
+        },
+        "category_3": {
+          "type": "link",
+          "settings": {
+            "label": "Western wear"
+          }
+        }
+      },
+      "block_order": [
+        "category_1",
+        "category_2",
+        "category_3"
+      ],
+      "settings": {
+        "heading": "Veylique",
+        "label_1": "New",
+        "label_2": "Bold",
+        "label_3": "Chic",
+        "label_4": "Effortless",
+        "label_5": "Fresh",
+        "slide_duration": 3,
+        "transition_duration": 2
+      }
+    },
+    "categories": {
+      "type": "veylique-featured-collections",
+      "settings": {}
+    },
+    "new_arrivals": {
+      "type": "veylique-featured-products",
+      "settings": {}
+    },
+    "editorial": {
+      "type": "veylique-image-with-text",
+      "settings": {
+        "fallback": "manifest-cta.jpg"
+      }
+    },
+    "bestsellers": {
+      "type": "veylique-featured-products",
+      "settings": {
+        "kicker": "Bestsellers",
+        "heading": "Shop bestsellers",
+        "text": "Our most-loved styles, trusted by customers for fit and ease."
+      }
+    },
+    "sale_banner": {
+      "type": "veylique-image-banner",
+      "settings": {
+        "kicker": "Seasonal edit",
+        "heading": "End of season essentials",
+        "text": "Bring shoppers into a focused promotion or seasonal story.",
+        "fallback": "hero-3.webp"
+      }
+    },
+    "occasion": {
+      "type": "veylique-featured-collections",
+      "settings": {
+        "kicker": "Shop by occasion",
+        "heading": "One wardrobe, every plan",
+        "text": "Pick the moment and guide shoppers to an edited collection."
+      }
+    },
+    "latest": {
+      "type": "veylique-featured-products",
+      "settings": {
+        "kicker": "Latest products",
+        "heading": "Freshly launched styles",
+        "text": "Seasonal essentials selected for the next outfit."
+      }
+    },
+    "process": {
+      "type": "veylique-process",
+      "settings": {}
+    },
+    "testimonials": {
+      "type": "veylique-testimonials",
+      "settings": {}
+    },
+    "stories": {
+      "type": "veylique-blog-posts",
+      "settings": {}
+    },
+    "full_cta": {
+      "type": "veylique-image-banner",
+      "settings": {
+        "kicker": "Ready when you are",
+        "heading": "For every size, mood, and plan",
+        "text": "",
+        "fallback": "hero-1.webp"
+      }
+    },
+    "faq": {
+      "type": "veylique-faq",
       "settings": {}
     }
   },
   "order": [
-    "main"
+    "hero",
+    "categories",
+    "new_arrivals",
+    "editorial",
+    "bestsellers",
+    "sale_banner",
+    "occasion",
+    "latest",
+    "process",
+    "testimonials",
+    "stories",
+    "full_cta",
+    "faq"
   ]
 }

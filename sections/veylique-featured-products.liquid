@@ -1,0 +1,62 @@
+<section class="veylique-page veylique-section" aria-labelledby="VeyliqueProductsTitle-{{ section.id }}">
+  <div class="veylique-container">
+    <div class="veylique-section-head">
+      <div>
+        <p class="veylique-kicker">{{ section.settings.kicker | escape }}</p>
+        <h2 id="VeyliqueProductsTitle-{{ section.id }}" class="veylique-section-title">{{ section.settings.heading | escape }}</h2>
+      </div>
+      <p class="veylique-text">{{ section.settings.text | escape }}</p>
+    </div>
+
+    <div class="veylique-card-grid" style="--columns: {{ section.settings.columns_desktop }}">
+      {% for block in section.blocks %}
+        <div {{ block.shopify_attributes }}>
+          {% render 'veylique-product-card',
+            product: block.settings.product,
+            image: block.settings.image,
+            fallback: block.settings.fallback,
+            title: block.settings.heading,
+            price: block.settings.price
+          %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Featured products",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "New arrivals" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "New arrivals" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "The newest pieces to land in the collection, fresh off the rack and ready to wear." },
+    { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 2, "max": 5, "step": 1, "default": 4 }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        { "type": "product", "id": "product", "label": "Product" },
+        { "type": "image_picker", "id": "image", "label": "Fallback image" },
+        { "type": "text", "id": "heading", "label": "Fallback title", "default": "Printed wrap midi dress" },
+        { "type": "text", "id": "price", "label": "Fallback price", "default": "Rs. 3,200" },
+        { "type": "text", "id": "fallback", "label": "Fallback asset", "default": "hero-2.webp" }
+      ]
+    },
+    { "type": "@app" }
+  ],
+  "presets": [
+    {
+      "name": "Featured products",
+      "blocks": [
+        { "type": "product", "settings": { "heading": "Printed wrap midi dress", "price": "Rs. 3,200", "fallback": "hero-2.webp" } },
+        { "type": "product", "settings": { "heading": "Everyday kurta set", "price": "Rs. 2,850", "fallback": "hero-3.webp" } },
+        { "type": "product", "settings": { "heading": "Relaxed co-ord", "price": "Rs. 3,650", "fallback": "hero-4.webp" } },
+        { "type": "product", "settings": { "heading": "Soft occasion layer", "price": "Rs. 4,100", "fallback": "hero-5.webp" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

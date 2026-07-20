@@ -1,0 +1,36 @@
+<section class="veylique-page veylique-sale veylique-full-width" aria-labelledby="VeyliquePageHeroTitle-{{ section.id }}">
+  <div class="veylique-sale__media">
+    {% render 'veylique-responsive-image',
+      image: section.settings.image,
+      fallback: section.settings.fallback,
+      class: 'veylique-media',
+      alt: section.settings.heading,
+      loading: 'eager',
+      width: 2400,
+      height: 1600
+    %}
+  </div>
+  <div class="veylique-sale__content">
+    <p class="veylique-kicker">{{ section.settings.kicker | escape }}</p>
+    <h1 id="VeyliquePageHeroTitle-{{ section.id }}" class="veylique-title">{{ section.settings.heading }}</h1>
+    {% if section.settings.text != blank %}
+      <p class="veylique-text" style="color: rgba(255,255,255,0.78); max-width: 42rem;">{{ section.settings.text }}</p>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Page hero",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "fallback", "label": "Fallback asset", "default": "hero-2.webp" },
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Veylique" },
+    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Designed for real life" },
+    { "type": "inline_richtext", "id": "text", "label": "Text", "default": "Modern clothing designed around comfort, confident silhouettes, and everyday polish." }
+  ],
+  "presets": [
+    { "name": "Page hero" }
+  ]
+}
+{% endschema %}

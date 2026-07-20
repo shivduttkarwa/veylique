@@ -1,0 +1,53 @@
+<section class="veylique-page veylique-section" aria-labelledby="VeyliqueProcessTitle-{{ section.id }}">
+  <div class="veylique-container">
+    <div class="veylique-section-head">
+      <div>
+        <p class="veylique-kicker">{{ section.settings.kicker | escape }}</p>
+        <h2 id="VeyliqueProcessTitle-{{ section.id }}" class="veylique-section-title">{{ section.settings.heading | escape }}</h2>
+      </div>
+      <p class="veylique-text">{{ section.settings.text | escape }}</p>
+    </div>
+
+    <div class="veylique-card-grid veylique-process-grid" style="--columns: {{ section.settings.columns_desktop }}">
+      {% for block in section.blocks %}
+        <article class="veylique-process-card" {{ block.shopify_attributes }}>
+          <h3 class="veylique-card-title">{{ block.settings.heading | escape }}</h3>
+          <p class="veylique-text">{{ block.settings.text | escape }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Columns",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "The style ritual" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Your everyday edit" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Four considered steps, one confident look. A complete approach to getting dressed, built around real bodies." },
+    { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 2, "max": 4, "step": 1, "default": 4 }
+  ],
+  "blocks": [
+    {
+      "type": "column",
+      "name": "Column",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Discover" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Start with mood, size, routine, and the moments you are dressing for." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Columns",
+      "blocks": [
+        { "type": "column", "settings": { "heading": "Discover" } },
+        { "type": "column", "settings": { "heading": "Fit", "text": "Choose silhouettes and fabrics that feel natural through the day." } },
+        { "type": "column", "settings": { "heading": "Style", "text": "Build outfits with pieces that repeat, layer, and travel well." } },
+        { "type": "column", "settings": { "heading": "Wear", "text": "Keep the final look polished without sacrificing movement." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

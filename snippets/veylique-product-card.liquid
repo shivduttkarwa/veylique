@@ -1,0 +1,47 @@
+{% doc %}
+  Renders a Veylique product card with selected-product data and demo fallbacks.
+
+  @param {product} [product] - Shopify product selected in a section block.
+  @param {image} [image] - Fallback image selected in a section block.
+  @param {string} [fallback] - Asset fallback image filename.
+  @param {string} [title] - Fallback product title.
+  @param {string} [price] - Fallback price text.
+
+  @example
+  {% render 'veylique-product-card', product: block.settings.product, fallback: 'hero-2.webp' %}
+{% enddoc %}
+
+{% liquid
+  assign card_title = title | default: 'Printed wrap midi dress'
+  assign card_price = price | default: 'Rs. 3,200'
+  assign card_url = routes.all_products_collection_url
+  assign card_image = image
+
+  if product != blank
+    assign card_title = product.title
+    assign card_price = product.price | money
+    assign card_url = product.url
+    assign card_image = product.featured_image
+  endif
+%}
+
+<a class="veylique-product-card" href="{{ card_url }}">
+  <span class="veylique-product-card__media">
+    {% render 'veylique-responsive-image',
+      image: card_image,
+      fallback: fallback,
+      class: 'veylique-media',
+      alt: card_title,
+      width: 900
+    %}
+  </span>
+  <span class="veylique-card-body">
+    <span>
+      <span class="veylique-card-title">{{ card_title | escape }}</span>
+      {% if product != blank and product.vendor != blank %}
+        <span class="veylique-card-sub">{{ product.vendor | escape }}</span>
+      {% endif %}
+    </span>
+    <span class="veylique-card-title">{{ card_price }}</span>
+  </span>
+</a>

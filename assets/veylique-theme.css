@@ -1,0 +1,789 @@
+:root {
+  --veylique-bg: var(--color-background);
+  --veylique-ink: var(--color-foreground);
+  --veylique-muted: #756b60;
+  --veylique-line: rgba(36, 31, 26, 0.14);
+  --veylique-gold: var(--color-accent);
+  --veylique-gold-contrast: var(--color-accent-foreground);
+  --veylique-sage: var(--color-secondary-accent);
+  --veylique-sage-contrast: var(--color-secondary-accent-foreground);
+  --veylique-rose: #c58d80;
+}
+
+body {
+  background: var(--veylique-bg);
+}
+
+.veylique-page {
+  background: var(--veylique-bg);
+  color: var(--veylique-ink);
+}
+
+.veylique-full-width {
+  grid-column: 1 / -1;
+}
+
+.veylique-container {
+  width: min(100% - 2rem, 92rem);
+  margin-inline: auto;
+}
+
+.veylique-kicker {
+  margin: 0 0 1.1rem;
+  color: currentColor;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.veylique-title {
+  margin: 0;
+  color: currentColor;
+  font-family: var(--font-primary--family);
+  font-size: clamp(3.5rem, 11vw, 11rem);
+  font-weight: 500;
+  line-height: 0.88;
+  letter-spacing: 0;
+}
+
+.veylique-section-title {
+  margin: 0;
+  color: var(--veylique-ink);
+  font-size: clamp(2.35rem, 5.8vw, 6rem);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.veylique-text {
+  margin: 0;
+  color: var(--veylique-muted);
+  line-height: 1.75;
+}
+
+.veylique-button {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0 1.45rem;
+  border: 0.0625rem solid currentColor;
+  border-radius: 999rem;
+  color: currentColor;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.veylique-button--solid {
+  border-color: var(--veylique-ink);
+  background: var(--veylique-ink);
+  color: var(--veylique-bg);
+}
+
+.veylique-media {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.veylique-section {
+  padding: clamp(4.5rem, 9vw, 9rem) 0;
+}
+
+.veylique-section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(18rem, 0.52fr);
+  gap: clamp(2rem, 5vw, 5.5rem);
+  align-items: end;
+  margin-bottom: clamp(2.25rem, 5vw, 5rem);
+}
+
+.veylique-header {
+  padding: 1.1rem 0;
+  background: var(--veylique-bg);
+}
+
+.veylique-header a {
+  color: var(--veylique-ink);
+}
+
+.veylique-home-hero {
+  position: relative;
+  width: 100%;
+  min-height: calc(100svh - 5rem);
+  overflow: hidden;
+  isolation: isolate;
+  color: #fff;
+  background: #13241d;
+}
+
+.veylique-home-hero__fallback,
+.veylique-home-hero__canvas-wrap,
+.veylique-home-hero__canvas-wrap::after {
+  position: absolute;
+  inset: 0;
+}
+
+.veylique-home-hero__fallback {
+  z-index: 0;
+  background: #13241d;
+}
+
+.veylique-home-hero__canvas-wrap {
+  z-index: 1;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.veylique-home-hero__canvas-wrap::after {
+  content: "";
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.52) 0%, rgba(0, 0, 0, 0.08) 22%, transparent 42%),
+    radial-gradient(circle at 50% 55%, rgba(255, 255, 255, 0.025), transparent 36%),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.15)),
+    linear-gradient(to right, rgba(0, 0, 0, 0.05), transparent 28%, transparent 72%, rgba(0, 0, 0, 0.18));
+}
+
+.veylique-home-hero__canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.veylique-home-hero__content {
+  position: relative;
+  z-index: 2;
+  min-height: calc(100svh - 5rem);
+  pointer-events: none;
+}
+
+.veylique-home-hero__label,
+.veylique-home-hero__subtitles a,
+.veylique-home-hero__title,
+.veylique-home-hero__cta {
+  visibility: hidden;
+}
+
+.veylique-home-hero.is-visible .veylique-home-hero__label,
+.veylique-home-hero.is-visible .veylique-home-hero__subtitles a,
+.veylique-home-hero.is-visible .veylique-home-hero__title,
+.veylique-home-hero.is-visible .veylique-home-hero__cta,
+.no-js .veylique-home-hero__label,
+.no-js .veylique-home-hero__subtitles a,
+.no-js .veylique-home-hero__title,
+.no-js .veylique-home-hero__cta {
+  visibility: visible;
+}
+
+.veylique-home-hero__label {
+  position: absolute;
+  top: 8.1rem;
+  right: 1.9rem;
+  margin: 0;
+  color: var(--veylique-gold);
+  font-size: clamp(2rem, 3.4vw, 3.25rem);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  will-change: clip-path, opacity, transform, filter;
+}
+
+.veylique-home-hero__label.is-changing {
+  animation: veyliqueHeroLabelChange 680ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.veylique-home-hero__subtitles {
+  position: absolute;
+  left: 1.9rem;
+  right: 1.9rem;
+  top: 41.2%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+  gap: 1rem;
+  border-bottom: 0.0625rem dashed rgba(255, 255, 255, 0.72);
+  padding-bottom: 0.95rem;
+  color: #fff;
+  font-size: clamp(0.8rem, 1vw, 1.06rem);
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow: 0 0.125rem 1rem rgba(0, 0, 0, 0.28);
+}
+
+.veylique-home-hero__subtitles a {
+  color: inherit;
+  text-decoration: none;
+  pointer-events: auto;
+  will-change: clip-path, opacity;
+}
+
+.veylique-home-hero__subtitles a:nth-child(1) {
+  text-align: left;
+}
+
+.veylique-home-hero__subtitles a:nth-child(2) {
+  text-align: center;
+}
+
+.veylique-home-hero__subtitles a:nth-child(3) {
+  text-align: right;
+}
+
+.veylique-home-hero__title {
+  position: absolute;
+  left: 1.75rem;
+  right: 1.5rem;
+  bottom: 8.125rem;
+  margin: 0;
+  color: #fff;
+  font-size: clamp(4.875rem, 17vw, 20rem);
+  font-weight: 400;
+  line-height: 0.78;
+  letter-spacing: -0.085em;
+  text-align: center;
+  text-shadow: 0 0.375rem 2.5rem rgba(0, 0, 0, 0.12);
+  text-transform: uppercase;
+  white-space: nowrap;
+  will-change: letter-spacing, opacity, transform;
+}
+
+.veylique-home-hero__cta {
+  position: absolute;
+  right: 1.4rem;
+  bottom: 6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.625rem;
+  pointer-events: auto;
+}
+
+.veylique-home-hero__button {
+  min-width: 9.375rem;
+  height: 2.875rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  padding: 0 1.5rem;
+  border: 0.0625rem solid rgba(36, 31, 26, 0.16);
+  border-radius: 0.4375rem;
+  background: #fff;
+  color: var(--veylique-ink);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition:
+    background-color 250ms ease,
+    border-color 250ms ease,
+    color 250ms ease,
+    transform 250ms ease,
+    box-shadow 250ms ease;
+}
+
+.veylique-home-hero__button:hover {
+  border-color: var(--veylique-sage);
+  background: var(--veylique-sage);
+  color: var(--veylique-sage-contrast);
+  box-shadow: 0 0.5rem 1.25rem rgba(120, 154, 75, 0.18);
+  transform: translateY(-0.0625rem);
+}
+
+.veylique-home-hero__scroll {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  border: 0;
+  padding: 0.5rem;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  opacity: 0.62;
+  transform: translateX(-50%);
+  transition: opacity 300ms ease;
+}
+
+.veylique-home-hero__scroll:hover {
+  opacity: 1;
+}
+
+.veylique-home-hero__scroll span {
+  width: 0.3rem;
+  height: 0.3rem;
+  display: block;
+  border-radius: 999rem;
+  background: currentColor;
+  animation: veyliqueHeroDotFall 1.6s ease-in-out infinite;
+  opacity: 0;
+}
+
+.veylique-home-hero__scroll span:nth-child(2) {
+  animation-delay: 300ms;
+}
+
+.veylique-home-hero__scroll span:nth-child(3) {
+  animation-delay: 600ms;
+}
+
+.veylique-home-hero.is-visible .veylique-home-hero__title {
+  animation: veyliqueHeroTitleIn 2.4s cubic-bezier(0.65, 0, 0.35, 1) 60ms both;
+}
+
+.veylique-home-hero.is-visible .veylique-home-hero__label {
+  animation: veyliqueHeroLabelIn 1s cubic-bezier(0.22, 1, 0.36, 1) 1.05s both;
+}
+
+.veylique-home-hero.is-visible .veylique-home-hero__subtitles a {
+  animation: veyliqueHeroSubtitleIn 800ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.veylique-home-hero.is-visible .veylique-home-hero__subtitles a:nth-child(1) {
+  animation-delay: 1.2s;
+}
+
+.veylique-home-hero.is-visible .veylique-home-hero__subtitles a:nth-child(2) {
+  animation-delay: 1.34s;
+}
+
+.veylique-home-hero.is-visible .veylique-home-hero__subtitles a:nth-child(3) {
+  animation-delay: 1.48s;
+}
+
+.veylique-home-hero.is-visible .veylique-home-hero__cta {
+  animation: veyliqueHeroCtaIn 1s ease 1.55s both;
+}
+
+.veylique-home-hero.is-visible .veylique-home-hero__label.is-changing {
+  animation: veyliqueHeroLabelChange 680ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes veyliqueHeroTitleIn {
+  from {
+    opacity: 0;
+    letter-spacing: 0.22em;
+    transform: scale(1.03);
+  }
+  to {
+    opacity: 1;
+    letter-spacing: -0.085em;
+    transform: scale(1);
+  }
+}
+
+@keyframes veyliqueHeroLabelIn {
+  from {
+    opacity: 0;
+    clip-path: inset(0 0 0 100%);
+    transform: translateX(1rem);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0);
+    transform: translateX(0);
+  }
+}
+
+@keyframes veyliqueHeroLabelChange {
+  0% {
+    opacity: 0;
+    filter: blur(0.35rem);
+    transform: translate(1.25rem, 1.25rem) rotateX(-50deg);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate(0, 0) rotateX(0);
+  }
+}
+
+@keyframes veyliqueHeroSubtitleIn {
+  from {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0);
+  }
+}
+
+@keyframes veyliqueHeroCtaIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes veyliqueHeroDotFall {
+  0% {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  70% {
+    opacity: 0.4;
+    transform: translateY(0.5rem);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0.9rem);
+  }
+}
+
+.veylique-card-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--columns, 4), minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.veylique-image-card,
+.veylique-product-card,
+.veylique-article-card,
+.veylique-quote-card {
+  color: inherit;
+  text-decoration: none;
+}
+
+.veylique-image-card__media,
+.veylique-product-card__media,
+.veylique-article-card__media {
+  aspect-ratio: 3 / 4;
+  display: block;
+  overflow: hidden;
+  background: #e8ded2;
+}
+
+.veylique-product-card__media img,
+.veylique-image-card__media img,
+.veylique-article-card__media img {
+  transition: transform 550ms ease;
+}
+
+.veylique-product-card:hover img,
+.veylique-image-card:hover img,
+.veylique-article-card:hover img {
+  transform: scale(1.045);
+}
+
+.veylique-card-body {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1rem;
+}
+
+.veylique-card-title {
+  margin: 0;
+  color: var(--veylique-ink);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.veylique-card-sub {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--veylique-muted);
+  font-size: 0.9rem;
+}
+
+.veylique-editorial {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.75fr);
+  gap: clamp(2rem, 7vw, 7rem);
+  align-items: center;
+}
+
+.veylique-editorial__media {
+  min-height: 35rem;
+  overflow: hidden;
+}
+
+.veylique-sale {
+  position: relative;
+  min-height: 34rem;
+  display: grid;
+  align-items: end;
+  overflow: hidden;
+  color: #fff;
+  background: #1d1915;
+}
+
+.veylique-sale__media,
+.veylique-sale__media::after {
+  position: absolute;
+  inset: 0;
+}
+
+.veylique-sale__media::after {
+  content: "";
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.08));
+}
+
+.veylique-sale__content {
+  position: relative;
+  z-index: 1;
+  width: min(100% - 2rem, 92rem);
+  margin: 0 auto;
+  padding: clamp(4rem, 8vw, 7rem) 0;
+}
+
+.veylique-process-grid {
+  counter-reset: step;
+}
+
+.veylique-process-card {
+  min-height: 18rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.5rem;
+  border: 0.0625rem solid var(--veylique-line);
+  background: #fff;
+}
+
+.veylique-process-card::before {
+  counter-increment: step;
+  content: "0" counter(step);
+  margin-bottom: auto;
+  color: var(--veylique-gold);
+  font-weight: 900;
+}
+
+.veylique-quote-card,
+.veylique-faq-item {
+  padding: 1.6rem;
+  border: 0.0625rem solid var(--veylique-line);
+  background: #fff;
+}
+
+.veylique-faq-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--veylique-ink);
+  font: inherit;
+  font-weight: 800;
+  text-align: left;
+  cursor: pointer;
+}
+
+.veylique-faq-answer {
+  display: none;
+  padding-top: 1rem;
+  color: var(--veylique-muted);
+}
+
+.veylique-faq-item.is-open .veylique-faq-answer {
+  display: block;
+}
+
+.veylique-page label {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: var(--veylique-ink);
+  font-weight: 800;
+}
+
+.veylique-page input,
+.veylique-page textarea {
+  width: 100%;
+  border: 0.0625rem solid var(--veylique-line);
+  border-radius: var(--style-border-radius-inputs);
+  padding: 0.9rem 1rem;
+  background: #fff;
+  color: var(--veylique-ink);
+  font: inherit;
+}
+
+@media (max-width: 900px) {
+  .veylique-section-head,
+  .veylique-editorial {
+    grid-template-columns: 1fr;
+  }
+
+  .veylique-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .veylique-home-hero__label {
+    top: 5.8rem;
+    right: 1.15rem;
+    font-size: clamp(2rem, 6vw, 2.8rem);
+  }
+
+  .veylique-home-hero__subtitles {
+    left: 1.15rem;
+    right: 1.15rem;
+    top: 42%;
+    font-size: 1.04rem;
+    font-weight: 700;
+  }
+
+  .veylique-home-hero__title {
+    left: 1.15rem;
+    right: 1.15rem;
+    bottom: 9.3rem;
+    font-size: clamp(3.6rem, 13.6vw, 8.5rem);
+    white-space: normal;
+  }
+
+  .veylique-home-hero__cta {
+    right: 1.15rem;
+    bottom: 2.5rem;
+  }
+}
+
+@media (max-width: 620px) {
+  .veylique-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .veylique-title {
+    font-size: clamp(3.4rem, 19vw, 5.8rem);
+  }
+
+  .veylique-home-hero,
+  .veylique-home-hero__content {
+    min-height: calc(100svh - 5rem);
+  }
+
+  .veylique-home-hero__label {
+    top: 5.3rem;
+    right: 1rem;
+    font-size: clamp(1.75rem, 11vw, 2.35rem);
+  }
+
+  .veylique-home-hero__subtitles {
+    left: 1rem;
+    right: 1rem;
+    top: 36%;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    font-size: 0.975rem;
+    font-weight: 700;
+  }
+
+  .veylique-home-hero__subtitles a,
+  .veylique-home-hero__subtitles a:nth-child(2),
+  .veylique-home-hero__subtitles a:nth-child(3) {
+    text-align: left;
+  }
+
+  .veylique-home-hero__title {
+    left: 1rem;
+    right: 1rem;
+    bottom: 10rem;
+    font-size: 3rem;
+    line-height: 0.9;
+    letter-spacing: -0.08em;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .veylique-home-hero__cta {
+    right: 1rem;
+    bottom: 2.3rem;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1439.98px) {
+  .veylique-home-hero__label {
+    top: 7.2rem;
+    right: 1.5rem;
+  }
+
+  .veylique-home-hero__subtitles {
+    left: 1.5rem;
+    right: 1.5rem;
+  }
+
+  .veylique-home-hero__title {
+    left: 1.5rem;
+    right: 1.5rem;
+    bottom: 8.5rem;
+    font-size: clamp(3.9rem, 13.6vw, 16rem);
+  }
+
+  .veylique-home-hero__cta {
+    right: 1.5rem;
+    bottom: 5.2rem;
+  }
+}
+
+@media (min-width: 1920px) {
+  .veylique-home-hero__label {
+    top: 8.6rem;
+    right: 2.5rem;
+    font-size: 3.6rem;
+  }
+
+  .veylique-home-hero__subtitles {
+    left: 2.5rem;
+    right: 2.5rem;
+    font-size: 1.12rem;
+  }
+
+  .veylique-home-hero__title {
+    left: 2.5rem;
+    right: 2.5rem;
+    bottom: 9rem;
+    font-size: min(18rem, 15vw);
+  }
+
+  .veylique-home-hero__cta {
+    right: 2.5rem;
+    bottom: 5.8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .veylique-home-hero__label,
+  .veylique-home-hero__subtitles a,
+  .veylique-home-hero__title,
+  .veylique-home-hero__cta {
+    visibility: visible !important;
+    opacity: 1 !important;
+    clip-path: none !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  .veylique-home-hero__canvas-wrap {
+    display: none;
+  }
+
+  .veylique-home-hero__scroll span {
+    animation: none;
+    opacity: 1;
+  }
+}

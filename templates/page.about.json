@@ -1,0 +1,49 @@
+{
+  "sections": {
+    "hero": {
+      "type": "veylique-page-hero",
+      "settings": {
+        "kicker": "About Veylique",
+        "heading": "Designed for real life",
+        "fallback": "hero-2.webp"
+      }
+    },
+    "manifesto": {
+      "type": "veylique-rich-text",
+      "settings": {
+        "kicker": "Manifesto",
+        "heading": "Everyday clothes should feel polished without asking you to compromise.",
+        "text": "<p>Veylique is built around wearable silhouettes, reliable fabrics, and details that earn their place in a real wardrobe.</p>"
+      }
+    },
+    "story": {
+      "type": "veylique-image-with-text",
+      "settings": {
+        "kicker": "Our story",
+        "heading": "Modern wardrobe pieces with a softer point of view",
+        "fallback": "founder.jpg"
+      }
+    },
+    "values": {
+      "type": "veylique-process",
+      "settings": {
+        "kicker": "Values",
+        "heading": "What guides every collection"
+      }
+    },
+    "cta": {
+      "type": "veylique-image-banner",
+      "settings": {
+        "fallback": "hero-3.webp",
+        "heading": "Discover the collection"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "manifesto",
+    "story",
+    "values",
+    "cta"
+  ]
+}

@@ -1,0 +1,25 @@
+<section class="veylique-page veylique-section" aria-labelledby="VeyliqueRichTextTitle-{{ section.id }}">
+  <div class="veylique-container">
+    <div class="veylique-section-head">
+      <div>
+        <p class="veylique-kicker">{{ section.settings.kicker | escape }}</p>
+        <h2 id="VeyliqueRichTextTitle-{{ section.id }}" class="veylique-section-title">{{ section.settings.heading }}</h2>
+      </div>
+      <div class="veylique-text">{{ section.settings.text }}</div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Rich text",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Manifesto" },
+    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Everyday clothes should feel polished without asking you to compromise." },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Use this section for brand story, page introductions, policies, or editorial copy. It is fully editable in the theme editor.</p>" }
+  ],
+  "presets": [
+    { "name": "Rich text" }
+  ]
+}
+{% endschema %}
