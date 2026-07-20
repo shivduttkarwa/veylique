@@ -1,43 +1,26 @@
 {% liquid
-  capture slide_1_url
-    if section.settings.image_1 != blank
-      echo section.settings.image_1 | image_url: width: 2400
-    else
-      echo 'hero-1.webp' | asset_url
-    endif
-  endcapture
+  assign slide_blocks = section.blocks | where: 'type', 'slide'
+  assign category_blocks = section.blocks | where: 'type', 'link'
+  assign fallback_image = blank
+  assign fallback_alt = section.settings.heading | strip_html
+  assign initial_label = 'New'
 
-  capture slide_2_url
-    if section.settings.image_2 != blank
-      echo section.settings.image_2 | image_url: width: 2400
-    else
-      echo 'hero-2.webp' | asset_url
-    endif
-  endcapture
+  if slide_blocks.size > 0
+    for block in slide_blocks limit: 5
+      if forloop.first and block.settings.label != blank
+        assign initial_label = block.settings.label
+      endif
 
-  capture slide_3_url
-    if section.settings.image_3 != blank
-      echo section.settings.image_3 | image_url: width: 2400
-    else
-      echo 'hero-3.webp' | asset_url
-    endif
-  endcapture
-
-  capture slide_4_url
-    if section.settings.image_4 != blank
-      echo section.settings.image_4 | image_url: width: 2400
-    else
-      echo 'hero-4.webp' | asset_url
-    endif
-  endcapture
-
-  capture slide_5_url
-    if section.settings.image_5 != blank
-      echo section.settings.image_5 | image_url: width: 2400
-    else
-      echo 'hero-5.webp' | asset_url
-    endif
-  endcapture
+      if fallback_image == blank and block.settings.image != blank
+        assign fallback_image = block.settings.image
+        if block.settings.label != blank
+          assign fallback_alt = block.settings.label
+        endif
+      endif
+    endfor
+  elsif section.settings.label_1 != blank
+    assign initial_label = section.settings.label_1
+  endif
 %}
 
 <section
@@ -48,10 +31,10 @@
 >
   <div class="veylique-home-hero__fallback">
     {% render 'veylique-responsive-image',
-      image: section.settings.image_1,
+      image: fallback_image,
       fallback: 'hero-1.webp',
       class: 'veylique-media',
-      alt: section.settings.heading,
+      alt: fallback_alt,
       loading: 'eager',
       width: 2400,
       height: 1600
@@ -64,12 +47,12 @@
 
   <div class="veylique-home-hero__content">
     <p class="veylique-home-hero__label" data-veylique-hero-label>
-      {{ section.settings.label_1 | escape }}
+      {{ initial_label | escape }}
     </p>
 
-    {% if section.blocks.size > 0 %}
+    {% if category_blocks.size > 0 %}
       <nav class="veylique-home-hero__subtitles" aria-label="{{ section.settings.category_label | escape }}">
-        {% for block in section.blocks limit: 3 %}
+        {% for block in category_blocks limit: 3 %}
           <a href="{{ block.settings.link | default: routes.all_products_collection_url }}" {{ block.shopify_attributes }}>
             {{ block.settings.label | escape }}
           </a>
@@ -99,18 +82,43 @@
   <script type="application/json" data-veylique-hero-config>
     {
       "images": [
-        {{ slide_1_url | strip | json }},
-        {{ slide_2_url | strip | json }},
-        {{ slide_3_url | strip | json }},
-        {{ slide_4_url | strip | json }},
-        {{ slide_5_url | strip | json }}
+        {% if slide_blocks.size > 0 %}
+          {% for block in slide_blocks limit: 5 %}
+            {% liquid
+              capture fallback_asset
+                echo 'hero-' | append: forloop.index | append: '.webp'
+              endcapture
+
+              capture slide_url
+                if block.settings.image != blank
+                  echo block.settings.image | image_url: width: 2400
+                else
+                  echo fallback_asset | strip | asset_url
+                endif
+              endcapture
+            %}
+            {{ slide_url | strip | json }}{% unless forloop.last %},{% endunless %}
+          {% endfor %}
+        {% else %}
+          {{ 'hero-1.webp' | asset_url | json }},
+          {{ 'hero-2.webp' | asset_url | json }},
+          {{ 'hero-3.webp' | asset_url | json }},
+          {{ 'hero-4.webp' | asset_url | json }},
+          {{ 'hero-5.webp' | asset_url | json }}
+        {% endif %}
       ],
       "labels": [
-        {{ section.settings.label_1 | json }},
-        {{ section.settings.label_2 | json }},
-        {{ section.settings.label_3 | json }},
-        {{ section.settings.label_4 | json }},
-        {{ section.settings.label_5 | json }}
+        {% if slide_blocks.size > 0 %}
+          {% for block in slide_blocks limit: 5 %}
+            {{ block.settings.label | default: initial_label | json }}{% unless forloop.last %},{% endunless %}
+          {% endfor %}
+        {% else %}
+          {{ section.settings.label_1 | default: 'New' | json }},
+          {{ section.settings.label_2 | default: 'Bold' | json }},
+          {{ section.settings.label_3 | default: 'Chic' | json }},
+          {{ section.settings.label_4 | default: 'Effortless' | json }},
+          {{ section.settings.label_5 | default: 'Fresh' | json }}
+        {% endif %}
       ],
       "slideDuration": {{ section.settings.slide_duration | times: 1000 | json }},
       "transitionDuration": {{ section.settings.transition_duration | times: 1000 | json }}
@@ -120,7 +128,7 @@
 
 {% schema %}
 {
-  "name": "Slideshow",
+  "name": "Hero slideshow",
   "tag": "section",
   "class": "shopify-section--veylique-hero",
   "settings": [
@@ -130,22 +138,20 @@
     { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop collection" },
     { "type": "url", "id": "button_link", "label": "Button link" },
     { "type": "text", "id": "scroll_label", "label": "Scroll button label", "default": "Scroll down" },
-    { "type": "header", "content": "Slides" },
-    { "type": "image_picker", "id": "image_1", "label": "Slide 1 image" },
-    { "type": "text", "id": "label_1", "label": "Slide 1 label", "default": "New" },
-    { "type": "image_picker", "id": "image_2", "label": "Slide 2 image" },
-    { "type": "text", "id": "label_2", "label": "Slide 2 label", "default": "Bold" },
-    { "type": "image_picker", "id": "image_3", "label": "Slide 3 image" },
-    { "type": "text", "id": "label_3", "label": "Slide 3 label", "default": "Chic" },
-    { "type": "image_picker", "id": "image_4", "label": "Slide 4 image" },
-    { "type": "text", "id": "label_4", "label": "Slide 4 label", "default": "Effortless" },
-    { "type": "image_picker", "id": "image_5", "label": "Slide 5 image" },
-    { "type": "text", "id": "label_5", "label": "Slide 5 label", "default": "Fresh" },
     { "type": "header", "content": "Animation" },
     { "type": "range", "id": "slide_duration", "label": "Seconds per slide", "min": 2, "max": 8, "step": 1, "default": 3 },
     { "type": "range", "id": "transition_duration", "label": "Transition seconds", "min": 1, "max": 4, "step": 1, "default": 2 }
   ],
   "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "limit": 5,
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "label", "label": "Animated label", "default": "New" }
+      ]
+    },
     {
       "type": "link",
       "name": "Category link",
@@ -158,8 +164,13 @@
   ],
   "presets": [
     {
-      "name": "Slideshow",
+      "name": "Hero slideshow",
       "blocks": [
+        { "type": "slide", "settings": { "label": "New" } },
+        { "type": "slide", "settings": { "label": "Bold" } },
+        { "type": "slide", "settings": { "label": "Chic" } },
+        { "type": "slide", "settings": { "label": "Effortless" } },
+        { "type": "slide", "settings": { "label": "Fresh" } },
         { "type": "link", "settings": { "label": "Dresses" } },
         { "type": "link", "settings": { "label": "Ethnic wear" } },
         { "type": "link", "settings": { "label": "Western wear" } }
