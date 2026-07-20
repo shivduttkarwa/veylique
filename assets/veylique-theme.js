@@ -614,11 +614,126 @@
     });
   }
 
+  function initCategoryCarousels(root) {
+    root.querySelectorAll('[data-veylique-category-carousel]').forEach(function (carousel) {
+      if (carousel.dataset.veyliqueCategoryReady === 'true') return;
+      carousel.dataset.veyliqueCategoryReady = 'true';
+
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var intro = carousel.querySelector('[data-veylique-category-intro]');
+      var scroller = carousel.querySelector('[data-veylique-cat-track]');
+      var prev = carousel.querySelector('[data-veylique-cat-prev]');
+      var next = carousel.querySelector('[data-veylique-cat-next]');
+
+      carousel.querySelectorAll('[data-veylique-hover-image]').forEach(function (image) {
+        function markLoaded() {
+          image.classList.add('is-loaded');
+        }
+
+        if (image.complete && image.naturalWidth) markLoaded();
+        else image.addEventListener('load', markLoaded, { once: true });
+      });
+
+      function reveal(element) {
+        if (element) element.classList.add('is-visible');
+      }
+
+      if (!('IntersectionObserver' in window)) {
+        reveal(intro);
+        carousel.querySelectorAll('.veylique-reveal-js').forEach(reveal);
+      } else {
+        if (intro) {
+          var introObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              if (!entry.isIntersecting) return;
+              reveal(entry.target);
+              introObserver.unobserve(entry.target);
+            });
+          }, { threshold: 0.15, rootMargin: '0px 0px -12% 0px' });
+
+          introObserver.observe(intro);
+        }
+
+        var revealObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            reveal(entry.target);
+            revealObserver.unobserve(entry.target);
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+
+        carousel.querySelectorAll('.veylique-reveal-js').forEach(function (card) {
+          revealObserver.observe(card);
+        });
+      }
+
+      if (!scroller) return;
+
+      function getScrollStep() {
+        var slide = scroller.querySelector('.swiper-slide');
+        if (!slide) return scroller.clientWidth;
+
+        var wrapper = scroller.querySelector('.swiper-wrapper');
+        var styles = wrapper ? window.getComputedStyle(wrapper) : null;
+        var gap = styles ? parseFloat(styles.columnGap || styles.gap || '0') : 0;
+        return slide.getBoundingClientRect().width + (Number.isNaN(gap) ? 0 : gap);
+      }
+
+      function updateNav() {
+        var maxScroll = scroller.scrollWidth - scroller.clientWidth - 1;
+        var atStart = scroller.scrollLeft <= 1;
+        var atEnd = scroller.scrollLeft >= maxScroll;
+
+        if (prev) {
+          prev.classList.toggle('swiper-button-disabled', atStart);
+          prev.disabled = atStart;
+        }
+
+        if (next) {
+          next.classList.toggle('swiper-button-disabled', atEnd);
+          next.disabled = atEnd;
+        }
+      }
+
+      function scrollByDirection(direction) {
+        scroller.scrollBy({
+          left: getScrollStep() * direction,
+          behavior: reduceMotion ? 'auto' : 'smooth'
+        });
+      }
+
+      if (prev) {
+        prev.addEventListener('click', function () {
+          scrollByDirection(-1);
+        });
+      }
+
+      if (next) {
+        next.addEventListener('click', function () {
+          scrollByDirection(1);
+        });
+      }
+
+      var scrollFrame = 0;
+      scroller.addEventListener('scroll', function () {
+        if (scrollFrame) return;
+        scrollFrame = window.requestAnimationFrame(function () {
+          scrollFrame = 0;
+          updateNav();
+        });
+      }, { passive: true });
+
+      window.addEventListener('resize', updateNav);
+      updateNav();
+    });
+  }
+
   function init() {
     initFaq(document);
     initHeroes(document);
     initHeader(document);
     initFooter(document);
+    initCategoryCarousels(document);
   }
 
   if (document.readyState === 'loading') {
@@ -632,5 +747,6 @@
     initHeroes(event.target);
     initHeader(event.target);
     initFooter(event.target);
+    initCategoryCarousels(event.target);
   });
 })();

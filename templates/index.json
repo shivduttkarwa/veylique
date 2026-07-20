@@ -1,63 +1,56 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero": {
       "type": "veylique-hero",
       "blocks": {
-        "slide_1": {
+        "slide_BnnDTU": {
           "type": "slide",
           "settings": {
-            "label": "New"
+            "image": "shopify://shop_images/hero-4.webp",
+            "label": "test"
           }
         },
-        "slide_2": {
+        "slide_HDyD9Q": {
           "type": "slide",
           "settings": {
-            "label": "Bold"
-          }
-        },
-        "slide_3": {
-          "type": "slide",
-          "settings": {
-            "label": "Chic"
-          }
-        },
-        "slide_4": {
-          "type": "slide",
-          "settings": {
-            "label": "Effortless"
-          }
-        },
-        "slide_5": {
-          "type": "slide",
-          "settings": {
-            "label": "Fresh"
+            "image": "shopify://shop_images/cta.webp",
+            "label": "test-2"
           }
         },
         "category_1": {
           "type": "link",
           "settings": {
-            "label": "Dresses"
+            "label": "Dresses",
+            "link": ""
           }
         },
         "category_2": {
           "type": "link",
           "settings": {
-            "label": "Ethnic wear"
+            "label": "Ethnic wear",
+            "link": ""
           }
         },
         "category_3": {
           "type": "link",
           "settings": {
-            "label": "Western wear"
+            "label": "Western wear",
+            "link": ""
           }
         }
       },
       "block_order": [
-        "slide_1",
-        "slide_2",
-        "slide_3",
-        "slide_4",
-        "slide_5",
+        "slide_BnnDTU",
+        "slide_HDyD9Q",
         "category_1",
         "category_2",
         "category_3"
@@ -66,23 +59,104 @@
         "heading": "Veylique",
         "category_label": "Featured categories",
         "button_label": "Shop collection",
+        "button_link": "",
         "scroll_label": "Scroll down",
         "slide_duration": 3,
         "transition_duration": 2
       }
     },
     "categories": {
-      "type": "veylique-featured-collections",
-      "settings": {}
+      "type": "veylique-category-carousel",
+      "blocks": {
+        "category_dresses": {
+          "type": "category",
+          "settings": {
+            "heading": "Dresses",
+            "link": "",
+            "fallback": "hero-1.webp",
+            "hover_fallback": "hero-2.webp"
+          }
+        },
+        "category_ethnic": {
+          "type": "category",
+          "settings": {
+            "heading": "Ethnic Wear",
+            "link": "",
+            "fallback": "hero-2.webp",
+            "hover_fallback": "hero-3.webp"
+          }
+        },
+        "category_western": {
+          "type": "category",
+          "settings": {
+            "heading": "Western Wear",
+            "link": "",
+            "fallback": "hero-3.webp",
+            "hover_fallback": "hero-4.webp"
+          }
+        },
+        "category_coord": {
+          "type": "category",
+          "settings": {
+            "heading": "Co-ord Sets",
+            "link": "",
+            "fallback": "hero-4.webp",
+            "hover_fallback": "hero-5.webp"
+          }
+        },
+        "category_tops": {
+          "type": "category",
+          "settings": {
+            "heading": "Tops & Shirts",
+            "link": "",
+            "fallback": "hero-5.webp",
+            "hover_fallback": "cta.webp"
+          }
+        },
+        "category_accessories": {
+          "type": "category",
+          "settings": {
+            "heading": "Accessories",
+            "link": "",
+            "fallback": "cta.webp",
+            "hover_fallback": "hero-1.webp"
+          }
+        }
+      },
+      "block_order": [
+        "category_dresses",
+        "category_ethnic",
+        "category_western",
+        "category_coord",
+        "category_tops",
+        "category_accessories"
+      ],
+      "settings": {
+        "heading": "Shop by Category",
+        "text": "Explore the collection organised by mood, occasion, and everyday need.",
+        "show_navigation": true,
+        "previous_label": "Previous",
+        "next_label": "Next"
+      }
     },
     "new_arrivals": {
       "type": "veylique-featured-products",
-      "settings": {}
+      "settings": {
+        "kicker": "New arrivals",
+        "heading": "New arrivals",
+        "text": "The newest pieces to land in the collection, fresh off the rack and ready to wear.",
+        "columns_desktop": 4
+      }
     },
     "editorial": {
       "type": "veylique-image-with-text",
       "settings": {
-        "fallback": "manifest-cta.jpg"
+        "fallback": "manifest-cta.jpg",
+        "kicker": "The curated edit",
+        "heading": "Everyday polish, softened for comfort",
+        "text": "Use this editorial module for a campaign story, founder note, or seasonal look that anchors the collection.",
+        "button_label": "Explore the edit",
+        "button_link": ""
       }
     },
     "bestsellers": {
@@ -90,16 +164,19 @@
       "settings": {
         "kicker": "Bestsellers",
         "heading": "Shop bestsellers",
-        "text": "Our most-loved styles, trusted by customers for fit and ease."
+        "text": "Our most-loved styles, trusted by customers for fit and ease.",
+        "columns_desktop": 4
       }
     },
     "sale_banner": {
       "type": "veylique-image-banner",
       "settings": {
+        "fallback": "hero-3.webp",
         "kicker": "Seasonal edit",
         "heading": "End of season essentials",
         "text": "Bring shoppers into a focused promotion or seasonal story.",
-        "fallback": "hero-3.webp"
+        "button_label": "Shop all products",
+        "button_link": ""
       }
     },
     "occasion": {
@@ -107,7 +184,9 @@
       "settings": {
         "kicker": "Shop by occasion",
         "heading": "One wardrobe, every plan",
-        "text": "Pick the moment and guide shoppers to an edited collection."
+        "text": "Pick the moment and guide shoppers to an edited collection.",
+        "link_label": "View",
+        "columns_desktop": 4
       }
     },
     "latest": {
@@ -115,33 +194,58 @@
       "settings": {
         "kicker": "Latest products",
         "heading": "Freshly launched styles",
-        "text": "Seasonal essentials selected for the next outfit."
+        "text": "Seasonal essentials selected for the next outfit.",
+        "columns_desktop": 4
       }
     },
     "process": {
       "type": "veylique-process",
-      "settings": {}
+      "settings": {
+        "kicker": "The style ritual",
+        "heading": "Your everyday edit",
+        "text": "Four considered steps, one confident look. A complete approach to getting dressed, built around real bodies.",
+        "columns_desktop": 4
+      }
     },
     "testimonials": {
       "type": "veylique-testimonials",
-      "settings": {}
+      "settings": {
+        "kicker": "Customer stories",
+        "heading": "Loved for fit, ease, and detail",
+        "text": "Add social proof that feels specific and useful.",
+        "columns_desktop": 3
+      }
     },
     "stories": {
       "type": "veylique-blog-posts",
-      "settings": {}
+      "settings": {
+        "kicker": "Recent stories",
+        "heading": "Recent stories",
+        "text": "Style guides, sizing notes, and a look behind the collections.",
+        "blog": "",
+        "post_limit": 4,
+        "columns_desktop": 4
+      }
     },
     "full_cta": {
       "type": "veylique-image-banner",
       "settings": {
+        "fallback": "hero-1.webp",
         "kicker": "Ready when you are",
         "heading": "For every size, mood, and plan",
         "text": "",
-        "fallback": "hero-1.webp"
+        "button_label": "Shop all products",
+        "button_link": ""
       }
     },
     "faq": {
       "type": "veylique-faq",
-      "settings": {}
+      "settings": {
+        "kicker": "Help desk",
+        "heading": "Questions, answered",
+        "text": "Everything shoppers need before checkout, from fit to delivery and easy exchanges.",
+        "columns_desktop": 3
+      }
     }
   },
   "order": [
