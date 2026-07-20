@@ -1,0 +1,117 @@
+<div class="veylique-section-intro veylique-section-intro-js full-width">
+  <div class="veylique-container-wide">
+    <h2 class="veylique-section-title">{{ section.settings.heading }}</h2>
+    <p class="veylique-section-desc">{{ section.settings.text }}</p>
+  </div>
+</div>
+
+<section class="veylique-best-section full-width" aria-label="{{ section.settings.heading | escape }}">
+  <div class="veylique-best-inner">
+    <div class="veylique-best-slider-area" data-veylique-card-slider>
+      <div class="veylique-best-swiper" tabindex="0" data-veylique-card-slider-viewport>
+        <div class="swiper-wrapper" data-veylique-card-slider-track>
+          {% for block in section.blocks %}
+            <div class="swiper-slide" {{ block.shopify_attributes }}>
+              {% render 'veylique-home-product-card',
+                variant: 'best',
+                product: block.settings.product,
+                title: block.settings.title,
+                badge: block.settings.badge,
+                price: block.settings.price,
+                image: block.settings.image,
+                hover_image: block.settings.hover_image,
+                fallback: block.settings.fallback,
+                hover_fallback: block.settings.hover_fallback,
+                link: block.settings.link
+              %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      {% if section.settings.show_navigation %}
+        <div class="veylique-best-nav" aria-label="{{ section.settings.controls_label | escape }}">
+          <button class="veylique-best-nav-btn veylique-best-prev" type="button" data-veylique-card-slider-prev aria-label="{{ section.settings.previous_label | escape }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </button>
+          <button class="veylique-best-nav-btn veylique-best-next" type="button" data-veylique-card-slider-next aria-label="{{ section.settings.next_label | escape }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Veylique bestsellers",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop Bestsellers"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Our most-loved styles, trusted by thousands worldwide."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "Show navigation",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "controls_label",
+      "label": "Controls label",
+      "default": "Bestsellers carousel controls"
+    },
+    {
+      "type": "text",
+      "id": "previous_label",
+      "label": "Previous label",
+      "default": "Previous products"
+    },
+    {
+      "type": "text",
+      "id": "next_label",
+      "label": "Next label",
+      "default": "Next products"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        { "type": "product", "id": "product", "label": "Product" },
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "image_picker", "id": "hover_image", "label": "Hover image" },
+        { "type": "text", "id": "fallback", "label": "Fallback asset filename", "default": "hero-1.webp" },
+        { "type": "text", "id": "hover_fallback", "label": "Hover fallback asset filename", "default": "hero-2.webp" },
+        { "type": "text", "id": "badge", "label": "Badge", "default": "Bestseller" },
+        { "type": "text", "id": "title", "label": "Fallback title", "default": "Floral Wrap Midi Dress" },
+        { "type": "text", "id": "price", "label": "Fallback price", "default": "$54.00" },
+        { "type": "url", "id": "link", "label": "Fallback link" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Veylique bestsellers",
+      "blocks": [
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" }
+      ]
+    }
+  ]
+}
+{% endschema %}

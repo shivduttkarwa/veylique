@@ -1,0 +1,89 @@
+<div class="veylique-section-intro veylique-section-intro-js full-width">
+  <div class="veylique-container-wide">
+    <h2 class="veylique-section-title">{{ section.settings.heading }}</h2>
+    <p class="veylique-section-desc">{{ section.settings.text }}</p>
+  </div>
+</div>
+
+<section class="veylique-occ full-width" aria-label="{{ section.settings.heading | escape }}" data-veylique-occasion>
+  <div class="veylique-occ-inner">
+    <div class="veylique-occ-list" role="tablist" aria-label="{{ section.settings.tabs_label | escape }}" data-occ-list>
+      {% for block in section.blocks %}
+        <div class="veylique-occ-item{% if forloop.first %} is-active{% endif %}" data-occ-item {{ block.shopify_attributes }}>
+          <button class="veylique-occ-head" type="button" role="tab" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" data-occ-tab="{{ forloop.index0 }}">
+            <span class="veylique-occ-name">{{ block.settings.heading }}</span>
+            <span class="veylique-occ-icon" aria-hidden="true"></span>
+          </button>
+          <div class="veylique-occ-body">
+            <p class="veylique-occ-desc">{{ block.settings.text }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="veylique-occ-media">
+      {% for block in section.blocks %}
+        {% liquid
+          assign occasion_alt = block.settings.alt | default: block.settings.heading
+        %}
+        <div class="veylique-occ-slide{% if forloop.first %} is-active{% endif %}" data-occ-slide="{{ forloop.index0 }}">
+          {% render 'veylique-responsive-image',
+            image: block.settings.image,
+            fallback: block.settings.fallback,
+            class: '',
+            alt: occasion_alt,
+            width: 1200,
+            height: 1500
+          %}
+          <span class="veylique-occ-tag">
+            <span class="veylique-occ-tag-name">{{ block.settings.tag_1_name }}</span>
+            <span class="veylique-occ-tag-price">{{ block.settings.tag_1_price }}</span>
+          </span>
+          <span class="veylique-occ-tag">
+            <span class="veylique-occ-tag-name">{{ block.settings.tag_2_name }}</span>
+            <span class="veylique-occ-tag-price">{{ block.settings.tag_2_price }}</span>
+          </span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Veylique occasion",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Shop by Occasion" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "One wardrobe, every plan - pick the moment and we'll style it." },
+    { "type": "text", "id": "tabs_label", "label": "Tabs accessibility label", "default": "Occasions" }
+  ],
+  "blocks": [
+    {
+      "type": "occasion",
+      "name": "Occasion",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Office day" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Clean silhouettes and structured fabrics that move from the desk to after-work plans without missing a beat." },
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "fallback", "label": "Fallback asset filename", "default": "hero-4.webp" },
+        { "type": "text", "id": "alt", "label": "Alt text", "default": "Veylique occasion outfit" },
+        { "type": "text", "id": "tag_1_name", "label": "Tag 1 name", "default": "Cecilia Blazer" },
+        { "type": "text", "id": "tag_1_price", "label": "Tag 1 price", "default": "$128.00" },
+        { "type": "text", "id": "tag_2_name", "label": "Tag 2 name", "default": "Sathorn Pants" },
+        { "type": "text", "id": "tag_2_price", "label": "Tag 2 price", "default": "$86.00" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Veylique occasion",
+      "blocks": [
+        { "type": "occasion" },
+        { "type": "occasion" },
+        { "type": "occasion" }
+      ]
+    }
+  ]
+}
+{% endschema %}

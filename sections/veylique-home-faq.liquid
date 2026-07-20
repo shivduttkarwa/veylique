@@ -1,0 +1,72 @@
+<section class="veylique-home-faq full-width" aria-labelledby="veyliqueHomeFaqTitle-{{ section.id }}" data-veylique-home-faq>
+  <div class="veylique-home-faq-inner">
+    <div class="veylique-home-faq-copy">
+      <p class="veylique-home-faq-kicker veylique-reveal-js veylique-reveal--static-js">{{ section.settings.kicker }}</p>
+      <h2 id="veyliqueHomeFaqTitle-{{ section.id }}" class="veylique-home-faq-title veylique-reveal-js veylique-reveal--static-js">{{ section.settings.heading }}</h2>
+      <p class="veylique-home-faq-text veylique-reveal-js veylique-reveal--static-js">{{ section.settings.text }}</p>
+      {% if section.settings.link_label != blank %}
+        <a href="{{ section.settings.link | default: routes.root_url }}" class="veylique-home-faq-link veylique-reveal-js veylique-reveal--static-js">
+          <span>{{ section.settings.link_label }}</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      {% endif %}
+    </div>
+
+    <div class="veylique-home-faq-list">
+      {% for block in section.blocks %}
+        <div class="veylique-home-faq-item{% if forloop.first %} is-open{% endif %}" {{ block.shopify_attributes }}>
+          <button
+            class="veylique-home-faq-question"
+            type="button"
+            id="veyliqueHomeFaqQ-{{ section.id }}-{{ forloop.index }}"
+            aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+            aria-controls="veyliqueHomeFaqA-{{ section.id }}-{{ forloop.index }}"
+          >
+            <span>{{ block.settings.question }}</span>
+            <span class="veylique-home-faq-icon" aria-hidden="true"></span>
+          </button>
+          <div class="veylique-home-faq-answer" id="veyliqueHomeFaqA-{{ section.id }}-{{ forloop.index }}" role="region" aria-labelledby="veyliqueHomeFaqQ-{{ section.id }}-{{ forloop.index }}">
+            <div class="veylique-home-faq-answer-inner">
+              <p>{{ block.settings.answer }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Veylique home FAQ",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Help Desk" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Questions, answered" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Everything you need before checkout, from fit to delivery and easy exchanges." },
+    { "type": "text", "id": "link_label", "label": "Link label", "default": "Talk to support" },
+    { "type": "url", "id": "link", "label": "Link" }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Question",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Question", "default": "How long does delivery take?" },
+        { "type": "textarea", "id": "answer", "label": "Answer", "default": "Most orders ship within 24-48 hours. Standard delivery usually arrives in 3-6 business days, depending on your location." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Veylique home FAQ",
+      "blocks": [
+        { "type": "question" },
+        { "type": "question" },
+        { "type": "question" },
+        { "type": "question" }
+      ]
+    }
+  ]
+}
+{% endschema %}

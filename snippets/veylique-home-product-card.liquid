@@ -1,0 +1,179 @@
+{% doc %}
+  Renders a Veylique home product card for bestsellers and latest products.
+
+  @param {product} [product] - Optional Shopify product.
+  @param {string} [variant] - Card variant, either "best" or "latest".
+  @param {string} [title] - Fallback product title.
+  @param {string} [category] - Fallback category label.
+  @param {string} [badge] - Badge label.
+  @param {string} [price] - Fallback price text.
+  @param {string} [compare_price] - Fallback compare-at price text.
+  @param {image} [image] - Merchant-selected main image.
+  @param {image} [hover_image] - Merchant-selected hover image.
+  @param {string} [fallback] - Theme asset fallback for the main image.
+  @param {string} [hover_fallback] - Theme asset fallback for the hover image.
+  @param {string} [link] - Fallback destination.
+{% enddoc %}
+
+{% liquid
+  assign card_variant = variant | default: 'latest'
+  assign is_best = false
+  if card_variant == 'best'
+    assign is_best = true
+  endif
+
+  assign card_title = title | default: 'Veylique piece'
+  assign card_category = category
+  assign card_badge = badge
+  assign card_price = price | default: '$68.00'
+  assign card_compare_price = compare_price
+  assign card_link = link | default: routes.all_products_collection_url
+  assign card_image = image
+  assign card_hover_image = hover_image
+
+  if product != blank
+    assign card_title = product.title
+    assign card_link = product.url
+    assign card_price = product.price | money
+    if product.compare_at_price > product.price
+      assign card_compare_price = product.compare_at_price | money
+    endif
+    assign card_image = product.featured_image
+    assign card_hover_image = product.images[1]
+  endif
+
+  assign main_fallback = fallback | default: 'hero-1.webp'
+  assign secondary_fallback = hover_fallback | default: main_fallback
+  assign best_sizes = 'XS,S,M,L,XL,2XL' | split: ','
+  assign latest_sizes = 'XS,S,M,L,XL' | split: ','
+%}
+
+{% if is_best %}
+  <article class="veylique-best-card veylique-reveal-js veylique-reveal--static-js">
+    <div class="veylique-card-media-wrap">
+      <a href="{{ card_link }}" class="veylique-best-media-link">
+        {% if card_badge != blank %}
+          <span class="veylique-best-badge">{{ card_badge }}</span>
+        {% endif %}
+        <div class="veylique-best-media">
+          {% render 'veylique-responsive-image',
+            image: card_image,
+            fallback: main_fallback,
+            class: 'veylique-best-img veylique-best-img--main',
+            alt: card_title,
+            width: 900,
+            height: 1200
+          %}
+          {% render 'veylique-responsive-image',
+            image: card_hover_image,
+            fallback: secondary_fallback,
+            class: 'veylique-best-img veylique-best-img--hover',
+            alt: '',
+            width: 900,
+            height: 1200
+          %}
+        </div>
+      </a>
+    </div>
+
+    <div class="veylique-best-info">
+      <div class="veylique-best-title-row">
+        <h3 class="veylique-best-name"><a href="{{ card_link }}">{{ card_title }}</a></h3>
+        <button class="veylique-wish-btn" type="button" aria-label="Add {{ card_title | escape }} to wishlist" data-veylique-wish>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+      </div>
+      <div class="veylique-size-row" aria-label="Select size">
+        {% for size in best_sizes %}
+          <button type="button" class="veylique-size-chip" aria-pressed="false">{{ size }}</button>
+        {% endfor %}
+      </div>
+      <p class="veylique-best-price">{{ card_price }}</p>
+      <div class="veylique-card-actions">
+        <div class="veylique-card-atc-wrap">
+          {% if product != blank and product.available %}
+            {% form 'product', product, class: 'veylique-card-atc-form' %}
+              <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+              <button type="submit" class="veylique-btn btn-black">Add to Cart</button>
+            {% endform %}
+          {% else %}
+            <a href="{{ card_link }}" class="veylique-btn btn-black">Add to Cart</a>
+          {% endif %}
+        </div>
+        <a href="{{ routes.cart_url }}" class="veylique-view-cart-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span>View Cart</span>
+        </a>
+      </div>
+    </div>
+  </article>
+{% else %}
+  <article class="veylique-lp-card veylique-reveal-js veylique-reveal--static-js">
+    <a class="veylique-lp-media" href="{{ card_link }}">
+      {% if card_badge != blank %}
+        <span class="veylique-lp-badge{% if card_compare_price != blank %} veylique-lp-badge--sale{% endif %}">{{ card_badge }}</span>
+      {% endif %}
+      <span class="veylique-lp-track">
+        {% render 'veylique-responsive-image',
+          image: card_image,
+          fallback: main_fallback,
+          class: 'veylique-lp-img veylique-lp-img--main',
+          alt: card_title,
+          width: 900,
+          height: 1200
+        %}
+        {% render 'veylique-responsive-image',
+          image: card_hover_image,
+          fallback: secondary_fallback,
+          class: 'veylique-lp-img veylique-lp-img--hover',
+          alt: '',
+          width: 900,
+          height: 1200
+        %}
+      </span>
+      <span class="veylique-lp-dots" aria-hidden="true">
+        <span class="veylique-lp-dot is-active"></span>
+        <span class="veylique-lp-dot"></span>
+      </span>
+    </a>
+
+    <div class="veylique-lp-body">
+      {% if card_category != blank %}
+        <p class="veylique-lp-category">{{ card_category }}</p>
+      {% endif %}
+      <div class="veylique-lp-title-row">
+        <h3 class="veylique-lp-name"><a href="{{ card_link }}">{{ card_title }}</a></h3>
+        <button class="veylique-wish-btn" type="button" aria-label="Add {{ card_title | escape }} to wishlist" data-veylique-wish>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+      </div>
+      <div class="veylique-lp-pricing">
+        {% if card_compare_price != blank %}
+          <span class="veylique-lp-old">{{ card_compare_price }}</span>
+        {% endif %}
+        <span class="veylique-lp-price{% if card_compare_price != blank %} veylique-lp-price--sale{% endif %}">{{ card_price }}</span>
+      </div>
+      <div class="veylique-size-row" aria-label="Select size">
+        {% for size in latest_sizes %}
+          <button type="button" class="veylique-size-chip" aria-pressed="false">{{ size }}</button>
+        {% endfor %}
+      </div>
+      <div class="veylique-card-actions">
+        <div class="veylique-card-atc-wrap">
+          {% if product != blank and product.available %}
+            {% form 'product', product, class: 'veylique-card-atc-form' %}
+              <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+              <button type="submit" class="veylique-btn btn-black">Add to Cart</button>
+            {% endform %}
+          {% else %}
+            <a href="{{ card_link }}" class="veylique-btn btn-black">Add to Cart</a>
+          {% endif %}
+        </div>
+        <a href="{{ routes.cart_url }}" class="veylique-view-cart-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span>View Cart</span>
+        </a>
+      </div>
+    </div>
+  </article>
+{% endif %}

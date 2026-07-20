@@ -1,0 +1,95 @@
+<section class="veylique-eos full-width" aria-label="{{ section.settings.aria_label | escape }}">
+  <div class="veylique-eos-marquee" aria-hidden="true">
+    <div class="veylique-eos-marquee-track">
+      <span class="veylique-eos-marquee-seg">{{ section.settings.marquee_text }} <i>&#10022;</i> {{ section.settings.marquee_text }} <i>&#10022;</i> {{ section.settings.marquee_text }} <i>&#10022;</i> </span>
+      <span class="veylique-eos-marquee-seg">{{ section.settings.marquee_text }} <i>&#10022;</i> {{ section.settings.marquee_text }} <i>&#10022;</i> {{ section.settings.marquee_text }} <i>&#10022;</i> </span>
+    </div>
+  </div>
+
+  <div class="veylique-eos-main">
+    <div class="veylique-eos-content">
+      <span class="veylique-eos-eyebrow">{{ section.settings.kicker }}</span>
+      <h2 class="veylique-eos-title">
+        <span class="veylique-eos-line">{{ section.settings.heading_line_1 }}</span>
+        <span class="veylique-eos-line veylique-eos-line--outline">{{ section.settings.heading_line_2 }}</span>
+      </h2>
+      <p class="veylique-eos-sub">{{ section.settings.offer }}<span class="veylique-eos-chip">{{ section.settings.chip }}</span></p>
+      <p class="veylique-eos-desc">{{ section.settings.text }}</p>
+
+      <div class="veylique-eos-tiers" role="list" aria-label="{{ section.settings.tiers_label | escape }}">
+        <div class="veylique-eos-tier veylique-eos-tier--1" role="listitem">
+          <span class="veylique-eos-tier-pct">{{ section.settings.tier_1_percent }}</span>
+          <span class="veylique-eos-tier-items">{{ section.settings.tier_1_label }}</span>
+        </div>
+        <div class="veylique-eos-tier veylique-eos-tier--2" role="listitem">
+          <span class="veylique-eos-tier-pct">{{ section.settings.tier_2_percent }}</span>
+          <span class="veylique-eos-tier-items">{{ section.settings.tier_2_label }}</span>
+        </div>
+        <div class="veylique-eos-tier veylique-eos-tier--3" role="listitem">
+          <span class="veylique-eos-tier-tag">{{ section.settings.tier_3_tag }}</span>
+          <span class="veylique-eos-tier-pct">{{ section.settings.tier_3_percent }}</span>
+          <span class="veylique-eos-tier-items">{{ section.settings.tier_3_label }}</span>
+        </div>
+      </div>
+
+      <div class="veylique-eos-actions">
+        <a href="{{ section.settings.button_link | default: routes.all_products_collection_url }}" class="veylique-btn btn-white">{{ section.settings.button_label }}</a>
+        <span class="veylique-eos-note">{{ section.settings.note }}</span>
+      </div>
+    </div>
+
+    <div class="veylique-eos-media">
+      {% if section.settings.video != blank %}
+        {{ section.settings.video | video_tag: autoplay: true, muted: true, loop: true, playsinline: true, preload: 'auto', class: 'veylique-eos-video' }}
+      {% else %}
+        <video class="veylique-eos-video" autoplay muted loop playsinline preload="auto">
+          <source src="{{ 'demo-vid.mp4' | asset_url }}" type="video/mp4">
+        </video>
+      {% endif %}
+      <div class="veylique-eos-veil" aria-hidden="true"></div>
+      <div class="veylique-eos-sticker" aria-hidden="true">
+        <svg viewBox="0 0 120 120" focusable="false">
+          <defs>
+            <path id="veyliqueEosOrbit-{{ section.id }}" d="M60 60 m -44 0 a 44 44 0 1 1 88 0 a 44 44 0 1 1 -88 0" />
+          </defs>
+          <text><textPath href="#veyliqueEosOrbit-{{ section.id }}">{{ section.settings.sticker_text }}</textPath></text>
+        </svg>
+        <span class="veylique-eos-sticker-core">{{ section.settings.sticker_core }}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Veylique sale",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "aria_label", "label": "Accessibility label", "default": "End of Season Sale" },
+    { "type": "text", "id": "marquee_text", "label": "Marquee text", "default": "End of the Season Sale - Get up to 40% Off - More Items, More Savings" },
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Limited Time - End of Season Sale" },
+    { "type": "text", "id": "heading_line_1", "label": "Heading line 1", "default": "End of the" },
+    { "type": "text", "id": "heading_line_2", "label": "Heading line 2", "default": "Season Sale!" },
+    { "type": "text", "id": "offer", "label": "Offer", "default": "Get up to 40% Off" },
+    { "type": "text", "id": "chip", "label": "Offer chip", "default": "sale items" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "The more you add, the more you save - your discount steps up automatically at checkout." },
+    { "type": "text", "id": "tiers_label", "label": "Tiers accessibility label", "default": "Sale offers" },
+    { "type": "text", "id": "tier_1_percent", "label": "Tier 1 percentage", "default": "20%" },
+    { "type": "text", "id": "tier_1_label", "label": "Tier 1 label", "default": "1-2 items" },
+    { "type": "text", "id": "tier_2_percent", "label": "Tier 2 percentage", "default": "30%" },
+    { "type": "text", "id": "tier_2_label", "label": "Tier 2 label", "default": "3 items" },
+    { "type": "text", "id": "tier_3_tag", "label": "Tier 3 tag", "default": "Best value" },
+    { "type": "text", "id": "tier_3_percent", "label": "Tier 3 percentage", "default": "40%" },
+    { "type": "text", "id": "tier_3_label", "label": "Tier 3 label", "default": "4+ items" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop the Sale" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    { "type": "text", "id": "note", "label": "Note", "default": "On sale items - while sizes last" },
+    { "type": "video", "id": "video", "label": "Video" },
+    { "type": "text", "id": "sticker_text", "label": "Sticker text", "default": "More Items * More Savings * Up to 40% Off * More Items * More Savings *" },
+    { "type": "text", "id": "sticker_core", "label": "Sticker center", "default": "-40%" }
+  ],
+  "presets": [
+    { "name": "Veylique sale" }
+  ]
+}
+{% endschema %}

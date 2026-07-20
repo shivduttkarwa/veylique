@@ -140,111 +140,736 @@
       }
     },
     "new_arrivals": {
-      "type": "veylique-featured-products",
+      "type": "veylique-home-new-arrivals",
+      "blocks": {
+        "arrival_1": {
+          "type": "slide",
+          "settings": {
+            "fallback": "hero-1.webp",
+            "alt": "Veylique flowing floral dress",
+            "text": "Fresh off the rack - fluid silhouettes and considered fabrics for effortless, everyday style.",
+            "link": ""
+          }
+        },
+        "arrival_2": {
+          "type": "slide",
+          "settings": {
+            "fallback": "hero-2.webp",
+            "alt": "Veylique soft printed co-ord",
+            "text": "Soft tailoring, expressive prints, and occasion-ready layers designed to move with you.",
+            "link": ""
+          }
+        },
+        "arrival_3": {
+          "type": "slide",
+          "settings": {
+            "fallback": "hero-3.webp",
+            "alt": "Veylique embroidered occasion dress",
+            "text": "Polished pieces with lightness, comfort, and detail built into every line.",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "arrival_1",
+        "arrival_2",
+        "arrival_3"
+      ],
       "settings": {
-        "kicker": "New arrivals",
-        "heading": "New arrivals",
+        "heading": "New Arrivals",
         "text": "The newest pieces to land in the collection, fresh off the rack and ready to wear.",
-        "columns_desktop": 4
+        "button_label": "Shop Now",
+        "aria_label": "Veylique new arrivals",
+        "controls_label": "Slider controls",
+        "previous_label": "Previous slide",
+        "next_label": "Next slide"
       }
     },
     "editorial": {
-      "type": "veylique-image-with-text",
+      "type": "veylique-home-curated-edit",
+      "blocks": {
+        "curated_1": {
+          "type": "tile",
+          "settings": {
+            "product": "",
+            "fallback": "hero-1.webp",
+            "title": "Mustard Wrap Midi Dress",
+            "price": "$68.00",
+            "description": "A fluid wrap dress in breathable viscose, cut for effortless everyday movement.",
+            "link": ""
+          }
+        },
+        "curated_2": {
+          "type": "tile",
+          "settings": {
+            "product": "",
+            "fallback": "hero-2.webp",
+            "title": "Tiered Maxi Dress",
+            "price": "$89.00",
+            "description": "A flowing tiered maxi in soft cotton, designed for warm-weather ease.",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "curated_1",
+        "curated_2"
+      ],
       "settings": {
-        "fallback": "manifest-cta.jpg",
-        "kicker": "The curated edit",
-        "heading": "Everyday polish, softened for comfort",
-        "text": "Use this editorial module for a campaign story, founder note, or seasonal look that anchors the collection.",
-        "button_label": "Explore the edit",
-        "button_link": ""
+        "heading": "The Everyday Edit",
+        "text": "Handpicked essentials for a versatile, easy-to-style wardrobe.",
+        "button_label": "Shop Now"
       }
     },
     "bestsellers": {
-      "type": "veylique-featured-products",
+      "type": "veylique-home-bestsellers",
+      "blocks": {
+        "best_1": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "fallback": "hero-1.webp",
+            "hover_fallback": "hero-2.webp",
+            "badge": "Bestseller",
+            "title": "Floral Wrap Midi Dress",
+            "price": "$54.00",
+            "link": ""
+          }
+        },
+        "best_2": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "fallback": "hero-4.webp",
+            "hover_fallback": "hero-5.webp",
+            "badge": "Western Wear",
+            "title": "Quilted Bomber Jacket",
+            "price": "$94.00",
+            "link": ""
+          }
+        },
+        "best_3": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "fallback": "shop-hero.jpg",
+            "hover_fallback": "hero-4.webp",
+            "badge": "Bestseller",
+            "title": "Wide Leg Trousers",
+            "price": "$46.00",
+            "link": ""
+          }
+        },
+        "best_4": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "fallback": "hero-3.webp",
+            "hover_fallback": "hero-1.webp",
+            "badge": "Ethnic Wear",
+            "title": "Handblock Print Kaftan",
+            "price": "$56.00",
+            "link": ""
+          }
+        },
+        "best_5": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "fallback": "cta.webp",
+            "hover_fallback": "hero-2.webp",
+            "badge": "New",
+            "title": "Puff Sleeve Crop Top",
+            "price": "$38.00",
+            "link": ""
+          }
+        },
+        "best_6": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "fallback": "manifest-cta.jpg",
+            "hover_fallback": "founder.jpg",
+            "badge": "Limited",
+            "title": "Satin Slip Dress",
+            "price": "$78.00",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "best_1",
+        "best_2",
+        "best_3",
+        "best_4",
+        "best_5",
+        "best_6"
+      ],
       "settings": {
-        "kicker": "Bestsellers",
-        "heading": "Shop bestsellers",
-        "text": "Our most-loved styles, trusted by customers for fit and ease.",
-        "columns_desktop": 4
+        "heading": "Shop Bestsellers",
+        "text": "Our most-loved styles, trusted by thousands worldwide.",
+        "show_navigation": true,
+        "controls_label": "Bestsellers carousel controls",
+        "previous_label": "Previous products",
+        "next_label": "Next products"
       }
     },
     "sale_banner": {
-      "type": "veylique-image-banner",
+      "type": "veylique-home-sale",
       "settings": {
-        "fallback": "hero-3.webp",
-        "kicker": "Seasonal edit",
-        "heading": "End of season essentials",
-        "text": "Bring shoppers into a focused promotion or seasonal story.",
-        "button_label": "Shop all products",
-        "button_link": ""
+        "aria_label": "End of Season Sale",
+        "marquee_text": "End of the Season Sale - Get up to 40% Off - More Items, More Savings",
+        "kicker": "Limited Time - End of Season Sale",
+        "heading_line_1": "End of the",
+        "heading_line_2": "Season Sale!",
+        "offer": "Get up to 40% Off",
+        "chip": "sale items",
+        "text": "The more you add, the more you save - your discount steps up automatically at checkout.",
+        "tiers_label": "Sale offers",
+        "tier_1_percent": "20%",
+        "tier_1_label": "1-2 items",
+        "tier_2_percent": "30%",
+        "tier_2_label": "3 items",
+        "tier_3_tag": "Best value",
+        "tier_3_percent": "40%",
+        "tier_3_label": "4+ items",
+        "button_label": "Shop the Sale",
+        "button_link": "",
+        "note": "On sale items - while sizes last",
+        "sticker_text": "More Items * More Savings * Up to 40% Off * More Items * More Savings *",
+        "sticker_core": "-40%"
       }
     },
     "occasion": {
-      "type": "veylique-featured-collections",
+      "type": "veylique-home-occasion",
+      "blocks": {
+        "occasion_1": {
+          "type": "occasion",
+          "settings": {
+            "heading": "Office day",
+            "text": "Clean silhouettes and structured fabrics that move from the desk to after-work plans without missing a beat.",
+            "fallback": "shop-hero.jpg",
+            "alt": "Office day outfit",
+            "tag_1_name": "Cecilia Blazer",
+            "tag_1_price": "$128.00",
+            "tag_2_name": "Sathorn Pants",
+            "tag_2_price": "$86.00"
+          }
+        },
+        "occasion_2": {
+          "type": "occasion",
+          "settings": {
+            "heading": "Coffee run",
+            "text": "Easy layers and soft knits for a slow morning that still looks pulled together.",
+            "fallback": "hero-5.webp",
+            "alt": "Coffee run outfit",
+            "tag_1_name": "Oversized Knit",
+            "tag_1_price": "$58.00",
+            "tag_2_name": "Straight Leg Jeans",
+            "tag_2_price": "$74.00"
+          }
+        },
+        "occasion_3": {
+          "type": "occasion",
+          "settings": {
+            "heading": "Date night",
+            "text": "Fluid fabrics and considered details for evenings that call for a little more.",
+            "fallback": "hero-3.webp",
+            "alt": "Date night outfit",
+            "tag_1_name": "Wrap Midi Dress",
+            "tag_1_price": "$98.00",
+            "tag_2_name": "Strappy Heels",
+            "tag_2_price": "$64.00"
+          }
+        },
+        "occasion_4": {
+          "type": "occasion",
+          "settings": {
+            "heading": "Sunday picnic",
+            "text": "Breathable cottons and relaxed shapes made for long afternoons outdoors.",
+            "fallback": "hero-1.webp",
+            "alt": "Sunday picnic outfit",
+            "tag_1_name": "Tiered Sundress",
+            "tag_1_price": "$72.00",
+            "tag_2_name": "Woven Tote",
+            "tag_2_price": "$48.00"
+          }
+        },
+        "occasion_5": {
+          "type": "occasion",
+          "settings": {
+            "heading": "Tennis session",
+            "text": "Performance-ready pieces with a clean, court-side finish.",
+            "fallback": "hero-4.webp",
+            "alt": "Tennis session outfit",
+            "tag_1_name": "Pleated Tennis Skirt",
+            "tag_1_price": "$54.00",
+            "tag_2_name": "Ribbed Tank",
+            "tag_2_price": "$36.00"
+          }
+        },
+        "occasion_6": {
+          "type": "occasion",
+          "settings": {
+            "heading": "Travel mode",
+            "text": "Low-maintenance layers built to move through airports and time zones alike.",
+            "fallback": "cta.webp",
+            "alt": "Travel mode outfit",
+            "tag_1_name": "Oversized Trench",
+            "tag_1_price": "$148.00",
+            "tag_2_name": "Jogger Pants",
+            "tag_2_price": "$68.00"
+          }
+        }
+      },
+      "block_order": [
+        "occasion_1",
+        "occasion_2",
+        "occasion_3",
+        "occasion_4",
+        "occasion_5",
+        "occasion_6"
+      ],
       "settings": {
-        "kicker": "Shop by occasion",
-        "heading": "One wardrobe, every plan",
-        "text": "Pick the moment and guide shoppers to an edited collection.",
-        "link_label": "View",
-        "columns_desktop": 4
+        "heading": "Shop by Occasion",
+        "text": "One wardrobe, every plan - pick the moment and we'll style it.",
+        "tabs_label": "Occasions"
       }
     },
     "latest": {
-      "type": "veylique-featured-products",
+      "type": "veylique-home-latest-products",
+      "blocks": {
+        "latest_1": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "fallback": "hero-1.webp",
+            "hover_fallback": "hero-2.webp",
+            "category": "Dresses",
+            "badge": "New",
+            "title": "Linen Wrap Dress",
+            "price": "$72.00",
+            "compare_price": "",
+            "link": ""
+          }
+        },
+        "latest_2": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "fallback": "hero-2.webp",
+            "hover_fallback": "hero-3.webp",
+            "category": "Ethnic Wear",
+            "badge": "New",
+            "title": "Printed Kurta Set",
+            "price": "$88.00",
+            "compare_price": "",
+            "link": ""
+          }
+        },
+        "latest_3": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "fallback": "hero-3.webp",
+            "hover_fallback": "hero-4.webp",
+            "category": "Occasion",
+            "badge": "New",
+            "title": "Embroidered Maxi",
+            "price": "$118.00",
+            "compare_price": "",
+            "link": ""
+          }
+        },
+        "latest_4": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "fallback": "hero-4.webp",
+            "hover_fallback": "hero-5.webp",
+            "category": "Western Wear",
+            "badge": "New",
+            "title": "Draped Shirt Dress",
+            "price": "$82.00",
+            "compare_price": "",
+            "link": ""
+          }
+        },
+        "latest_5": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "fallback": "hero-5.webp",
+            "hover_fallback": "hero-1.webp",
+            "category": "Tops",
+            "badge": "New",
+            "title": "Puff Sleeve Blouse",
+            "price": "$46.00",
+            "compare_price": "",
+            "link": ""
+          }
+        },
+        "latest_6": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "fallback": "cta.webp",
+            "hover_fallback": "hero-2.webp",
+            "category": "Layers",
+            "badge": "Sale",
+            "title": "Lightweight Trench",
+            "price": "$96.00",
+            "compare_price": "$128.00",
+            "link": ""
+          }
+        },
+        "latest_7": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "fallback": "shop-hero.jpg",
+            "hover_fallback": "hero-4.webp",
+            "category": "Bottoms",
+            "badge": "New",
+            "title": "Relaxed Wide Pants",
+            "price": "$58.00",
+            "compare_price": "",
+            "link": ""
+          }
+        },
+        "latest_8": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "fallback": "manifest-cta.jpg",
+            "hover_fallback": "founder.jpg",
+            "category": "Sets",
+            "badge": "Limited",
+            "title": "Soft Co-ord Set",
+            "price": "$110.00",
+            "compare_price": "",
+            "link": ""
+          }
+        },
+        "latest_9": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "fallback": "founder.jpg",
+            "hover_fallback": "manifest-cta.jpg",
+            "category": "Accessories",
+            "badge": "New",
+            "title": "Woven Everyday Tote",
+            "price": "$48.00",
+            "compare_price": "",
+            "link": ""
+          }
+        },
+        "latest_10": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "fallback": "hero-3.webp",
+            "hover_fallback": "hero-1.webp",
+            "category": "Dresses",
+            "badge": "Sale",
+            "title": "Satin Slip Dress",
+            "price": "$78.00",
+            "compare_price": "$96.00",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "latest_1",
+        "latest_2",
+        "latest_3",
+        "latest_4",
+        "latest_5",
+        "latest_6",
+        "latest_7",
+        "latest_8",
+        "latest_9",
+        "latest_10"
+      ],
       "settings": {
-        "kicker": "Latest products",
-        "heading": "Freshly launched styles",
-        "text": "Seasonal essentials selected for the next outfit.",
-        "columns_desktop": 4
+        "heading": "Latest Products",
+        "text": "Freshly launched styles and seasonal essentials selected for your next outfit.",
+        "button_label": "View All Products",
+        "button_link": ""
       }
     },
     "process": {
-      "type": "veylique-process",
+      "type": "veylique-home-style-ritual",
+      "blocks": {
+        "ritual_1": {
+          "type": "step",
+          "settings": {
+            "title_main": "Discover",
+            "title_alt": "",
+            "text": "Start with intention. Browse curated edits across dresses, ethnic wear, and everyday essentials - chosen for how they actually wear, not just how they photograph.",
+            "fallback": "method-1-discover.jpg"
+          }
+        },
+        "ritual_2": {
+          "type": "step",
+          "settings": {
+            "title_main": "Fit",
+            "title_alt": "& Size",
+            "text": "Real sizing, real bodies. True-to-size cuts and an honest size guide help you find the fit that feels right, every time.",
+            "fallback": "method-2-analyse.jpg"
+          }
+        },
+        "ritual_3": {
+          "type": "step",
+          "settings": {
+            "title_main": "Style",
+            "title_alt": "& Pair",
+            "text": "Mix with intention. Considered separates and easy layering pieces make it simple to build a look that's entirely yours.",
+            "fallback": "method-3-Curate.jpg"
+          }
+        },
+        "ritual_4": {
+          "type": "step",
+          "settings": {
+            "title_main": "Wear",
+            "title_alt": "& Move",
+            "text": "Comfort that lasts all day. Breathable fabrics and considered construction mean you can wear it and forget it - in the best way.",
+            "fallback": "method-4-Glow.jpg"
+          }
+        }
+      },
+      "block_order": [
+        "ritual_1",
+        "ritual_2",
+        "ritual_3",
+        "ritual_4"
+      ],
       "settings": {
-        "kicker": "The style ritual",
-        "heading": "Your everyday edit",
+        "heading": "your everyday<br />style edit",
         "text": "Four considered steps, one confident look. A complete approach to getting dressed, built around real bodies.",
-        "columns_desktop": 4
+        "aria_label": "Veylique style edit",
+        "scroll_height": 420
       }
     },
     "testimonials": {
-      "type": "veylique-testimonials",
+      "type": "veylique-home-testimonials",
+      "blocks": {
+        "testi_1": {
+          "type": "testimonial",
+          "settings": {
+            "fallback": "hero-1.webp",
+            "quote": "The fit was exactly what I hoped for. It feels polished without trying too hard.",
+            "name": "Anaya R.",
+            "place": "Mumbai",
+            "bubble_size": 5,
+            "top": 10,
+            "side_offset": 4,
+            "float_duration": 10,
+            "float_delay": 0
+          }
+        },
+        "testi_2": {
+          "type": "testimonial",
+          "settings": {
+            "fallback": "hero-2.webp",
+            "quote": "Every piece feels easy to wear but still special. The detailing is what made me come back.",
+            "name": "Ishita M.",
+            "place": "Delhi",
+            "bubble_size": 4,
+            "top": 40,
+            "side_offset": 22,
+            "float_duration": 12,
+            "float_delay": 1
+          }
+        },
+        "testi_3": {
+          "type": "testimonial",
+          "settings": {
+            "fallback": "hero-3.webp",
+            "quote": "The fabric moves beautifully. I wore it from brunch to dinner and never wanted to change.",
+            "name": "Naina S.",
+            "place": "Bengaluru",
+            "bubble_size": 4.5,
+            "top": 80,
+            "side_offset": 8,
+            "float_duration": 11,
+            "float_delay": 2
+          }
+        },
+        "testi_4": {
+          "type": "testimonial",
+          "settings": {
+            "fallback": "hero-4.webp",
+            "quote": "The sizing felt honest, and the silhouette looked just like the photos.",
+            "name": "Meera T.",
+            "place": "Pune",
+            "bubble_size": 4.5,
+            "top": 10,
+            "side_offset": 4,
+            "float_duration": 9,
+            "float_delay": 1
+          }
+        },
+        "testi_5": {
+          "type": "testimonial",
+          "settings": {
+            "fallback": "hero-5.webp",
+            "quote": "Customer care found my size in minutes over chat. The dress arrived exactly as pictured.",
+            "name": "Riya K.",
+            "place": "Hyderabad",
+            "bubble_size": 4,
+            "top": 45,
+            "side_offset": 22,
+            "float_duration": 12,
+            "float_delay": 0.5
+          }
+        },
+        "testi_6": {
+          "type": "testimonial",
+          "settings": {
+            "fallback": "cta.webp",
+            "quote": "The kurta sets are now a permanent part of my wardrobe - effortless and elegant, every single time.",
+            "name": "Sana A.",
+            "place": "Jaipur",
+            "bubble_size": 5,
+            "top": 80,
+            "side_offset": 6,
+            "float_duration": 10,
+            "float_delay": 1.5
+          }
+        }
+      },
+      "block_order": [
+        "testi_1",
+        "testi_2",
+        "testi_3",
+        "testi_4",
+        "testi_5",
+        "testi_6"
+      ],
       "settings": {
         "kicker": "Customer stories",
-        "heading": "Loved for fit, ease, and detail",
-        "text": "Add social proof that feels specific and useful.",
-        "columns_desktop": 3
+        "aria_label": "Customer stories"
       }
     },
     "stories": {
-      "type": "veylique-blog-posts",
+      "type": "veylique-home-blog",
+      "blocks": {
+        "story_1": {
+          "type": "story",
+          "settings": {
+            "fallback": "hero-4.webp",
+            "badge": "Style Guide",
+            "meta": "12 Jul 2026 - 6 min read",
+            "title": "The Ultimate Guide to Layering This Winter",
+            "excerpt": "From base layers to statement coats - how to build a cold-weather wardrobe that actually works for real days, not just lookbooks.",
+            "link": ""
+          }
+        },
+        "story_2": {
+          "type": "story",
+          "settings": {
+            "fallback": "hero-2.webp",
+            "badge": "Style Tips",
+            "meta": "08 Jul 2026 - 4 min read",
+            "title": "Five Ways to Style Your Kurta Set for Every Occasion",
+            "excerpt": "From festive drapes to everyday layering - five styling formulas so your kurta set earns its place in daily rotation.",
+            "link": ""
+          }
+        },
+        "story_3": {
+          "type": "story",
+          "settings": {
+            "fallback": "manifest-cta.jpg",
+            "badge": "Behind the Brand",
+            "meta": "02 Jul 2026 - 5 min read",
+            "title": "Behind the Scenes: Shooting the Festive Collection",
+            "excerpt": "A look inside the studio - the lighting, styling, and small decisions that shape every campaign image.",
+            "link": ""
+          }
+        },
+        "story_4": {
+          "type": "story",
+          "settings": {
+            "fallback": "shop-hero.jpg",
+            "badge": "Guides",
+            "meta": "27 Jun 2026 - 7 min read",
+            "title": "How to Find Your Perfect Fit - A Real Sizing Guide",
+            "excerpt": "Real measurements, real bodies. How our size guide actually works, and how to read it before you buy.",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "story_1",
+        "story_2",
+        "story_3",
+        "story_4"
+      ],
       "settings": {
-        "kicker": "Recent stories",
         "heading": "Recent stories",
-        "text": "Style guides, sizing notes, and a look behind the collections.",
-        "blog": "",
-        "post_limit": 4,
-        "columns_desktop": 4
+        "text": "Style guides, sizing notes, and a look behind the collections - straight from the studio.",
+        "read_label": "Read Story",
+        "button_label": "View All Articles",
+        "button_link": ""
       }
     },
     "full_cta": {
-      "type": "veylique-image-banner",
+      "type": "veylique-home-full-cta",
       "settings": {
+        "aria_label": "Shop all products",
         "fallback": "hero-1.webp",
-        "kicker": "Ready when you are",
-        "heading": "For every size, mood, and plan",
-        "text": "",
-        "button_label": "Shop all products",
+        "mobile_fallback": "hero-1.webp",
+        "heading": "For <em>every</em> size.",
+        "button_label": "Shop All Products",
         "button_link": ""
       }
     },
     "faq": {
-      "type": "veylique-faq",
+      "type": "veylique-home-faq",
+      "blocks": {
+        "faq_1": {
+          "type": "question",
+          "settings": {
+            "question": "How long does delivery take?",
+            "answer": "Most orders ship within 24-48 hours. Standard delivery usually arrives in 3-6 business days, depending on your location."
+          }
+        },
+        "faq_2": {
+          "type": "question",
+          "settings": {
+            "question": "Can I exchange or return an item?",
+            "answer": "Yes. You can request an exchange or return within 7 days of delivery as long as the item is unused, unwashed, and has its original tags."
+          }
+        },
+        "faq_3": {
+          "type": "question",
+          "settings": {
+            "question": "How do I choose the right size?",
+            "answer": "Check the size guide on each product page and compare it with a garment you already love. If you are between sizes, choose the larger size for a relaxed fit."
+          }
+        },
+        "faq_4": {
+          "type": "question",
+          "settings": {
+            "question": "Will sold-out styles come back?",
+            "answer": "Core pieces are restocked regularly. Limited seasonal drops may not return, so save your size or join the waitlist when it appears."
+          }
+        }
+      },
+      "block_order": [
+        "faq_1",
+        "faq_2",
+        "faq_3",
+        "faq_4"
+      ],
       "settings": {
         "kicker": "Help desk",
         "heading": "Questions, answered",
         "text": "Everything shoppers need before checkout, from fit to delivery and easy exchanges.",
-        "columns_desktop": 3
+        "link_label": "Talk to support",
+        "link": ""
       }
     }
   },

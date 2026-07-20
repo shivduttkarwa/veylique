@@ -930,12 +930,730 @@
     });
   }
 
+  function initReveals(root) {
+    var elements = Array.prototype.slice.call(root.querySelectorAll('.veylique-section-intro-js, .veylique-reveal-js'));
+    if (!elements.length) return;
+
+    function reveal(element) {
+      element.classList.add('is-visible');
+    }
+
+    if (!('IntersectionObserver' in window)) {
+      elements.forEach(reveal);
+      return;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        reveal(entry.target);
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+
+    elements.forEach(function (element) {
+      if (element.classList.contains('is-visible')) return;
+      observer.observe(element);
+    });
+  }
+
+  function initProductCards(root) {
+    root.querySelectorAll('.veylique-best-img--hover, .veylique-lp-img--hover').forEach(function (image) {
+      if (image.dataset.veyliqueHoverReady === 'true') return;
+      image.dataset.veyliqueHoverReady = 'true';
+
+      function markLoaded() {
+        image.classList.add('is-loaded');
+      }
+
+      if (image.complete && image.naturalWidth) markLoaded();
+      else image.addEventListener('load', markLoaded, { once: true });
+    });
+
+    root.querySelectorAll('[data-veylique-wish]').forEach(function (button) {
+      if (button.dataset.veyliqueWishReady === 'true') return;
+      button.dataset.veyliqueWishReady = 'true';
+
+      button.addEventListener('click', function () {
+        var active = !button.classList.contains('is-wished');
+        button.classList.toggle('is-wished', active);
+        button.setAttribute('aria-pressed', String(active));
+      });
+    });
+
+    root.querySelectorAll('.veylique-size-row').forEach(function (row) {
+      if (row.dataset.veyliqueSizeReady === 'true') return;
+      row.dataset.veyliqueSizeReady = 'true';
+
+      row.querySelectorAll('.veylique-size-chip').forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          row.querySelectorAll('.veylique-size-chip').forEach(function (otherChip) {
+            otherChip.classList.toggle('is-selected', otherChip === chip);
+            otherChip.setAttribute('aria-pressed', String(otherChip === chip));
+          });
+        });
+      });
+    });
+  }
+
+  function initArrivals(root) {
+    root.querySelectorAll('[data-veylique-arrivals]').forEach(function (section) {
+      if (section.dataset.veyliqueArrivalsReady === 'true') return;
+      section.dataset.veyliqueArrivalsReady = 'true';
+
+      var stage = section.querySelector('.veylique-slider-stage');
+      var slides = Array.prototype.slice.call(section.querySelectorAll('[data-veylique-arrivals-slide]'));
+      var card = section.querySelector('.veylique-content-card');
+      var numberEl = section.querySelector('[data-veylique-arrivals-number]');
+      var textEl = section.querySelector('[data-veylique-arrivals-text]');
+      var linkEl = section.querySelector('[data-veylique-arrivals-link]');
+      var cursorArrow = section.querySelector('.veylique-cursor-arrow');
+      var controls = Array.prototype.slice.call(section.querySelectorAll('[data-veylique-arrivals-dir]'));
+
+      if (!stage || !slides.length) return;
+
+      var activeIndex = 0;
+      var cursorSide = 'next';
+      var touchStartX = 0;
+      var touchStartY = 0;
+      var touchDeltaX = 0;
+      var isSwiping = false;
+      var swapTimer = 0;
+
+      function updateSlides() {
+        slides.forEach(function (slide, index) {
+          var delta = index - activeIndex;
+          slide.classList.remove('is-active', 'is-prev', 'is-next', 'is-hidden-left', 'is-hidden-right');
+          if (delta === 0) slide.classList.add('is-active');
+          else if (delta === -1) slide.classList.add('is-prev');
+          else if (delta === 1) slide.classList.add('is-next');
+          else if (delta < 0) slide.classList.add('is-hidden-left');
+          else slide.classList.add('is-hidden-right');
+        });
+      }
+
+      function updateCard() {
+        var slide = slides[activeIndex];
+        if (!slide || !card) return;
+
+        window.clearTimeout(swapTimer);
+        card.classList.add('is-changing');
+
+        swapTimer = window.setTimeout(function () {
+          if (numberEl) numberEl.textContent = slide.dataset.number || '01';
+          if (textEl) textEl.textContent = slide.dataset.text || '';
+          if (linkEl && slide.dataset.url) linkEl.setAttribute('href', slide.dataset.url);
+          card.classList.remove('is-changing');
+        }, 260);
+      }
+
+      function updateButtons() {
+        var atStart = activeIndex <= 0;
+        var atEnd = activeIndex >= slides.length - 1;
+
+        controls.forEach(function (control) {
+          var direction = control.dataset.veyliqueArrivalsDir;
+          var disabled = direction === 'prev' ? atStart : atEnd;
+          control.disabled = disabled;
+          control.classList.toggle('is-disabled', disabled);
+        });
+      }
+
+      function go(direction) {
+        if (direction === 'prev' && activeIndex <= 0) return;
+        if (direction === 'next' && activeIndex >= slides.length - 1) return;
+        activeIndex += direction === 'next' ? 1 : -1;
+        updateSlides();
+        updateCard();
+        updateButtons();
+      }
+
+      function moveCursor(event) {
+        if (!cursorArrow) return;
+
+        var rect = stage.getBoundingClientRect();
+        var isLeft = (event.clientX - rect.left) < rect.width / 2;
+        var atStart = activeIndex <= 0;
+        var atEnd = activeIndex >= slides.length - 1;
+
+        if ((isLeft && atStart) || (!isLeft && atEnd)) {
+          cursorArrow.classList.remove('is-visible', 'is-left', 'is-right');
+          stage.classList.add('is-cursor-default');
+          return;
+        }
+
+        cursorSide = isLeft ? 'prev' : 'next';
+        stage.classList.remove('is-cursor-default');
+        cursorArrow.style.left = (event.clientX - rect.left) + 'px';
+        cursorArrow.style.top = (event.clientY - rect.top) + 'px';
+        cursorArrow.classList.add('is-visible');
+        cursorArrow.classList.toggle('is-left', isLeft);
+        cursorArrow.classList.toggle('is-right', !isLeft);
+      }
+
+      controls.forEach(function (control) {
+        control.addEventListener('click', function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          go(control.dataset.veyliqueArrivalsDir);
+        });
+      });
+
+      stage.addEventListener('mousemove', moveCursor);
+      stage.addEventListener('mouseleave', function () {
+        if (cursorArrow) cursorArrow.classList.remove('is-visible', 'is-left', 'is-right');
+        stage.classList.remove('is-cursor-default');
+      });
+      stage.addEventListener('click', function (event) {
+        if (isSwiping) return;
+        if (event.target.closest('.veylique-card-button, .veylique-mobile-arrows')) return;
+        go(cursorSide);
+      });
+
+      stage.addEventListener('touchstart', function (event) {
+        if (event.touches.length !== 1) return;
+        touchStartX = event.touches[0].clientX;
+        touchStartY = event.touches[0].clientY;
+        touchDeltaX = 0;
+        isSwiping = false;
+      }, { passive: true });
+
+      stage.addEventListener('touchmove', function (event) {
+        if (event.touches.length !== 1) return;
+        touchDeltaX = event.touches[0].clientX - touchStartX;
+        var deltaY = event.touches[0].clientY - touchStartY;
+        if (!isSwiping && Math.abs(touchDeltaX) > 10 && Math.abs(touchDeltaX) > Math.abs(deltaY)) {
+          isSwiping = true;
+        }
+      }, { passive: true });
+
+      stage.addEventListener('touchend', function (event) {
+        if (event.target.closest('.veylique-card-button, .veylique-mobile-arrows')) return;
+        if (isSwiping && Math.abs(touchDeltaX) > 40) {
+          go(touchDeltaX < 0 ? 'next' : 'prev');
+        }
+        window.setTimeout(function () { isSwiping = false; }, 300);
+      });
+
+      updateSlides();
+      updateCard();
+      updateButtons();
+
+      window.setTimeout(function () {
+        stage.classList.remove('is-loading');
+      }, 120);
+    });
+  }
+
+  function initCardSliders(root) {
+    root.querySelectorAll('[data-veylique-card-slider]').forEach(function (slider) {
+      if (slider.dataset.veyliqueCardSliderReady === 'true') return;
+      slider.dataset.veyliqueCardSliderReady = 'true';
+
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var viewport = slider.querySelector('[data-veylique-card-slider-viewport]');
+      var track = slider.querySelector('[data-veylique-card-slider-track]');
+      var prev = slider.querySelector('[data-veylique-card-slider-prev]');
+      var next = slider.querySelector('[data-veylique-card-slider-next]');
+      if (!viewport || !track) return;
+
+      var slides = [];
+      var activeIndex = 0;
+      var currentTranslate = 0;
+      var targetTranslate = 0;
+      var minTranslate = 0;
+      var maxIndex = 0;
+      var slideStep = 0;
+      var frame = 0;
+      var drag = {
+        active: false,
+        pointerId: null,
+        startX: 0,
+        startY: 0,
+        startTranslate: 0,
+        lastX: 0,
+        lastTime: 0,
+        velocity: 0,
+        didDrag: false,
+        suppressClickUntil: 0
+      };
+
+      function clampTranslate(value) {
+        return Math.min(0, Math.max(minTranslate, value));
+      }
+
+      function setTranslate(value) {
+        track.style.transform = 'translate3d(' + value + 'px, 0, 0)';
+      }
+
+      function easeOutCubic(progress) {
+        return 1 - Math.pow(1 - progress, 3);
+      }
+
+      function translateToIndex(value) {
+        if (!slideStep) return 0;
+        return Math.min(maxIndex, Math.max(0, Math.round(Math.abs(clampTranslate(value)) / slideStep)));
+      }
+
+      function indexToTranslate(index) {
+        return clampTranslate(-index * slideStep);
+      }
+
+      function updateNav() {
+        var atStart = targetTranslate >= -1;
+        var atEnd = targetTranslate <= minTranslate + 1 || activeIndex >= maxIndex;
+
+        if (prev) {
+          prev.disabled = atStart;
+          prev.classList.toggle('swiper-button-disabled', atStart);
+        }
+
+        if (next) {
+          next.disabled = atEnd;
+          next.classList.toggle('swiper-button-disabled', atEnd);
+        }
+      }
+
+      function stopAnimation() {
+        if (!frame) return;
+        window.cancelAnimationFrame(frame);
+        frame = 0;
+      }
+
+      function animateTo(value, duration) {
+        stopAnimation();
+        targetTranslate = clampTranslate(value);
+
+        if (reduceMotion || !duration) {
+          currentTranslate = targetTranslate;
+          activeIndex = translateToIndex(targetTranslate);
+          setTranslate(currentTranslate);
+          updateNav();
+          return;
+        }
+
+        var from = currentTranslate;
+        var to = targetTranslate;
+        var start = performance.now();
+
+        function tick(now) {
+          var progress = Math.min(1, (now - start) / duration);
+          currentTranslate = from + (to - from) * easeOutCubic(progress);
+          setTranslate(currentTranslate);
+
+          if (progress < 1) {
+            frame = window.requestAnimationFrame(tick);
+            return;
+          }
+
+          frame = 0;
+          currentTranslate = to;
+          activeIndex = translateToIndex(to);
+          setTranslate(currentTranslate);
+          updateNav();
+        }
+
+        frame = window.requestAnimationFrame(tick);
+        updateNav();
+      }
+
+      function slideTo(index, duration) {
+        activeIndex = Math.min(maxIndex, Math.max(0, index));
+        animateTo(indexToTranslate(activeIndex), duration);
+      }
+
+      function measure() {
+        slides = Array.prototype.slice.call(track.querySelectorAll('.swiper-slide'));
+        if (!slides.length) {
+          minTranslate = 0;
+          maxIndex = 0;
+          slideStep = 0;
+          setTranslate(0);
+          updateNav();
+          return;
+        }
+
+        var styles = window.getComputedStyle(track);
+        var gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
+        var first = slides[0];
+        var last = slides[slides.length - 1];
+        var totalWidth = last.offsetLeft - first.offsetLeft + last.offsetWidth;
+
+        slideStep = first.getBoundingClientRect().width + gap;
+        minTranslate = Math.min(0, viewport.clientWidth - totalWidth);
+        maxIndex = slideStep ? Math.ceil(Math.abs(minTranslate) / slideStep) : 0;
+        activeIndex = Math.min(maxIndex, Math.max(0, activeIndex));
+        currentTranslate = indexToTranslate(activeIndex);
+        targetTranslate = currentTranslate;
+        setTranslate(currentTranslate);
+        updateNav();
+      }
+
+      function endDrag(event) {
+        if (!drag.active) return;
+
+        if (event && viewport.releasePointerCapture) {
+          try {
+            viewport.releasePointerCapture(drag.pointerId);
+          } catch (error) {
+            // Pointer may already be released by the browser.
+          }
+        }
+
+        viewport.classList.remove('is-pointer-down', 'is-dragging');
+
+        if (drag.didDrag) {
+          drag.suppressClickUntil = Date.now() + 320;
+          slideTo(translateToIndex(currentTranslate + Math.max(-2.4, Math.min(2.4, drag.velocity)) * 420), 680);
+        } else {
+          animateTo(targetTranslate, 260);
+        }
+
+        drag.active = false;
+        drag.pointerId = null;
+      }
+
+      viewport.addEventListener('pointerdown', function (event) {
+        if (event.button !== 0 || !event.isPrimary || !maxIndex) return;
+        stopAnimation();
+        drag.active = true;
+        drag.pointerId = event.pointerId;
+        drag.startX = event.clientX;
+        drag.startY = event.clientY;
+        drag.startTranslate = currentTranslate;
+        drag.lastX = event.clientX;
+        drag.lastTime = performance.now();
+        drag.velocity = 0;
+        drag.didDrag = false;
+        viewport.classList.add('is-pointer-down');
+        if (viewport.setPointerCapture) viewport.setPointerCapture(event.pointerId);
+      });
+
+      viewport.addEventListener('pointermove', function (event) {
+        if (!drag.active || event.pointerId !== drag.pointerId) return;
+
+        var deltaX = event.clientX - drag.startX;
+        var deltaY = event.clientY - drag.startY;
+        var horizontal = Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 4;
+        if (!drag.didDrag && !horizontal) return;
+
+        drag.didDrag = true;
+        viewport.classList.add('is-dragging');
+        event.preventDefault();
+
+        var nextTranslate = drag.startTranslate + deltaX;
+        if (nextTranslate > 0) nextTranslate *= 0.28;
+        else if (nextTranslate < minTranslate) nextTranslate = minTranslate + (nextTranslate - minTranslate) * 0.28;
+
+        currentTranslate = nextTranslate;
+        targetTranslate = clampTranslate(nextTranslate);
+        setTranslate(currentTranslate);
+
+        var now = performance.now();
+        var elapsed = now - drag.lastTime;
+        if (elapsed > 0) {
+          drag.velocity = (event.clientX - drag.lastX) / elapsed;
+          drag.lastX = event.clientX;
+          drag.lastTime = now;
+        }
+      });
+
+      viewport.addEventListener('pointerup', endDrag);
+      viewport.addEventListener('pointercancel', endDrag);
+      viewport.addEventListener('lostpointercapture', endDrag);
+      viewport.addEventListener('click', function (event) {
+        if (Date.now() > drag.suppressClickUntil) return;
+        event.preventDefault();
+        event.stopPropagation();
+      }, true);
+
+      if (prev) {
+        prev.addEventListener('click', function () {
+          slideTo(activeIndex - 1, 680);
+        });
+      }
+
+      if (next) {
+        next.addEventListener('click', function () {
+          slideTo(activeIndex + 1, 680);
+        });
+      }
+
+      viewport.addEventListener('keydown', function (event) {
+        if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+        event.preventDefault();
+        slideTo(activeIndex + (event.key === 'ArrowRight' ? 1 : -1), 680);
+      });
+
+      var resizeFrame = 0;
+      window.addEventListener('resize', function () {
+        if (resizeFrame) return;
+        resizeFrame = window.requestAnimationFrame(function () {
+          resizeFrame = 0;
+          measure();
+        });
+      });
+
+      measure();
+    });
+  }
+
+  function initOccasions(root) {
+    root.querySelectorAll('[data-veylique-occasion]').forEach(function (section) {
+      if (section.dataset.veyliqueOccasionReady === 'true') return;
+      section.dataset.veyliqueOccasionReady = 'true';
+
+      var items = Array.prototype.slice.call(section.querySelectorAll('[data-occ-item]'));
+      var slides = Array.prototype.slice.call(section.querySelectorAll('[data-occ-slide]'));
+      if (!items.length || !slides.length) return;
+
+      function activate(index) {
+        items.forEach(function (item, itemIndex) {
+          var active = itemIndex === index;
+          item.classList.toggle('is-active', active);
+          var tab = item.querySelector('[data-occ-tab]');
+          if (tab) tab.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+
+        slides.forEach(function (slide, slideIndex) {
+          slide.classList.toggle('is-active', slideIndex === index);
+        });
+      }
+
+      items.forEach(function (item, index) {
+        var tab = item.querySelector('[data-occ-tab]');
+        if (!tab) return;
+        tab.addEventListener('click', function () {
+          activate(index);
+        });
+      });
+    });
+  }
+
+  function initTestimonials(root) {
+    root.querySelectorAll('[data-veylique-testi]').forEach(function (section) {
+      if (section.dataset.veyliqueTestiReady === 'true') return;
+      section.dataset.veyliqueTestiReady = 'true';
+
+      var persons = Array.prototype.slice.call(section.querySelectorAll('.veylique-testi-person'));
+      var bubbles = Array.prototype.slice.call(section.querySelectorAll('.veylique-testi-bubble'));
+      var dots = Array.prototype.slice.call(section.querySelectorAll('.veylique-testi-dot'));
+      if (persons.length < 2) return;
+
+      var current = 0;
+      var timer = 0;
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function show(index) {
+        current = (index + persons.length) % persons.length;
+        persons.forEach(function (person, personIndex) {
+          person.classList.toggle('is-active', personIndex === current);
+        });
+        bubbles.forEach(function (bubble) {
+          bubble.classList.toggle('is-active', Number(bubble.dataset.testiTarget) === current);
+        });
+        dots.forEach(function (dot) {
+          dot.classList.toggle('is-active', Number(dot.dataset.testiTarget) === current);
+        });
+      }
+
+      function start() {
+        if (reduceMotion) return;
+        window.clearInterval(timer);
+        timer = window.setInterval(function () {
+          show(current + 1);
+        }, 5000);
+      }
+
+      function stop() {
+        window.clearInterval(timer);
+      }
+
+      bubbles.concat(dots).forEach(function (control) {
+        control.addEventListener('click', function () {
+          show(Number(control.dataset.testiTarget) || 0);
+          start();
+        });
+      });
+
+      section.addEventListener('mouseenter', stop);
+      section.addEventListener('mouseleave', start);
+      section.addEventListener('focusin', stop);
+      section.addEventListener('focusout', start);
+
+      start();
+    });
+  }
+
+  function initRituals(root) {
+    root.querySelectorAll('[data-veylique-ritual]').forEach(function (section) {
+      if (section.dataset.veyliqueRitualReady === 'true') return;
+      section.dataset.veyliqueRitualReady = 'true';
+
+      var cards = Array.prototype.slice.call(section.querySelectorAll('.veylique-ritual-card'));
+      var dots = Array.prototype.slice.call(section.querySelectorAll('.veylique-ritual-dot'));
+      var label = section.querySelector('[data-veylique-ritual-label]');
+      if (!cards.length) return;
+
+      function setActive(index, progressInStep) {
+        cards.forEach(function (card, cardIndex) {
+          card.classList.toggle('is-base', cardIndex === index);
+        });
+
+        dots.forEach(function (dot, dotIndex) {
+          var bar = dot.querySelector('span');
+          dot.classList.toggle('is-current', dotIndex === index);
+          if (!bar) return;
+          if (dotIndex < index) bar.style.transform = 'scaleX(1)';
+          else if (dotIndex === index) bar.style.transform = 'scaleX(' + progressInStep + ')';
+          else bar.style.transform = 'scaleX(0)';
+        });
+
+        if (label) {
+          var title = cards[index].dataset.title || '';
+          var step = String(index + 1).padStart(2, '0');
+          var total = String(cards.length).padStart(2, '0');
+          label.textContent = title + ' - ' + step + ' / ' + total;
+        }
+      }
+
+      function update() {
+        if (window.matchMedia('(max-width: 991px)').matches) return;
+
+        var rect = section.getBoundingClientRect();
+        var scrollable = Math.max(1, rect.height - window.innerHeight);
+        var progress = Math.min(1, Math.max(0, -rect.top / scrollable));
+        var exact = progress * cards.length;
+        var index = Math.min(cards.length - 1, Math.max(0, Math.floor(exact)));
+        var progressInStep = Math.min(1, Math.max(0.08, exact - index));
+
+        if (progress >= 1) progressInStep = 1;
+        setActive(index, progressInStep);
+      }
+
+      var ticking = false;
+      function requestUpdate() {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(function () {
+          ticking = false;
+          update();
+        });
+      }
+
+      window.addEventListener('scroll', requestUpdate, { passive: true });
+      window.addEventListener('resize', requestUpdate);
+      update();
+    });
+  }
+
+  function initHomeFaqs(root) {
+    root.querySelectorAll('[data-veylique-home-faq]').forEach(function (section) {
+      if (section.dataset.veyliqueHomeFaqReady === 'true') return;
+      section.dataset.veyliqueHomeFaqReady = 'true';
+
+      var items = Array.prototype.slice.call(section.querySelectorAll('.veylique-home-faq-item'));
+      if (!items.length) return;
+
+      function setItem(item, open) {
+        item.classList.toggle('is-open', open);
+        var button = item.querySelector('.veylique-home-faq-question');
+        if (button) button.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+
+      items.forEach(function (item) {
+        setItem(item, item.classList.contains('is-open'));
+        var button = item.querySelector('.veylique-home-faq-question');
+        if (!button) return;
+
+        button.addEventListener('click', function () {
+          var shouldOpen = !item.classList.contains('is-open');
+          items.forEach(function (otherItem) {
+            setItem(otherItem, otherItem === item ? shouldOpen : false);
+          });
+        });
+      });
+    });
+  }
+
+  function initBlogs(root) {
+    root.querySelectorAll('[data-veylique-blog]').forEach(function (section) {
+      if (section.dataset.veyliqueBlogReady === 'true') return;
+      section.dataset.veyliqueBlogReady = 'true';
+
+      var rows = Array.prototype.slice.call(section.querySelectorAll('.veylique-blog-scroll-row'));
+      var panels = Array.prototype.slice.call(section.querySelectorAll('.veylique-blog-panel'));
+      if (rows.length < 2 || panels.length < 2) return;
+
+      function setActive(index) {
+        rows.forEach(function (row, rowIndex) {
+          row.classList.toggle('is-active', rowIndex === index);
+        });
+        panels.forEach(function (panel, panelIndex) {
+          panel.classList.toggle('is-active', panelIndex === index);
+        });
+      }
+
+      function updateActiveByPosition() {
+        var viewportCenter = window.innerHeight / 2;
+        var closestIndex = 0;
+        var closestDistance = Infinity;
+
+        rows.forEach(function (row, index) {
+          var rect = row.getBoundingClientRect();
+          var distance = Math.abs(rect.top + rect.height / 2 - viewportCenter);
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestIndex = index;
+          }
+        });
+
+        setActive(closestIndex);
+      }
+
+      var ticking = false;
+      function requestUpdate() {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(function () {
+          ticking = false;
+          updateActiveByPosition();
+        });
+      }
+
+      if (window.matchMedia('(min-width: 992px)').matches) {
+        window.addEventListener('scroll', requestUpdate, { passive: true });
+        window.addEventListener('resize', requestUpdate);
+        requestUpdate();
+      }
+
+      rows.forEach(function (row, index) {
+        row.addEventListener('click', function (event) {
+          if (row.getAttribute('href') === '/') event.preventDefault();
+          setActive(index);
+        });
+        row.addEventListener('mouseenter', function () {
+          setActive(index);
+        });
+      });
+    });
+  }
+
   function init() {
     initFaq(document);
     initHeroes(document);
     initHeader(document);
     initFooter(document);
     initCategoryCarousels(document);
+    initReveals(document);
+    initProductCards(document);
+    initArrivals(document);
+    initCardSliders(document);
+    initOccasions(document);
+    initTestimonials(document);
+    initRituals(document);
+    initHomeFaqs(document);
+    initBlogs(document);
   }
 
   if (document.readyState === 'loading') {
@@ -950,5 +1668,14 @@
     initHeader(event.target);
     initFooter(event.target);
     initCategoryCarousels(event.target);
+    initReveals(event.target);
+    initProductCards(event.target);
+    initArrivals(event.target);
+    initCardSliders(event.target);
+    initOccasions(event.target);
+    initTestimonials(event.target);
+    initRituals(event.target);
+    initHomeFaqs(event.target);
+    initBlogs(event.target);
   });
 })();
