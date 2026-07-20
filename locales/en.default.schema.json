@@ -981,10 +981,13 @@
       }
     },
     "veylique-services-list": {
-      "name": "Services",
+      "name": "Services list",
       "settings": {
-        "kicker": {
-          "label": "Kicker"
+        "aria_label": {
+          "label": "Accessible label"
+        },
+        "eyebrow": {
+          "label": "Eyebrow"
         },
         "heading": {
           "label": "Heading"
@@ -992,31 +995,46 @@
         "text": {
           "label": "Text"
         },
-        "columns_desktop": {
-          "label": "Columns on desktop"
+        "more_label": {
+          "label": "Card link label"
         }
       },
       "blocks": {
         "service": {
           "name": "Service",
           "settings": {
-            "image": {
-              "label": "Image"
+            "icon": {
+              "label": "Icon"
             },
-            "fallback": {
-              "label": "Fallback asset"
+            "meta": {
+              "label": "Meta (duration / price)"
             },
-            "heading": {
-              "label": "Heading"
+            "title": {
+              "label": "Title"
             },
-            "text": {
-              "label": "Text"
+            "desc": {
+              "label": "Description"
+            },
+            "link": {
+              "label": "Link"
+            },
+            "image_1": {
+              "label": "Photo 1"
+            },
+            "fallback_1": {
+              "label": "Photo 1 fallback asset"
+            },
+            "image_2": {
+              "label": "Photo 2"
+            },
+            "fallback_2": {
+              "label": "Photo 2 fallback asset"
             }
           }
         }
       },
       "presets": {
-        "name": "Services"
+        "name": "Services list"
       }
     },
     "veylique-testimonials": {
@@ -1128,6 +1146,42 @@
       },
       "presets": {
         "name": "Contact form"
+      }
+    },
+    "veylique-services-method": {
+      "name": "Services method",
+      "settings": {
+        "aria_label": {
+          "label": "Accessible label"
+        },
+        "eyebrow": {
+          "label": "Eyebrow"
+        },
+        "heading": {
+          "label": "Heading"
+        }
+      },
+      "blocks": {
+        "step": {
+          "name": "Step",
+          "settings": {
+            "name": {
+              "label": "Step name"
+            },
+            "desc": {
+              "label": "Description"
+            },
+            "image": {
+              "label": "Image"
+            },
+            "fallback": {
+              "label": "Fallback asset"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Services method"
       }
     }
   }

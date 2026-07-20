@@ -1,0 +1,179 @@
+<section class="veylique-svc-method" aria-label="{{ section.settings.aria_label | escape }}">
+  <div class="veylique-section-intro veylique-section-intro-js veylique-section-intro--flush">
+    <div class="veylique-container-wide container-fluid">
+      <div class="row">
+        <div class="col-12 col-xl-10">
+          <span class="veylique-eyebrow">{{ section.settings.eyebrow | escape }}</span>
+          <h2 class="veylique-section-title">{{ section.settings.heading | escape }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="veylique-container-wide">
+    <div class="veylique-svc-method-wrap" data-svc-steps>
+      <div class="veylique-svc-method-label">
+        <span class="veylique-svc-method-count">({{ section.blocks.size | prepend: '0' | slice: -2, 2 }})</span>
+      </div>
+
+      <div class="veylique-svc-method-main">
+        <ol class="veylique-svc-steps">
+          {% for block in section.blocks %}
+            <li class="veylique-svc-step" data-svc-step {{ block.shopify_attributes }}>
+              <span class="veylique-svc-step-n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+              <h3 class="veylique-svc-step-name-wrap">
+                <span class="veylique-svc-step-name">{{ block.settings.name | escape }}</span>
+                <span class="veylique-svc-step-name veylique-svc-step-name--active" data-svc-step-name aria-hidden="true">{{ block.settings.name | escape }}</span>
+              </h3>
+              <p class="veylique-svc-step-desc-inline">{{ block.settings.desc | escape }}</p>
+            </li>
+          {% endfor %}
+        </ol>
+
+        <div class="veylique-svc-method-imgs-outer" data-svc-imgs-outer aria-hidden="true">
+          <div class="veylique-svc-method-imgs" data-svc-imgs>
+            {% for block in section.blocks %}
+              <div class="veylique-svc-method-img" data-svc-img>
+                {% render 'veylique-responsive-image', image: block.settings.image, fallback: block.settings.fallback, alt: '', width: 600, height: 800 %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="veylique-svc-method-descs" aria-hidden="true">
+          <div class="veylique-svc-method-desc-list">
+            {% for block in section.blocks %}
+              <p class="veylique-svc-method-desc" data-svc-desc>{{ block.settings.desc | escape }}</p>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .veylique-svc-method {
+    background: var(--mustard-text);
+    color: #faf6ec;
+    padding: 7rem 0 8rem;
+  }
+  .veylique-svc-method .veylique-section-intro { padding: 0 0 5rem; }
+  .veylique-svc-method .veylique-eyebrow { color: rgba(255, 250, 247, 0.45); }
+  .veylique-svc-method .veylique-section-title { color: #faf6ec; }
+  .veylique-svc-method-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(2rem, 4vw, 4rem);
+  }
+  .veylique-svc-method-label { position: sticky; top: 42vh; flex: 0 0 auto; }
+  .veylique-svc-method-count {
+    font-family: var(--mustard-font-mono);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: rgba(255, 250, 247, 0.45);
+  }
+  .veylique-svc-method-main {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(2rem, 4vw, 4rem);
+    min-width: 0;
+  }
+  .veylique-svc-steps { list-style: none; margin: 0; padding: 0; flex: 1 1 auto; min-width: 0; }
+  .veylique-svc-step { padding: clamp(2.5rem, 9vh, 5.5rem) 0; }
+  .veylique-svc-step-n {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-family: var(--mustard-font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    color: rgba(255, 250, 247, 0.4);
+  }
+  .veylique-svc-step-name-wrap { position: relative; display: inline-block; margin: 0; }
+  .veylique-svc-step-name {
+    display: block;
+    font-family: var(--mustard-font-heading);
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    font-weight: 400;
+    line-height: 0.95;
+    letter-spacing: -0.05em;
+    color: rgba(255, 250, 247, 0.2);
+  }
+  .veylique-svc-step-name--active { position: absolute; inset: 0; color: #faf6ec; opacity: 0; }
+  .veylique-svc-step-desc-inline {
+    display: none;
+    margin: 1rem 0 0;
+    max-width: 28rem;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: rgba(255, 250, 247, 0.62);
+  }
+  .veylique-svc-method-imgs-outer { position: sticky; top: 28vh; flex: 0 0 clamp(13rem, 21vw, 19rem); }
+  .veylique-svc-method-imgs { position: relative; width: 100%; aspect-ratio: 3 / 4; }
+  .veylique-svc-method-img { position: absolute; inset: 0; }
+  .veylique-svc-method-img:not(:first-child) { opacity: 0; }
+  .veylique-svc-method-img img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 1.25rem;
+    border: 0.125rem solid rgba(255, 250, 247, 0.35);
+    box-shadow: 0 0.5rem 1.25rem rgba(0, 0, 0, 0.3), 0 1.5rem 3.25rem rgba(0, 0, 0, 0.4);
+  }
+  .veylique-svc-method-descs { position: sticky; top: 42vh; flex: 0 0 clamp(13rem, 18vw, 17rem); }
+  .veylique-svc-method-desc-list { position: relative; }
+  .veylique-svc-method-desc {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: rgba(255, 250, 247, 0.7);
+  }
+  .veylique-svc-method-desc:first-child { position: relative; }
+  .veylique-svc-method-desc:not(:first-child) { opacity: 0; }
+
+  @media (max-width: 991px) {
+    .veylique-svc-method-descs { display: none; }
+    .veylique-svc-step-desc-inline { display: block; }
+  }
+  @media (max-width: 767px) {
+    .veylique-svc-method { padding: 4.5rem 0 5rem; }
+    .veylique-svc-method .veylique-section-intro { padding-bottom: 3rem; }
+    .veylique-svc-method-label,
+    .veylique-svc-method-imgs-outer { display: none; }
+    .veylique-svc-step { padding: 2rem 0; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.veylique-services-method.name",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "aria_label", "label": "t:sections.veylique-services-method.settings.aria_label.label", "default": "The Veylique method" },
+    { "type": "text", "id": "eyebrow", "label": "t:sections.veylique-services-method.settings.eyebrow.label", "default": "The Veylique Method" },
+    { "type": "text", "id": "heading", "label": "t:sections.veylique-services-method.settings.heading.label", "default": "Four steps to better outfits." }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "t:sections.veylique-services-method.blocks.step.name",
+      "settings": [
+        { "type": "text", "id": "name", "label": "t:sections.veylique-services-method.blocks.step.settings.name.label", "default": "Discover" },
+        { "type": "textarea", "id": "desc", "label": "t:sections.veylique-services-method.blocks.step.settings.desc.label", "default": "We begin with a conversation about your lifestyle, fit preferences, colour comfort, and wardrobe gaps." },
+        { "type": "image_picker", "id": "image", "label": "t:sections.veylique-services-method.blocks.step.settings.image.label" },
+        { "type": "text", "id": "fallback", "label": "t:sections.veylique-services-method.blocks.step.settings.fallback.label", "default": "method-1-discover.jpg" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "t:sections.veylique-services-method.presets.name" }
+  ]
+}
+{% endschema %}

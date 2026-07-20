@@ -2711,6 +2711,115 @@
     }
   }
 
+  /* ===== Services page: card photo-tilt on hover ===== */
+  function initServiceCards(root) {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var canHover = window.matchMedia('(hover: hover)').matches;
+    if (reduceMotion || !canHover) return;
+
+    root.querySelectorAll('.veylique-svc-card-link').forEach(function (card) {
+      if (card.dataset.veyliqueSvcTiltReady === 'true') return;
+      card.dataset.veyliqueSvcTiltReady = 'true';
+      var imgs = card.querySelectorAll('.veylique-svc-photo img');
+      if (!imgs.length) return;
+      card.addEventListener('mouseenter', function () {
+        imgs.forEach(function (img) { img.style.transform = 'rotate(' + (Math.random() * 30 - 15) + 'deg)'; });
+      });
+      card.addEventListener('mouseleave', function () {
+        imgs.forEach(function (img) { img.style.transform = 'rotate(0deg)'; });
+      });
+    });
+  }
+
+  /* ===== Services page: scroll-driven sticky "Method" showcase =====
+     As each step crosses the viewport centre its name lights up, its photo
+     springs into the sticky panel (scale + rotate, expo.out), and the sticky
+     description swaps; the panel drifts with the mouse. GSAP-gated. */
+  function initServiceMethod(root) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+
+    root.querySelectorAll('[data-svc-steps]').forEach(function (wrap) {
+      if (wrap.dataset.veyliqueSvcMethodReady === 'true') return;
+      wrap.dataset.veyliqueSvcMethodReady = 'true';
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      var steps = gsap.utils.toArray(wrap.querySelectorAll('[data-svc-step]'));
+      var names = gsap.utils.toArray(wrap.querySelectorAll('[data-svc-step-name]'));
+      var imgs = gsap.utils.toArray(wrap.querySelectorAll('[data-svc-img]'));
+      var descs = gsap.utils.toArray(wrap.querySelectorAll('[data-svc-desc]'));
+      var imgsOuter = wrap.querySelector('[data-svc-imgs-outer]');
+      var imgsWrap = wrap.querySelector('[data-svc-imgs]');
+      if (!steps.length || !imgsWrap) return;
+
+      gsap.set(names, { autoAlpha: 0 });
+      gsap.set(imgsWrap, { scale: 0, rotate: 45 });
+      gsap.set(imgs, { autoAlpha: 0, scale: 0, rotate: 45, yPercent: -50 });
+      gsap.set(descs, { autoAlpha: 0, scale: 0.75, xPercent: 25 });
+
+      function showStep(index, skipMedia) {
+        gsap.to(names, { autoAlpha: 0, duration: 0.5, ease: 'expo.out' });
+        gsap.to(names[index], { autoAlpha: 1, duration: 0.5, ease: 'expo.out' });
+        if (skipMedia) return;
+
+        imgs.forEach(function (img, i) {
+          if (i === index) return;
+          gsap.to(img, { autoAlpha: 0, scale: 0, yPercent: -50, rotate: -45, duration: 0.66, ease: 'expo.out' });
+        });
+        gsap.fromTo(imgs[index],
+          { autoAlpha: 0, scale: 0, rotate: 45, yPercent: 50 },
+          { autoAlpha: 1, scale: 1, rotate: 0, yPercent: 0, duration: 0.66, ease: 'expo.out' });
+
+        descs.forEach(function (desc, i) {
+          if (i === index) return;
+          gsap.to(desc, { autoAlpha: 0, scale: 0.75, xPercent: 25, duration: 0.66, ease: 'expo.out' });
+        });
+        gsap.fromTo(descs[index],
+          { autoAlpha: 0, scale: 0.75, xPercent: -25 },
+          { autoAlpha: 1, scale: 1, xPercent: 0, duration: 0.66, ease: 'expo.out' });
+      }
+
+      ScrollTrigger.create({
+        trigger: imgsWrap,
+        start: 'bottom 80%',
+        onEnter: function () {
+          gsap.to(imgsWrap, { rotate: 0, scale: 1, duration: 1, ease: 'expo.out' });
+          gsap.to(imgs[0], { autoAlpha: 1, rotate: 0, scale: 1, yPercent: 0, duration: 1, ease: 'expo.out', delay: 0.22 });
+          gsap.to(names[0], { autoAlpha: 1, duration: 1, ease: 'expo.out', delay: 0.22 });
+          gsap.fromTo(descs[0],
+            { autoAlpha: 0, scale: 0.75, xPercent: -25 },
+            { autoAlpha: 1, scale: 1, xPercent: 0, duration: 1, ease: 'expo.out', delay: 0.44 });
+        },
+        onLeaveBack: function () {
+          gsap.to(imgsWrap, { rotate: 45, scale: 0, duration: 1, ease: 'expo.out', delay: 0.22 });
+          gsap.to(imgs[0], { autoAlpha: 0, rotate: 45, scale: 0, duration: 1, ease: 'expo.out' });
+          gsap.to(names[0], { autoAlpha: 0, duration: 1, ease: 'expo.out' });
+          gsap.to(descs[0], { autoAlpha: 0, scale: 0.75, xPercent: 25, duration: 0.66, ease: 'expo.out' });
+        }
+      });
+
+      steps.forEach(function (el, index) {
+        ScrollTrigger.create({
+          trigger: el,
+          start: 'top center',
+          onEnter: function () { showStep(index, index === 0); },
+          onLeaveBack: function () { if (index > 0) showStep(index - 1); }
+        });
+      });
+
+      if (imgsOuter && window.matchMedia('(hover: hover)').matches) {
+        var quickX = gsap.quickTo(imgsOuter, 'x', { duration: 0.6, ease: 'power3.out' });
+        var quickRotate = gsap.quickTo(imgsOuter, 'rotation', { duration: 0.6, ease: 'power3.out' });
+        window.addEventListener('mousemove', function (event) {
+          var relativeX = (event.clientX / window.innerWidth) * 2 - 1;
+          quickX(relativeX * 40);
+          quickRotate(relativeX * 4);
+        });
+      }
+    });
+  }
+
   function init() {
     initFaq(document);
     initHeroes(document);
@@ -2727,6 +2836,8 @@
     initHomeFaqs(document);
     initFaqPage(document);
     initContactSelect(document);
+    initServiceCards(document);
+    initServiceMethod(document);
     initBlogs(document);
   }
 
@@ -2752,6 +2863,8 @@
     initHomeFaqs(event.target);
     initFaqPage(event.target);
     initContactSelect(event.target);
+    initServiceCards(event.target);
+    initServiceMethod(event.target);
     initBlogs(event.target);
   });
 })();
