@@ -1,0 +1,26 @@
+# Local source/demo files
+static-demo/*
+
+# Editor and repository metadata
+.git/*
+.vscode/*
+.gitattributes
+.gitignore
+
+# Local Shopify and validation configuration
+.shopifyignore
+.theme-check.yml
+
+# AI development instructions
+AGENTS.md
+CLAUDE.md
+copilot-instructions.md
+
+# Repository documentation
+README.md
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+LICENSE.md
+
+# Local deployment utilities
+deploy.bat
