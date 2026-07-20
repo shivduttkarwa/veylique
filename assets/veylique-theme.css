@@ -115,13 +115,14 @@ body {
 }
 
 .veylique-header a {
-  color: var(--veylique-ink);
+  color: inherit;
 }
 
 .veylique-home-hero {
   position: relative;
   width: 100%;
-  min-height: calc(100svh - 5rem);
+  min-height: 100vh;
+  min-height: 100svh;
   overflow: hidden;
   isolation: isolate;
   color: #fff;
@@ -166,7 +167,8 @@ body {
 .veylique-home-hero__content {
   position: relative;
   z-index: 2;
-  min-height: calc(100svh - 5rem);
+  min-height: 100vh;
+  min-height: 100svh;
   pointer-events: none;
 }
 
@@ -686,7 +688,8 @@ body {
 
   .veylique-home-hero,
   .veylique-home-hero__content {
-    min-height: calc(100svh - 5rem);
+    min-height: 100vh;
+    min-height: 100svh;
   }
 
   .veylique-home-hero__label {

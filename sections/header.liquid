@@ -229,6 +229,8 @@
 
 {% stylesheet %}
   .veylique-header {
+    --veylique-header-action-size: 2.375rem;
+    --veylique-header-action-icon-size: 1.45rem;
     position: fixed;
     top: 0;
     left: 0;
@@ -300,7 +302,7 @@
   .veylique-nav-list a {
     color: color-mix(in srgb, currentColor 84%, transparent);
     font-family: var(--font-heading--family);
-    font-size: 0.6875rem;
+    font-size: var(--veylique-header-action-icon-size);
     font-weight: 800;
     letter-spacing: 0.05em;
     text-decoration: none;
@@ -324,8 +326,8 @@
   .veylique-header-icon-btn,
   .veylique-cart-trigger,
   .veylique-nav-toggle {
-    width: 2.375rem;
-    height: 2.375rem;
+    width: var(--veylique-header-action-size);
+    height: var(--veylique-header-action-size);
     position: relative;
     display: inline-flex;
     align-items: center;
@@ -350,8 +352,8 @@
 
   .veylique-header-icon-btn svg,
   .veylique-cart-trigger svg {
-    width: 1.45rem;
-    height: 1.45rem;
+    width: var(--veylique-header-action-icon-size);
+    height: var(--veylique-header-action-icon-size);
   }
 
   .veylique-cart-count {
