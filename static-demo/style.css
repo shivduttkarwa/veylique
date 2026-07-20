@@ -728,7 +728,7 @@ body.template-cart .veylique-header,
 body.template-checkout .veylique-header,
 body.template-customers-account .veylique-header,
 body.template-404 .veylique-header,
-body.template-page:not(.home):not(.template-page-about):not(.page-about):not(.veylique-about-template):not(.veylique-wishlist-template):not(.veylique-contact-template):not(.veylique-faq-template) .veylique-header {
+body.template-page:not(.home):not(.template-page-about):not(.page-about):not(.veylique-about-template):not(.veylique-services-template):not(.veylique-wishlist-template):not(.veylique-contact-template):not(.veylique-faq-template) .veylique-header {
   background: rgba(255, 250, 247, 0.97);
   box-shadow: 0 0.0625rem 0 var(--mustard-border);
   backdrop-filter: blur(0.75rem);
@@ -752,7 +752,7 @@ body.template-cart .veylique-header-logo,
 body.template-checkout .veylique-header-logo,
 body.template-customers-account .veylique-header-logo,
 body.template-404 .veylique-header-logo,
-body.template-page:not(.home):not(.template-page-about):not(.page-about):not(.veylique-about-template):not(.veylique-wishlist-template):not(.veylique-contact-template):not(.veylique-faq-template) .veylique-header-logo {
+body.template-page:not(.home):not(.template-page-about):not(.page-about):not(.veylique-about-template):not(.veylique-services-template):not(.veylique-wishlist-template):not(.veylique-contact-template):not(.veylique-faq-template) .veylique-header-logo {
   color: var(--mustard-text);
 }
 
@@ -761,7 +761,7 @@ body.template-cart .veylique-nav-list li a,
 body.template-checkout .veylique-nav-list li a,
 body.template-customers-account .veylique-nav-list li a,
 body.template-404 .veylique-nav-list li a,
-body.template-page:not(.home):not(.template-page-about):not(.page-about):not(.veylique-about-template):not(.veylique-wishlist-template):not(.veylique-contact-template):not(.veylique-faq-template) .veylique-nav-list li a {
+body.template-page:not(.home):not(.template-page-about):not(.page-about):not(.veylique-about-template):not(.veylique-services-template):not(.veylique-wishlist-template):not(.veylique-contact-template):not(.veylique-faq-template) .veylique-nav-list li a {
   color: var(--mustard-muted);
 }
 
@@ -770,7 +770,7 @@ body.template-cart .veylique-nav-list li a:hover,
 body.template-checkout .veylique-nav-list li a:hover,
 body.template-customers-account .veylique-nav-list li a:hover,
 body.template-404 .veylique-nav-list li a:hover,
-body.template-page:not(.home):not(.template-page-about):not(.page-about):not(.veylique-about-template):not(.veylique-wishlist-template):not(.veylique-contact-template):not(.veylique-faq-template) .veylique-nav-list li a:hover {
+body.template-page:not(.home):not(.template-page-about):not(.page-about):not(.veylique-about-template):not(.veylique-services-template):not(.veylique-wishlist-template):not(.veylique-contact-template):not(.veylique-faq-template) .veylique-nav-list li a:hover {
   color: var(--mustard-text);
 }
 
@@ -779,7 +779,7 @@ body.template-cart .veylique-header .veylique-cart-trigger,
 body.template-checkout .veylique-header .veylique-cart-trigger,
 body.template-customers-account .veylique-header .veylique-cart-trigger,
 body.template-404 .veylique-header .veylique-cart-trigger,
-body.template-page:not(.home):not(.template-page-about):not(.page-about):not(.veylique-about-template):not(.veylique-wishlist-template):not(.veylique-contact-template):not(.veylique-faq-template) .veylique-header .veylique-cart-trigger {
+body.template-page:not(.home):not(.template-page-about):not(.page-about):not(.veylique-about-template):not(.veylique-services-template):not(.veylique-wishlist-template):not(.veylique-contact-template):not(.veylique-faq-template) .veylique-header .veylique-cart-trigger {
   border-color: var(--mustard-border);
   color: var(--mustard-text);
 }
@@ -789,7 +789,7 @@ body.template-cart .veylique-nav-toggle-bar,
 body.template-checkout .veylique-nav-toggle-bar,
 body.template-customers-account .veylique-nav-toggle-bar,
 body.template-404 .veylique-nav-toggle-bar,
-body.template-page:not(.home):not(.template-page-about):not(.page-about):not(.veylique-about-template):not(.veylique-wishlist-template):not(.veylique-contact-template):not(.veylique-faq-template) .veylique-nav-toggle-bar {
+body.template-page:not(.home):not(.template-page-about):not(.page-about):not(.veylique-about-template):not(.veylique-services-template):not(.veylique-wishlist-template):not(.veylique-contact-template):not(.veylique-faq-template) .veylique-nav-toggle-bar {
   background: var(--mustard-text);
 }
 
@@ -900,43 +900,55 @@ body.veylique-contact-template .veylique-header.is-scrolled .veylique-nav-toggle
 
 body.template-page.template-page-about .veylique-header:not(.is-scrolled),
 body.template-page.page-about .veylique-header:not(.is-scrolled),
-body.veylique-about-template .veylique-header:not(.is-scrolled) {
+body.veylique-about-template .veylique-header:not(.is-scrolled),
+body.veylique-services-template .veylique-header:not(.is-scrolled) {
   background: transparent;
   box-shadow: none;
 }
 body.template-page.template-page-about .veylique-header:not(.is-scrolled) .veylique-header-logo,
 body.template-page.page-about .veylique-header:not(.is-scrolled) .veylique-header-logo,
-body.veylique-about-template .veylique-header:not(.is-scrolled) .veylique-header-logo { color: #ffffff; }
+body.veylique-about-template .veylique-header:not(.is-scrolled) .veylique-header-logo,
+body.veylique-services-template .veylique-header:not(.is-scrolled) .veylique-header-logo { color: #ffffff; }
 body.template-page.template-page-about .veylique-header:not(.is-scrolled) .veylique-nav-list li a,
 body.template-page.page-about .veylique-header:not(.is-scrolled) .veylique-nav-list li a,
-body.veylique-about-template .veylique-header:not(.is-scrolled) .veylique-nav-list li a { color: rgba(255,255,255,0.85); }
+body.veylique-about-template .veylique-header:not(.is-scrolled) .veylique-nav-list li a,
+body.veylique-services-template .veylique-header:not(.is-scrolled) .veylique-nav-list li a { color: rgba(255,255,255,0.85); }
 body.template-page.template-page-about .veylique-header:not(.is-scrolled) .veylique-nav-list li a:hover,
 body.template-page.page-about .veylique-header:not(.is-scrolled) .veylique-nav-list li a:hover,
-body.veylique-about-template .veylique-header:not(.is-scrolled) .veylique-nav-list li a:hover { color: #ffffff; }
+body.veylique-about-template .veylique-header:not(.is-scrolled) .veylique-nav-list li a:hover,
+body.veylique-services-template .veylique-header:not(.is-scrolled) .veylique-nav-list li a:hover { color: #ffffff; }
 body.template-page.template-page-about .veylique-header:not(.is-scrolled) .veylique-cart-trigger,
 body.template-page.page-about .veylique-header:not(.is-scrolled) .veylique-cart-trigger,
-body.veylique-about-template .veylique-header:not(.is-scrolled) .veylique-cart-trigger { border-color: rgba(255,255,255,0.35); color: #ffffff; }
+body.veylique-about-template .veylique-header:not(.is-scrolled) .veylique-cart-trigger,
+body.veylique-services-template .veylique-header:not(.is-scrolled) .veylique-cart-trigger { border-color: rgba(255,255,255,0.35); color: #ffffff; }
 body.template-page.template-page-about .veylique-header:not(.is-scrolled) .veylique-nav-toggle-bar,
 body.template-page.page-about .veylique-header:not(.is-scrolled) .veylique-nav-toggle-bar,
-body.veylique-about-template .veylique-header:not(.is-scrolled) .veylique-nav-toggle-bar { background: #ffffff; }
+body.veylique-about-template .veylique-header:not(.is-scrolled) .veylique-nav-toggle-bar,
+body.veylique-services-template .veylique-header:not(.is-scrolled) .veylique-nav-toggle-bar { background: #ffffff; }
 body.template-page.template-page-about .veylique-header.is-scrolled,
 body.template-page.page-about .veylique-header.is-scrolled,
-body.veylique-about-template .veylique-header.is-scrolled { background: rgba(255,250,247,0.97); box-shadow: 0 0.0625rem 0 var(--mustard-border); backdrop-filter: blur(0.75rem); }
+body.veylique-about-template .veylique-header.is-scrolled,
+body.veylique-services-template .veylique-header.is-scrolled { background: rgba(255,250,247,0.97); box-shadow: 0 0.0625rem 0 var(--mustard-border); backdrop-filter: blur(0.75rem); }
 body.template-page.template-page-about .veylique-header.is-scrolled .veylique-header-logo,
 body.template-page.page-about .veylique-header.is-scrolled .veylique-header-logo,
-body.veylique-about-template .veylique-header.is-scrolled .veylique-header-logo { color: var(--mustard-text); }
+body.veylique-about-template .veylique-header.is-scrolled .veylique-header-logo,
+body.veylique-services-template .veylique-header.is-scrolled .veylique-header-logo { color: var(--mustard-text); }
 body.template-page.template-page-about .veylique-header.is-scrolled .veylique-nav-list li a,
 body.template-page.page-about .veylique-header.is-scrolled .veylique-nav-list li a,
-body.veylique-about-template .veylique-header.is-scrolled .veylique-nav-list li a { color: var(--mustard-muted); }
+body.veylique-about-template .veylique-header.is-scrolled .veylique-nav-list li a,
+body.veylique-services-template .veylique-header.is-scrolled .veylique-nav-list li a { color: var(--mustard-muted); }
 body.template-page.template-page-about .veylique-header.is-scrolled .veylique-nav-list li a:hover,
 body.template-page.page-about .veylique-header.is-scrolled .veylique-nav-list li a:hover,
-body.veylique-about-template .veylique-header.is-scrolled .veylique-nav-list li a:hover { color: var(--mustard-text); }
+body.veylique-about-template .veylique-header.is-scrolled .veylique-nav-list li a:hover,
+body.veylique-services-template .veylique-header.is-scrolled .veylique-nav-list li a:hover { color: var(--mustard-text); }
 body.template-page.template-page-about .veylique-header.is-scrolled .veylique-cart-trigger,
 body.template-page.page-about .veylique-header.is-scrolled .veylique-cart-trigger,
-body.veylique-about-template .veylique-header.is-scrolled .veylique-cart-trigger { border-color: var(--mustard-border); color: var(--mustard-text); }
+body.veylique-about-template .veylique-header.is-scrolled .veylique-cart-trigger,
+body.veylique-services-template .veylique-header.is-scrolled .veylique-cart-trigger { border-color: var(--mustard-border); color: var(--mustard-text); }
 body.template-page.template-page-about .veylique-header.is-scrolled .veylique-nav-toggle-bar,
 body.template-page.page-about .veylique-header.is-scrolled .veylique-nav-toggle-bar,
-body.veylique-about-template .veylique-header.is-scrolled .veylique-nav-toggle-bar { background: var(--mustard-text); }
+body.veylique-about-template .veylique-header.is-scrolled .veylique-nav-toggle-bar,
+body.veylique-services-template .veylique-header.is-scrolled .veylique-nav-toggle-bar { background: var(--mustard-text); }
 
 body.template-blog .veylique-header:not(.is-scrolled),
 body.template-list-collections:not(.template-collection):not(.template-collection) .veylique-header:not(.is-scrolled) {
@@ -12061,7 +12073,7 @@ body.template-cart .veylique-header .veylique-header-icon-btn,
 body.template-checkout .veylique-header .veylique-header-icon-btn,
 body.template-customers-account .veylique-header .veylique-header-icon-btn,
 body.template-404 .veylique-header .veylique-header-icon-btn,
-body.template-page:not(.home):not(.template-page-about):not(.page-about):not(.veylique-about-template):not(.veylique-wishlist-template):not(.veylique-contact-template):not(.veylique-faq-template) .veylique-header .veylique-header-icon-btn {
+body.template-page:not(.home):not(.template-page-about):not(.page-about):not(.veylique-about-template):not(.veylique-services-template):not(.veylique-wishlist-template):not(.veylique-contact-template):not(.veylique-faq-template) .veylique-header .veylique-header-icon-btn {
   color: var(--mustard-text);
 }
 
@@ -12070,7 +12082,7 @@ body.template-cart .veylique-header .veylique-header-icon-btn:hover,
 body.template-checkout .veylique-header .veylique-header-icon-btn:hover,
 body.template-customers-account .veylique-header .veylique-header-icon-btn:hover,
 body.template-404 .veylique-header .veylique-header-icon-btn:hover,
-body.template-page:not(.home):not(.template-page-about):not(.page-about):not(.veylique-about-template):not(.veylique-wishlist-template):not(.veylique-contact-template):not(.veylique-faq-template) .veylique-header .veylique-header-icon-btn:hover {
+body.template-page:not(.home):not(.template-page-about):not(.page-about):not(.veylique-about-template):not(.veylique-services-template):not(.veylique-wishlist-template):not(.veylique-contact-template):not(.veylique-faq-template) .veylique-header .veylique-header-icon-btn:hover {
   background: rgba(0, 0, 0, 0.05);
 }
 
@@ -12079,6 +12091,7 @@ body.template-collection .veylique-header:not(.is-scrolled) .veylique-header-ico
 body.template-page.template-page-about .veylique-header:not(.is-scrolled) .veylique-header-icon-btn,
 body.template-page.page-about .veylique-header:not(.is-scrolled) .veylique-header-icon-btn,
 body.veylique-about-template .veylique-header:not(.is-scrolled) .veylique-header-icon-btn,
+body.veylique-services-template .veylique-header:not(.is-scrolled) .veylique-header-icon-btn,
 body.veylique-wishlist-template .veylique-header:not(.is-scrolled) .veylique-header-icon-btn,
 body.veylique-faq-template .veylique-header:not(.is-scrolled) .veylique-header-icon-btn,
 body.veylique-contact-template .veylique-header:not(.is-scrolled) .veylique-header-icon-btn,
@@ -12095,6 +12108,7 @@ body.template-collection .veylique-header:not(.is-scrolled) .veylique-header-ico
 body.template-page.template-page-about .veylique-header:not(.is-scrolled) .veylique-header-icon-btn:hover,
 body.template-page.page-about .veylique-header:not(.is-scrolled) .veylique-header-icon-btn:hover,
 body.veylique-about-template .veylique-header:not(.is-scrolled) .veylique-header-icon-btn:hover,
+body.veylique-services-template .veylique-header:not(.is-scrolled) .veylique-header-icon-btn:hover,
 body.veylique-wishlist-template .veylique-header:not(.is-scrolled) .veylique-header-icon-btn:hover,
 body.veylique-faq-template .veylique-header:not(.is-scrolled) .veylique-header-icon-btn:hover,
 body.veylique-contact-template .veylique-header:not(.is-scrolled) .veylique-header-icon-btn:hover,
@@ -12111,6 +12125,7 @@ body.template-collection .veylique-header.is-scrolled .veylique-header-icon-btn,
 body.template-page.template-page-about .veylique-header.is-scrolled .veylique-header-icon-btn,
 body.template-page.page-about .veylique-header.is-scrolled .veylique-header-icon-btn,
 body.veylique-about-template .veylique-header.is-scrolled .veylique-header-icon-btn,
+body.veylique-services-template .veylique-header.is-scrolled .veylique-header-icon-btn,
 body.veylique-wishlist-template .veylique-header.is-scrolled .veylique-header-icon-btn,
 body.veylique-faq-template .veylique-header.is-scrolled .veylique-header-icon-btn,
 body.veylique-contact-template .veylique-header.is-scrolled .veylique-header-icon-btn,
