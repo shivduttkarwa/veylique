@@ -678,20 +678,48 @@
 
       if (!scroller) return;
 
-      function getScrollStep() {
-        var slide = scroller.querySelector('.swiper-slide');
-        if (!slide) return scroller.clientWidth;
+      var wrapper = scroller.querySelector('.swiper-wrapper');
+      if (!wrapper) return;
 
-        var wrapper = scroller.querySelector('.swiper-wrapper');
-        var styles = wrapper ? window.getComputedStyle(wrapper) : null;
-        var gap = styles ? parseFloat(styles.columnGap || styles.gap || '0') : 0;
-        return slide.getBoundingClientRect().width + (Number.isNaN(gap) ? 0 : gap);
+      var slides = [];
+      var activeIndex = 0;
+      var currentTranslate = 0;
+      var targetTranslate = 0;
+      var minTranslate = 0;
+      var maxIndex = 0;
+      var slideStep = 0;
+      var animationFrame = 0;
+
+      function clampTranslate(value) {
+        return Math.min(0, Math.max(minTranslate, value));
+      }
+
+      function indexToTranslate(index) {
+        return clampTranslate(-index * slideStep);
+      }
+
+      function translateToIndex(value) {
+        if (!slideStep) return 0;
+        return Math.min(maxIndex, Math.max(0, Math.round(Math.abs(clampTranslate(value)) / slideStep)));
+      }
+
+      function setTranslate(value) {
+        wrapper.style.transform = 'translate3d(' + value + 'px, 0, 0)';
+      }
+
+      function stopAnimation() {
+        if (!animationFrame) return;
+        window.cancelAnimationFrame(animationFrame);
+        animationFrame = 0;
+      }
+
+      function easeOutCubic(progress) {
+        return 1 - Math.pow(1 - progress, 3);
       }
 
       function updateNav() {
-        var maxScroll = scroller.scrollWidth - scroller.clientWidth - 1;
-        var atStart = scroller.scrollLeft <= 1;
-        var atEnd = scroller.scrollLeft >= maxScroll;
+        var atStart = targetTranslate >= -1;
+        var atEnd = targetTranslate <= minTranslate + 1 || activeIndex >= maxIndex;
 
         if (prev) {
           prev.classList.toggle('swiper-button-disabled', atStart);
@@ -704,41 +732,79 @@
         }
       }
 
-      function scrollByDirection(direction) {
-        scroller.scrollBy({
-          left: getScrollStep() * direction,
-          behavior: reduceMotion ? 'auto' : 'smooth'
-        });
-      }
+      function animateTo(value, duration) {
+        stopAnimation();
 
-      function maxScrollLeft() {
-        return Math.max(0, scroller.scrollWidth - scroller.clientWidth);
-      }
+        targetTranslate = clampTranslate(value);
 
-      function nearestSlideLeft() {
-        var slides = Array.prototype.slice.call(scroller.querySelectorAll('.swiper-slide'));
-        var current = scroller.scrollLeft;
-        var nearest = current;
-        var distance = Infinity;
+        if (reduceMotion || !duration) {
+          currentTranslate = targetTranslate;
+          activeIndex = translateToIndex(targetTranslate);
+          setTranslate(currentTranslate);
+          updateNav();
+          return;
+        }
 
-        slides.forEach(function (slide) {
-          var offset = slide.offsetLeft;
-          var slideDistance = Math.abs(offset - current);
-          if (slideDistance < distance) {
-            distance = slideDistance;
-            nearest = offset;
+        var from = currentTranslate;
+        var to = targetTranslate;
+        var start = performance.now();
+
+        function tick(now) {
+          var progress = Math.min(1, (now - start) / duration);
+          currentTranslate = from + (to - from) * easeOutCubic(progress);
+          setTranslate(currentTranslate);
+
+          if (progress < 1) {
+            animationFrame = window.requestAnimationFrame(tick);
+            return;
           }
-        });
 
-        return Math.min(maxScrollLeft(), Math.max(0, nearest));
+          animationFrame = 0;
+          currentTranslate = to;
+          activeIndex = translateToIndex(to);
+          setTranslate(currentTranslate);
+          updateNav();
+        }
+
+        animationFrame = window.requestAnimationFrame(tick);
+        updateNav();
       }
 
-      function snapToNearestSlide() {
-        if (!maxScrollLeft()) return;
-        scroller.scrollTo({
-          left: nearestSlideLeft(),
-          behavior: reduceMotion ? 'auto' : 'smooth'
-        });
+      function slideTo(index, duration) {
+        activeIndex = Math.min(maxIndex, Math.max(0, index));
+        animateTo(indexToTranslate(activeIndex), duration);
+      }
+
+      function slideByDirection(direction) {
+        slideTo(activeIndex + direction, 680);
+      }
+
+      function measureSlider() {
+        slides = Array.prototype.slice.call(wrapper.querySelectorAll('.swiper-slide'));
+
+        if (!slides.length) {
+          minTranslate = 0;
+          maxIndex = 0;
+          slideStep = 0;
+          setTranslate(0);
+          updateNav();
+          return;
+        }
+
+        var styles = window.getComputedStyle(wrapper);
+        var gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
+        var firstSlide = slides[0];
+        var lastSlide = slides[slides.length - 1];
+        var totalWidth = lastSlide.offsetLeft - firstSlide.offsetLeft + lastSlide.offsetWidth;
+
+        slideStep = firstSlide.getBoundingClientRect().width + gap;
+        minTranslate = Math.min(0, scroller.clientWidth - totalWidth);
+        maxIndex = slideStep ? Math.ceil(Math.abs(minTranslate) / slideStep) : 0;
+        activeIndex = Math.min(maxIndex, Math.max(0, activeIndex));
+        currentTranslate = indexToTranslate(activeIndex);
+        targetTranslate = currentTranslate;
+        setTranslate(currentTranslate);
+        updateNav();
       }
 
       function endDrag(event) {
@@ -756,7 +822,11 @@
 
         if (dragState.didDrag) {
           dragState.suppressClickUntil = Date.now() + 320;
-          window.setTimeout(snapToNearestSlide, 40);
+          var velocity = Math.max(-2.4, Math.min(2.4, dragState.velocity || 0));
+          var projectedTranslate = currentTranslate + velocity * 420;
+          slideTo(translateToIndex(projectedTranslate), 680);
+        } else {
+          animateTo(targetTranslate, 260);
         }
 
         dragState.active = false;
@@ -764,14 +834,18 @@
       }
 
       scroller.addEventListener('pointerdown', function (event) {
-        if (event.button !== 0 || !event.isPrimary || !maxScrollLeft()) return;
+        if (event.button !== 0 || !event.isPrimary || !maxIndex) return;
         if (event.target.closest('[data-veylique-cat-prev], [data-veylique-cat-next]')) return;
 
+        stopAnimation();
         dragState.active = true;
         dragState.pointerId = event.pointerId;
         dragState.startX = event.clientX;
         dragState.startY = event.clientY;
-        dragState.startScrollLeft = scroller.scrollLeft;
+        dragState.startTranslate = currentTranslate;
+        dragState.lastX = event.clientX;
+        dragState.lastTime = performance.now();
+        dragState.velocity = 0;
         dragState.didDrag = false;
         scroller.classList.add('is-pointer-down');
 
@@ -792,7 +866,26 @@
         dragState.didDrag = true;
         scroller.classList.add('is-dragging');
         event.preventDefault();
-        scroller.scrollLeft = dragState.startScrollLeft - deltaX;
+
+        var nextTranslate = dragState.startTranslate + deltaX;
+
+        if (nextTranslate > 0) {
+          nextTranslate *= 0.28;
+        } else if (nextTranslate < minTranslate) {
+          nextTranslate = minTranslate + (nextTranslate - minTranslate) * 0.28;
+        }
+
+        currentTranslate = nextTranslate;
+        targetTranslate = clampTranslate(nextTranslate);
+        setTranslate(currentTranslate);
+
+        var now = performance.now();
+        var elapsed = now - dragState.lastTime;
+        if (elapsed > 0) {
+          dragState.velocity = (event.clientX - dragState.lastX) / elapsed;
+          dragState.lastX = event.clientX;
+          dragState.lastTime = now;
+        }
       });
 
       scroller.addEventListener('pointerup', endDrag);
@@ -808,27 +901,32 @@
 
       if (prev) {
         prev.addEventListener('click', function () {
-          scrollByDirection(-1);
+          slideByDirection(-1);
         });
       }
 
       if (next) {
         next.addEventListener('click', function () {
-          scrollByDirection(1);
+          slideByDirection(1);
         });
       }
 
-      var scrollFrame = 0;
-      scroller.addEventListener('scroll', function () {
-        if (scrollFrame) return;
-        scrollFrame = window.requestAnimationFrame(function () {
-          scrollFrame = 0;
-          updateNav();
-        });
-      }, { passive: true });
+      scroller.addEventListener('keydown', function (event) {
+        if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+        event.preventDefault();
+        slideByDirection(event.key === 'ArrowRight' ? 1 : -1);
+      });
 
-      window.addEventListener('resize', updateNav);
-      updateNav();
+      var resizeFrame = 0;
+      window.addEventListener('resize', function () {
+        if (resizeFrame) return;
+        resizeFrame = window.requestAnimationFrame(function () {
+          resizeFrame = 0;
+          measureSlider();
+        });
+      });
+
+      measureSlider();
     });
   }
 

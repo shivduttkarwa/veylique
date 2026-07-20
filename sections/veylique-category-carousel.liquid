@@ -139,7 +139,7 @@
     --mustard-bg: var(--veylique-bg, #faf6ec);
     --mustard-text: var(--veylique-ink, #2a2318);
     --mustard-border: rgba(42, 35, 24, 0.12);
-    --mustard-radius: 1.5rem;
+    --mustard-radius: 0;
     --mustard-container-wide: 90rem;
     --mustard-container-gutter: clamp(1rem, 3vw, 2.5rem);
     background: #ffffff;
@@ -242,10 +242,11 @@
 
   .veylique-cat-slider-area {
     position: relative;
+    padding-top: 3.5rem;
   }
 
   .veylique-cat-swiper {
-    overflow-x: auto;
+    overflow: visible;
     overflow-y: visible;
     scrollbar-width: none;
     cursor: grab;
@@ -255,7 +256,6 @@
   }
 
   .veylique-cat-swiper.is-pointer-down {
-    scroll-behavior: auto;
     cursor: grabbing;
   }
 
@@ -277,6 +277,7 @@
     align-items: stretch;
     gap: 1rem;
     width: 100%;
+    will-change: transform;
   }
 
   .veylique-cat-swiper .swiper-slide {
@@ -449,14 +450,13 @@
 
   .veylique-cat-nav {
     position: absolute;
-    top: 38%;
-    right: -0.75rem;
+    top: 0;
+    right: 0;
     z-index: 10;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 0.625rem;
     pointer-events: none;
-    transform: translateY(-50%);
   }
 
   .veylique-cat-nav-btn {
