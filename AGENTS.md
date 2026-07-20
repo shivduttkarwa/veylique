@@ -1,6 +1,6 @@
 # AGENTS.md
 
-🚨 MANDATORY: YOU MUST CALL "learn_shopify_api" ONCE WHEN WORKING WITH LIQUID THEMES.
+When working with Shopify Liquid themes, use the `shopify-theme-standards` skill, consult official Shopify documentation when needed, and validate changes with `shopify theme check`.
 
 ## Theme Architecture
 
@@ -74,6 +74,15 @@
 
 - Write CSS and JavaScript per components using the `{% stylesheet %}` and `{% javascript %}` tags
 - Note: `{% stylesheet %}` and `{% javascript %}` are only supported in `snippets/`, `blocks/`, and `sections/`
+
+### Veylique CSS Infrastructure
+
+- Keep `snippets/css-variables.liquid` as the canonical design-token source for merchant fonts, colors, spacing, radii, layout widths, timing, focus rings, and z-index values.
+- Keep `assets/critical.css` limited to browser reset, document defaults, accessibility primitives, and Shopify section grid utilities needed on every page.
+- Keep `assets/veylique-theme.css` for shared Veylique primitives: containers, typography helpers, buttons, media helpers, grid/stack utilities, and common component contracts.
+- Keep section-specific visuals inside each section's `{% stylesheet %}` block unless the style is reused across multiple sections.
+- Use `rem` for typography, spacing, radii, and component sizing. Leave the root `html` font size at `100%` so customer browser text-size preferences are respected.
+- Use CSS-first interactions wherever possible. JavaScript should progressively enhance behavior, not provide basic shopping, navigation, or content access.
 
 ### LiquidDoc
 

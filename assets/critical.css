@@ -1,8 +1,19 @@
 /** Critical CSS for the theme. This file is included on every page. */
 
 /* Reset styles inspired by https://www.joshwcomeau.com/css/custom-css-reset/ */
-* {
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
+}
+
+* {
   margin: 0;
 }
 
@@ -11,6 +22,7 @@ body {
   flex-direction: column;
   margin: 0;
   min-height: 100svh;
+  line-height: 1.6;
 }
 
 html:has(dialog[scroll-lock][open], details[scroll-lock][open]) {
@@ -27,10 +39,21 @@ svg {
   height: auto;
 }
 
+main {
+  display: block;
+  flex: 1 0 auto;
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+
 input,
 textarea,
 select {
-  font: inherit;
   border-radius: var(--style-border-radius-inputs);
 }
 
@@ -71,6 +94,49 @@ p:empty {
   margin-block-end: 0;
 }
 
+:where(a, button, input, textarea, select, summary, [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: var(--veylique-focus-ring-width, 0.125rem) solid var(--veylique-focus-ring-color, currentColor);
+  outline-offset: var(--veylique-focus-ring-offset, 0.1875rem);
+}
+
+#MainContent:focus {
+  outline: none;
+}
+
+.skip-to-content-link {
+  position: absolute;
+  inset-block-start: var(--veylique-space-4, 1rem);
+  inset-inline-start: var(--veylique-space-4, 1rem);
+  z-index: var(--veylique-z-skip-link, 10000);
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--veylique-space-5, 1.25rem);
+  border: var(--veylique-border-width, 0.0625rem) solid var(--veylique-color-foreground, currentColor);
+  border-radius: var(--veylique-radius-sm, 0.5rem);
+  background: var(--veylique-color-background, #ffffff);
+  color: var(--veylique-color-foreground, #111111);
+  font-weight: 700;
+  text-decoration: none;
+  transform: translateY(calc(-100% - var(--veylique-space-8, 2rem)));
+  transition: transform var(--veylique-duration-base, 250ms) var(--veylique-ease-standard, ease);
+}
+
+.skip-to-content-link:focus {
+  transform: translateY(0);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 0.0625rem;
+  height: 0.0625rem;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /** Theme styles below */
 body {
   font-family: var(--font-body--family);
@@ -95,10 +161,10 @@ body {
  */
 .shopify-section {
   --content-width: min(
-    calc(var(--page-width) - var(--page-margin) * 2),
-    calc(100% - var(--page-margin) * 2)
+    calc(var(--veylique-page-width, var(--page-width)) - var(--veylique-page-margin, var(--page-margin)) * 2),
+    calc(100% - var(--veylique-page-margin, var(--page-margin)) * 2)
   );
-  --content-margin: minmax(var(--page-margin), 1fr);
+  --content-margin: minmax(var(--veylique-page-margin, var(--page-margin)), 1fr);
   --content-grid: var(--content-margin) var(--content-width) var(--content-margin);
 
   /* This is required to make <img> elements work as background images */
@@ -116,4 +182,15 @@ body {
 /* Child elements that use the full-width utility class span the entire viewport. */
 .shopify-section > .full-width {
   grid-column: 1 / -1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

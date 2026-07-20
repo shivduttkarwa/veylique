@@ -1,13 +1,13 @@
 :root {
-  --veylique-bg: var(--color-background);
-  --veylique-ink: var(--color-foreground);
-  --veylique-muted: #756b60;
-  --veylique-line: rgba(36, 31, 26, 0.14);
-  --veylique-gold: var(--color-accent);
-  --veylique-gold-contrast: var(--color-accent-foreground);
-  --veylique-sage: var(--color-secondary-accent);
-  --veylique-sage-contrast: var(--color-secondary-accent-foreground);
-  --veylique-rose: #c58d80;
+  --veylique-bg: var(--veylique-color-background);
+  --veylique-ink: var(--veylique-color-foreground);
+  --veylique-muted: var(--veylique-color-muted);
+  --veylique-line: var(--veylique-color-border);
+  --veylique-gold: var(--veylique-color-accent);
+  --veylique-gold-contrast: var(--veylique-color-accent-foreground);
+  --veylique-sage: var(--veylique-color-secondary);
+  --veylique-sage-contrast: var(--veylique-color-secondary-foreground);
+  --veylique-rose: var(--veylique-color-rose);
 }
 
 body {
@@ -24,14 +24,43 @@ body {
 }
 
 .veylique-container {
-  width: min(100% - 2rem, 92rem);
+  width: min(100% - (var(--veylique-container-gutter) * 2), var(--veylique-container));
   margin-inline: auto;
+}
+
+.veylique-container--narrow {
+  width: min(100% - (var(--veylique-container-gutter) * 2), var(--veylique-container-narrow));
+  margin-inline: auto;
+}
+
+.veylique-container--wide {
+  width: min(100% - (var(--veylique-container-gutter) * 2), var(--veylique-container-wide));
+  margin-inline: auto;
+}
+
+.veylique-container--full {
+  width: min(100%, var(--veylique-container-full));
+  margin-inline: auto;
+}
+
+.veylique-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--veylique-stack-gap, var(--veylique-space-4));
+}
+
+.veylique-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--veylique-cluster-gap, var(--veylique-space-3));
+  align-items: var(--veylique-cluster-align, center);
+  justify-content: var(--veylique-cluster-justify, flex-start);
 }
 
 .veylique-kicker {
   margin: 0 0 1.1rem;
   color: currentColor;
-  font-family: var(--font-heading--family);
+  font-family: var(--veylique-font-heading);
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.14em;
@@ -41,8 +70,8 @@ body {
 .veylique-title {
   margin: 0;
   color: currentColor;
-  font-family: var(--font-heading--family);
-  font-style: var(--font-heading--style);
+  font-family: var(--veylique-font-heading);
+  font-style: var(--veylique-font-heading-style);
   font-size: clamp(3.5rem, 11vw, 11rem);
   font-weight: 500;
   line-height: 0.88;
@@ -52,8 +81,8 @@ body {
 .veylique-section-title {
   margin: 0;
   color: var(--veylique-ink);
-  font-family: var(--font-heading--family);
-  font-style: var(--font-heading--style);
+  font-family: var(--veylique-font-heading);
+  font-style: var(--veylique-font-heading-style);
   font-size: clamp(2.35rem, 5.8vw, 6rem);
   font-weight: 500;
   line-height: 0.95;
@@ -67,27 +96,64 @@ body {
 }
 
 .veylique-button {
+  appearance: none;
   display: inline-flex;
   min-height: 3rem;
   align-items: center;
   justify-content: center;
   gap: 0.55rem;
   padding: 0 1.45rem;
-  border: 0.0625rem solid currentColor;
-  border-radius: 999rem;
+  border: var(--veylique-border-width) solid currentColor;
+  border-radius: var(--veylique-radius-pill);
+  background: transparent;
   color: currentColor;
-  font-family: var(--font-heading--family);
+  cursor: pointer;
+  font-family: var(--veylique-font-heading);
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.08em;
+  line-height: 1;
+  text-align: center;
   text-decoration: none;
   text-transform: uppercase;
+  transition:
+    background-color var(--veylique-duration-base) ease,
+    border-color var(--veylique-duration-base) ease,
+    color var(--veylique-duration-base) ease,
+    transform var(--veylique-duration-base) ease;
+}
+
+.veylique-button:hover {
+  transform: translateY(-0.0625rem);
 }
 
 .veylique-button--solid {
   border-color: var(--veylique-ink);
   background: var(--veylique-ink);
   color: var(--veylique-bg);
+}
+
+.veylique-button--outline {
+  border-color: var(--veylique-line);
+  color: var(--veylique-ink);
+}
+
+.veylique-button--outline:hover {
+  border-color: var(--veylique-ink);
+  background: var(--veylique-ink);
+  color: var(--veylique-bg);
+}
+
+.veylique-button--ghost {
+  border-color: transparent;
+  color: var(--veylique-ink);
+}
+
+.veylique-button:disabled,
+.veylique-button[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.45;
+  transform: none;
 }
 
 .veylique-media {
@@ -98,7 +164,7 @@ body {
 }
 
 .veylique-section {
-  padding: clamp(4.5rem, 9vw, 9rem) 0;
+  padding: var(--veylique-section-spacing) 0;
 }
 
 .veylique-section-head {

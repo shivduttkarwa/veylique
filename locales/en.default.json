@@ -1,4 +1,7 @@
 {
+  "accessibility": {
+    "skip_to_content": "Skip to content"
+  },
   "404": {
     "title": "404",
     "not_found": "Page not found.",

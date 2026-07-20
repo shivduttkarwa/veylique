@@ -35,9 +35,15 @@
   </head>
 
   <body>
+    <a class="skip-to-content-link" href="#MainContent">
+      {{ 'accessibility.skip_to_content' | t }}
+    </a>
+
     {% sections 'header-group' %}
 
-    {{ content_for_layout }}
+    <main id="MainContent" role="main" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
 
     {% sections 'footer-group' %}
     <script src="{{ 'veylique-theme.js' | asset_url }}" defer></script>
