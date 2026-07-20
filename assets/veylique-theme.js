@@ -2461,6 +2461,123 @@
     });
   }
 
+  /* ===== FAQ page: tabbed categories + animated-height accordion ===== */
+  function initFaqPage(root) {
+    root.querySelectorAll('[data-veylique-faq-page]').forEach(function (section) {
+      if (section.dataset.veyliqueFaqPageReady === 'true') return;
+      section.dataset.veyliqueFaqPageReady = 'true';
+
+      var tabs = Array.prototype.slice.call(section.querySelectorAll('[data-faq-tab]'));
+      var panels = Array.prototype.slice.call(section.querySelectorAll('.veylique-faq-panel'));
+
+      function setAnswerHeight(answer, height) {
+        answer.style.height = height + 'px';
+      }
+
+      function onAnswerTransitionEnd(answer, state) {
+        var done = false;
+        var finish = function () {
+          if (done) return;
+          done = true;
+          answer.removeEventListener('transitionend', handler);
+          if (answer.dataset.faqState !== state) return;
+          if (state === 'opening') {
+            answer.style.height = 'auto';
+            answer.dataset.faqState = 'open';
+          }
+          if (state === 'closing') {
+            answer.hidden = true;
+            answer.dataset.faqState = 'closed';
+          }
+        };
+        var handler = function (event) {
+          if (event.target !== answer || event.propertyName !== 'height') return;
+          finish();
+        };
+        answer.addEventListener('transitionend', handler);
+        window.setTimeout(finish, 420);
+      }
+
+      function openItem(item) {
+        var button = item.querySelector('.veylique-faq-question');
+        var answer = item.querySelector('.veylique-faq-answer');
+        if (!button || !answer || answer.dataset.faqState === 'opening' || answer.dataset.faqState === 'open') return;
+        answer.hidden = false;
+        answer.dataset.faqState = 'opening';
+        answer.style.height = '0px';
+        answer.getBoundingClientRect();
+        item.classList.add('is-open');
+        button.setAttribute('aria-expanded', 'true');
+        setAnswerHeight(answer, answer.scrollHeight);
+        onAnswerTransitionEnd(answer, 'opening');
+      }
+
+      function closeItem(item) {
+        var button = item.querySelector('.veylique-faq-question');
+        var answer = item.querySelector('.veylique-faq-answer');
+        if (!button || !answer || answer.hidden || answer.dataset.faqState === 'closing' || answer.dataset.faqState === 'closed') return;
+        answer.dataset.faqState = 'closing';
+        setAnswerHeight(answer, answer.scrollHeight);
+        answer.getBoundingClientRect();
+        item.classList.remove('is-open');
+        button.setAttribute('aria-expanded', 'false');
+        setAnswerHeight(answer, 0);
+        onAnswerTransitionEnd(answer, 'closing');
+      }
+
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          var controlledId = tab.getAttribute('aria-controls');
+          tabs.forEach(function (item) {
+            var selected = item === tab;
+            item.classList.toggle('is-active', selected);
+            item.setAttribute('aria-selected', selected ? 'true' : 'false');
+            item.setAttribute('tabindex', selected ? '0' : '-1');
+          });
+          panels.forEach(function (panel) {
+            var active = panel.id === controlledId;
+            panel.classList.toggle('is-active', active);
+            panel.hidden = !active;
+          });
+        });
+
+        tab.addEventListener('keydown', function (event) {
+          if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+          event.preventDefault();
+          var current = tabs.indexOf(tab);
+          var offset = event.key === 'ArrowRight' ? 1 : -1;
+          var next = (current + offset + tabs.length) % tabs.length;
+          tabs[next].focus();
+          tabs[next].click();
+        });
+      });
+
+      section.querySelectorAll('[data-faq-item]').forEach(function (item) {
+        var button = item.querySelector('.veylique-faq-question');
+        var answer = item.querySelector('.veylique-faq-answer');
+        if (!button || !answer) return;
+
+        answer.dataset.faqState = answer.hidden ? 'closed' : 'open';
+        answer.style.height = answer.hidden ? '0px' : 'auto';
+
+        button.addEventListener('click', function () {
+          var isOpen = !answer.hidden;
+          var panel = item.closest('.veylique-faq-panel');
+          if (panel) {
+            panel.querySelectorAll('[data-faq-item]').forEach(function (sibling) {
+              if (sibling !== item) closeItem(sibling);
+            });
+          }
+          if (!isOpen) {
+            openItem(item);
+          } else {
+            closeItem(item);
+          }
+        });
+      });
+    });
+  }
+
   function init() {
     initFaq(document);
     initHeroes(document);
@@ -2475,6 +2592,7 @@
     initTestimonials(document);
     initRituals(document);
     initHomeFaqs(document);
+    initFaqPage(document);
     initBlogs(document);
   }
 
@@ -2498,6 +2616,7 @@
     initTestimonials(event.target);
     initRituals(event.target);
     initHomeFaqs(event.target);
+    initFaqPage(event.target);
     initBlogs(event.target);
   });
 })();

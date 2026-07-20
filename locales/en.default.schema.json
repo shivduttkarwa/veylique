@@ -174,23 +174,35 @@
     "veylique-faq": {
       "name": "FAQ",
       "settings": {
-        "kicker": {
-          "label": "Kicker"
+        "title": {
+          "label": "Accessible title"
         },
-        "heading": {
-          "label": "Heading"
+        "tablist_label": {
+          "label": "Tablist aria-label"
         },
-        "text": {
-          "label": "Text"
+        "cta_header": {
+          "content": "Bottom call to action"
         },
-        "columns_desktop": {
-          "label": "Columns on desktop"
+        "cta_title": {
+          "label": "CTA title"
+        },
+        "cta_text": {
+          "label": "CTA text"
+        },
+        "cta_button_label": {
+          "label": "CTA button label"
+        },
+        "cta_button_link": {
+          "label": "CTA button link"
         }
       },
       "blocks": {
         "question": {
           "name": "Question",
           "settings": {
+            "category": {
+              "label": "Category (tab)"
+            },
             "question": {
               "label": "Question"
             },

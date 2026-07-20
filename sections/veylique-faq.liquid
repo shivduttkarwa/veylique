@@ -1,114 +1,295 @@
-<section class="veylique-page veylique-section" data-veylique-faq aria-labelledby="VeyliqueFaqTitle-{{ section.id }}">
-  <div class="veylique-container">
-    <div class="veylique-section-head">
-      <div>
-        <p class="veylique-kicker">{{ section.settings.kicker | escape }}</p>
-        <h2 id="VeyliqueFaqTitle-{{ section.id }}" class="veylique-section-title">{{ section.settings.heading | escape }}</h2>
-      </div>
-      <p class="veylique-text">{{ section.settings.text | escape }}</p>
-    </div>
+{% liquid
+  # Collect the distinct categories from the question blocks, in first-seen order.
+  assign categories = ''
+  for block in section.blocks
+    assign cat = block.settings.category | default: 'General'
+    unless categories contains cat
+      assign categories = categories | append: cat | append: '|||'
+    endunless
+  endfor
+  assign category_list = categories | split: '|||'
+%}
 
-    <div class="veylique-card-grid" style="--columns: {{ section.settings.columns_desktop }}">
-      {% for block in section.blocks %}
-        {% liquid
-          assign question_id = 'VeyliqueFaqQuestion-' | append: section.id | append: '-' | append: forloop.index
-          assign answer_id = 'VeyliqueFaqAnswer-' | append: section.id | append: '-' | append: forloop.index
-        %}
-        <div class="veylique-faq-item{% if forloop.first %} is-open{% endif %}" {{ block.shopify_attributes }}>
+<section class="veylique-faq-page" data-veylique-faq-page aria-labelledby="VeyliqueFaqTitle-{{ section.id }}">
+  <h2 id="VeyliqueFaqTitle-{{ section.id }}" class="visually-hidden">{{ section.settings.title | escape }}</h2>
+
+  <div class="veylique-faq-body">
+    <div class="veylique-faq-body-inner">
+      <div class="veylique-faq-tabs veylique-reveal-js veylique-reveal--static-js" role="tablist" aria-label="{{ section.settings.tablist_label | escape }}">
+        {% for cat in category_list %}
+          {% assign key = cat | handleize %}
           <button
-            id="{{ question_id }}"
-            class="veylique-faq-button"
             type="button"
-            aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
-            aria-controls="{{ answer_id }}"
-            data-veylique-faq-button
-          >
-            <span>{{ block.settings.question | escape }}</span>
-            <span aria-hidden="true">+</span>
-          </button>
-          <div id="{{ answer_id }}" class="veylique-faq-answer" role="region" aria-labelledby="{{ question_id }}">
-            {{ block.settings.answer }}
-          </div>
+            class="veylique-pill{% if forloop.first %} is-active{% endif %}"
+            role="tab"
+            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
+            aria-controls="veylique-faq-panel-{{ key }}-{{ section.id }}"
+            id="veylique-faq-tab-{{ key }}-{{ section.id }}"
+            data-faq-tab="{{ key }}"
+          >{{ cat }}</button>
+        {% endfor %}
+      </div>
+
+      {% for cat in category_list %}
+        {% assign key = cat | handleize %}
+        <div
+          class="veylique-faq-panel{% if forloop.first %} is-active{% endif %}"
+          id="veylique-faq-panel-{{ key }}-{{ section.id }}"
+          role="tabpanel"
+          aria-labelledby="veylique-faq-tab-{{ key }}-{{ section.id }}"
+          {% unless forloop.first %}hidden{% endunless %}
+        >
+          {% for block in section.blocks %}
+            {% assign block_cat = block.settings.category | default: 'General' %}
+            {% if block_cat == cat %}
+              {% assign item_id = key | append: '-' | append: forloop.index0 | append: '-' | append: section.id %}
+              <div class="veylique-faq-item" data-faq-item {{ block.shopify_attributes }}>
+                <button
+                  type="button"
+                  class="veylique-faq-question"
+                  aria-expanded="false"
+                  aria-controls="faq-{{ item_id }}"
+                  id="faq-{{ item_id }}-btn"
+                >
+                  <span>{{ block.settings.question | escape }}</span>
+                  <svg class="veylique-faq-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="veylique-faq-answer" id="faq-{{ item_id }}" role="region" aria-labelledby="faq-{{ item_id }}-btn" hidden>
+                  <div class="veylique-faq-answer-inner">{{ block.settings.answer }}</div>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
         </div>
       {% endfor %}
     </div>
   </div>
+
+  {% if section.settings.cta_title != blank %}
+    <div class="veylique-faq-cta">
+      <div class="veylique-faq-cta-inner veylique-reveal-js veylique-reveal--static-js">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <div>
+          <h2 class="veylique-faq-cta-title">{{ section.settings.cta_title | escape }}</h2>
+          <p class="veylique-faq-cta-text">{{ section.settings.cta_text | escape }}</p>
+        </div>
+        {% if section.settings.cta_button_label != blank %}
+          <a href="{{ section.settings.cta_button_link | default: routes.root_url }}" class="veylique-btn btn-black">{{ section.settings.cta_button_label | escape }}</a>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
 </section>
+
+{% stylesheet %}
+  .veylique-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4375rem;
+    padding: 0.5rem 1.125rem;
+    border-radius: 6.25rem;
+    border: 0.0625rem solid var(--mustard-border);
+    background: transparent;
+    font-family: var(--mustard-font-body);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--mustard-muted);
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  .veylique-pill:hover:not(.is-active) {
+    border-color: var(--mustard-text);
+    color: var(--mustard-text);
+    background: rgba(36, 24, 22, 0.035);
+  }
+
+  .veylique-pill.is-active {
+    background: var(--mustard-text);
+    border-color: var(--mustard-text);
+    color: #ffffff;
+    box-shadow: 0 0.375rem 1rem rgba(36, 24, 22, 0.16);
+  }
+
+  .veylique-pill:focus-visible {
+    outline: 0.125rem solid var(--mustard-accent);
+    outline-offset: 0.125rem;
+  }
+
+  .veylique-faq-body {
+    padding: 3.5rem 0 5rem;
+  }
+
+  .veylique-faq-body-inner {
+    width: min(100% - 3rem, 51.25rem);
+    margin-inline: auto;
+  }
+
+  .veylique-faq-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+  }
+
+  .veylique-faq-panel {
+    display: none;
+  }
+
+  .veylique-faq-panel.is-active {
+    display: block;
+  }
+
+  .veylique-faq-item {
+    border-bottom: 0.0625rem solid var(--mustard-border);
+  }
+
+  .veylique-faq-item:first-child {
+    border-top: 0.0625rem solid var(--mustard-border);
+  }
+
+  .veylique-faq-question {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    padding: 1.375rem 0;
+    background: transparent;
+    border: none;
+    text-align: left;
+    font-family: var(--mustard-font-body);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--mustard-text);
+    cursor: pointer;
+    transition: color 0.18s;
+  }
+
+  .veylique-faq-question:hover {
+    color: var(--mustard-accent-dark);
+  }
+
+  .veylique-faq-icon {
+    flex-shrink: 0;
+    color: var(--mustard-muted);
+    transition: transform 0.25s ease, color 0.18s;
+  }
+
+  .veylique-faq-item.is-open .veylique-faq-icon {
+    transform: rotate(180deg);
+    color: var(--mustard-accent-dark);
+  }
+
+  .veylique-faq-answer {
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: height 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
+  }
+
+  .veylique-faq-item.is-open .veylique-faq-answer {
+    opacity: 1;
+  }
+
+  .veylique-faq-answer-inner {
+    padding: 0 0 1.5rem;
+    font-family: var(--mustard-font-body);
+    font-size: 0.875rem;
+    line-height: 1.8;
+    color: var(--mustard-muted);
+  }
+
+  .veylique-faq-answer-inner p {
+    margin: 0;
+  }
+
+  .veylique-faq-cta {
+    background: #ffffff;
+    border-top: 0.0625rem solid var(--mustard-border);
+    padding: 3.5rem 0;
+  }
+
+  .veylique-faq-cta-inner {
+    width: min(100% - 3rem, var(--mustard-container));
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .veylique-faq-cta-inner > svg {
+    color: var(--mustard-accent-dark);
+    flex-shrink: 0;
+  }
+
+  .veylique-faq-cta-inner > div {
+    flex: 1;
+  }
+
+  .veylique-faq-cta-title {
+    margin: 0 0 0.25rem;
+    font-family: var(--mustard-font-heading);
+    font-size: 1.375rem;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: var(--mustard-text);
+  }
+
+  .veylique-faq-cta-text {
+    margin: 0;
+    font-family: var(--mustard-font-body);
+    font-size: 0.875rem;
+    color: var(--mustard-muted);
+  }
+
+  .veylique-faq-cta-inner .veylique-btn {
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 768px) {
+    .veylique-faq-cta-inner {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .veylique-faq-cta-inner > svg {
+      display: none;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:sections.veylique-faq.name",
+  "tag": "section",
   "settings": [
-    {
-      "type": "text",
-      "id": "kicker",
-      "label": "t:sections.veylique-faq.settings.kicker.label",
-      "default": "Help desk"
-    },
-    {
-      "type": "text",
-      "id": "heading",
-      "label": "t:sections.veylique-faq.settings.heading.label",
-      "default": "Questions, answered"
-    },
-    {
-      "type": "textarea",
-      "id": "text",
-      "label": "t:sections.veylique-faq.settings.text.label",
-      "default": "Everything shoppers need before checkout, from fit to delivery and easy exchanges."
-    },
-    {
-      "type": "range",
-      "id": "columns_desktop",
-      "label": "t:sections.veylique-faq.settings.columns_desktop.label",
-      "min": 1,
-      "max": 3,
-      "step": 1,
-      "default": 3
-    }
+    { "type": "text", "id": "title", "label": "t:sections.veylique-faq.settings.title.label", "default": "Frequently asked questions" },
+    { "type": "text", "id": "tablist_label", "label": "t:sections.veylique-faq.settings.tablist_label.label", "default": "FAQ categories" },
+    { "type": "header", "content": "t:sections.veylique-faq.settings.cta_header.content" },
+    { "type": "text", "id": "cta_title", "label": "t:sections.veylique-faq.settings.cta_title.label", "default": "Still have questions?" },
+    { "type": "text", "id": "cta_text", "label": "t:sections.veylique-faq.settings.cta_text.label", "default": "Our customer care team replies within one business day." },
+    { "type": "text", "id": "cta_button_label", "label": "t:sections.veylique-faq.settings.cta_button_label.label", "default": "Contact us" },
+    { "type": "url", "id": "cta_button_link", "label": "t:sections.veylique-faq.settings.cta_button_link.label" }
   ],
   "blocks": [
     {
       "type": "question",
       "name": "t:sections.veylique-faq.blocks.question.name",
       "settings": [
-        {
-          "type": "text",
-          "id": "question",
-          "label": "t:sections.veylique-faq.blocks.question.settings.question.label",
-          "default": "How long does delivery take?"
-        },
-        {
-          "type": "richtext",
-          "id": "answer",
-          "label": "t:sections.veylique-faq.blocks.question.settings.answer.label",
-          "default": "<p>Most orders ship within 24-48 hours. Standard delivery usually arrives in 3-6 business days.</p>"
-        }
+        { "type": "text", "id": "category", "label": "t:sections.veylique-faq.blocks.question.settings.category.label", "default": "General" },
+        { "type": "text", "id": "question", "label": "t:sections.veylique-faq.blocks.question.settings.question.label", "default": "Question" },
+        { "type": "richtext", "id": "answer", "label": "t:sections.veylique-faq.blocks.question.settings.answer.label", "default": "<p>Answer</p>" }
       ]
     }
   ],
   "presets": [
     {
-      "name": "t:sections.veylique-faq.presets.name",
-      "blocks": [
-        {
-          "type": "question"
-        },
-        {
-          "type": "question",
-          "settings": {
-            "question": "Can I exchange or return an item?",
-            "answer": "<p>Yes. You can request an exchange or return within 7 days of delivery when the item is unused and has original tags.</p>"
-          }
-        },
-        {
-          "type": "question",
-          "settings": {
-            "question": "How do I choose the right size?",
-            "answer": "<p>Compare the product size guide with a garment you already love. If you are between sizes, choose the larger size for a relaxed fit.</p>"
-          }
-        }
-      ]
+      "name": "t:sections.veylique-faq.presets.name"
     }
   ]
 }

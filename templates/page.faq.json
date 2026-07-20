@@ -11,7 +11,152 @@
     },
     "faq": {
       "type": "veylique-faq",
-      "settings": {}
+      "blocks": {
+        "q0": {
+          "type": "question",
+          "settings": {
+            "category": "Fashion",
+            "question": "How do I choose the right size?",
+            "answer": "<p>Check the size guide on each product page and compare the measurements with a garment you already love. For a relaxed fit, choose the larger size when you are between sizes.</p>"
+          }
+        },
+        "q1": {
+          "type": "question",
+          "settings": {
+            "category": "Fashion",
+            "question": "What fabrics does MUSTARD use?",
+            "answer": "<p>Our collections use breathable cottons, soft viscose blends, linen blends, crepe, and seasonally selected knits. Fabric details are listed on every product page.</p>"
+          }
+        },
+        "q2": {
+          "type": "question",
+          "settings": {
+            "category": "Fashion",
+            "question": "Will sold-out styles come back?",
+            "answer": "<p>Core pieces are restocked regularly. Limited seasonal drops may not return, so save your size or join the waitlist when it appears.</p>"
+          }
+        },
+        "q3": {
+          "type": "question",
+          "settings": {
+            "category": "Fashion",
+            "question": "How should I care for my clothes?",
+            "answer": "<p>Follow the care label inside each garment. As a general rule, wash inside out on a gentle cycle, avoid harsh bleach, and dry in shade to preserve colour and fabric feel.</p>"
+          }
+        },
+        "q4": {
+          "type": "question",
+          "settings": {
+            "category": "Fashion",
+            "question": "Do colours look the same in person?",
+            "answer": "<p>We photograph colours as accurately as possible, but tones can vary slightly by screen. Product descriptions call out undertones and fabric finish where it helps.</p>"
+          }
+        },
+        "q5": {
+          "type": "question",
+          "settings": {
+            "category": "Shipping",
+            "question": "How long does delivery take?",
+            "answer": "<p>Standard shipping: 3–5 business days. Express: 1–2 business days. International orders: 7–14 business days depending on destination. All orders are dispatched from our Sydney warehouse within 1 business day of being placed.</p>"
+          }
+        },
+        "q6": {
+          "type": "question",
+          "settings": {
+            "category": "Shipping",
+            "question": "Do you offer free shipping?",
+            "answer": "<p>Yes — free standard shipping on all Australian orders over $50. International free shipping thresholds vary by region and are shown at checkout.</p>"
+          }
+        },
+        "q7": {
+          "type": "question",
+          "settings": {
+            "category": "Shipping",
+            "question": "Can I track my order?",
+            "answer": "<p>Absolutely. You will receive a shipping confirmation email with a tracking link as soon as your order leaves our warehouse. You can also view order status any time in My Account.</p>"
+          }
+        },
+        "q8": {
+          "type": "question",
+          "settings": {
+            "category": "Shipping",
+            "question": "Do you ship internationally?",
+            "answer": "<p>We ship to 40+ countries. Shipping costs and estimated delivery times are calculated at checkout based on your location. Please note customs duties and import taxes are the customer responsibility.</p>"
+          }
+        },
+        "q9": {
+          "type": "question",
+          "settings": {
+            "category": "Returns",
+            "question": "What is your return policy?",
+            "answer": "<p>You can request an exchange or return within 7 days of delivery as long as the item is unused, unwashed, and has its original tags attached.</p>"
+          }
+        },
+        "q10": {
+          "type": "question",
+          "settings": {
+            "category": "Returns",
+            "question": "How do I start a return?",
+            "answer": "<p>Email hello@mustardfashion.com with your order number and reason for return. Our team will respond within 24 hours with the next steps.</p>"
+          }
+        },
+        "q11": {
+          "type": "question",
+          "settings": {
+            "category": "Returns",
+            "question": "When will I receive my refund?",
+            "answer": "<p>Refunds are processed within 2 business days of receiving the returned item. Funds typically appear in your account within 5–7 business days depending on your bank.</p>"
+          }
+        },
+        "q12": {
+          "type": "question",
+          "settings": {
+            "category": "Account",
+            "question": "How do I create an account?",
+            "answer": "<p>Visit the My Account page and click “Create Account”. You will need your email address and a password. You can also create an account during checkout.</p>"
+          }
+        },
+        "q13": {
+          "type": "question",
+          "settings": {
+            "category": "Account",
+            "question": "I forgot my password. How do I reset it?",
+            "answer": "<p>On the login page, click “Forgot password?” and enter your email address. You will receive a reset link within a few minutes. Check your spam folder if it does not appear.</p>"
+          }
+        },
+        "q14": {
+          "type": "question",
+          "settings": {
+            "category": "Account",
+            "question": "Can I modify or cancel my order?",
+            "answer": "<p>Orders can be modified or cancelled within 1 hour of placement. After that, our warehouse begins picking and packing and changes can no longer be made. Contact us immediately at hello@mustardfashion.com if you need to make a change.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "q0",
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5",
+        "q6",
+        "q7",
+        "q8",
+        "q9",
+        "q10",
+        "q11",
+        "q12",
+        "q13",
+        "q14"
+      ],
+      "settings": {
+        "title": "Frequently asked questions",
+        "cta_title": "Still have questions?",
+        "cta_text": "Our customer care team replies within one business day.",
+        "cta_button_label": "Contact us",
+        "cta_button_link": "/pages/contact"
+      }
     }
   },
   "order": [
