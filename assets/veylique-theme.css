@@ -3107,6 +3107,36 @@ body {
   color: var(--mustard-text);
 }
 
+/* Full-viewport canvas the peel shader draws the flying card into. Fixed and
+   appended to <body>, so it is viewport-relative regardless of section layout;
+   z-index sits below the header (40) and is inert unless mid-transition. */
+.veylique-ritual-peel-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Reduced motion: no scroll pinning, first card just shows. */
+.veylique-ritual.is-ritual-static {
+  height: auto;
+}
+
+.veylique-ritual.is-ritual-static .veylique-ritual-desktop {
+  position: relative;
+  height: auto;
+}
+
+.veylique-ritual.is-ritual-static .veylique-ritual-stage {
+  width: min(100%, 80rem);
+  height: clamp(24rem, 60vh, 40rem);
+  flex: none;
+}
+
 .veylique-ritual-desktop {
   position: sticky;
   top: 0;

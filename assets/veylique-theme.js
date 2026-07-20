@@ -1620,65 +1620,630 @@
     });
   }
 
+  /* ===== Style ritual: scroll-driven WebGL peel deck ==============
+     The resting card is always the crisp DOM element; the peel shader only
+     distorts an offscreen rasterization of a card mid-transition. Falls back
+     to a DOM flight when WebGL / a texture isn't available, and to a static
+     first card under reduced motion. ============================== */
+
+  function ritualClamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function ritualSmooth(value) {
+    return value * value * (3 - 2 * value);
+  }
+
+  function ritualCoverDraw(ctx, img, dx, dy, dw, dh) {
+    var iw = img.naturalWidth;
+    var ih = img.naturalHeight;
+    if (!iw || !ih) return;
+    var scale = Math.max(dw / iw, dh / ih);
+    var sw = dw / scale;
+    var sh = dh / scale;
+    ctx.drawImage(img, (iw - sw) / 2, (ih - sh) / 2, sw, sh, dx, dy, dw, dh);
+  }
+
+  function ritualDrawTextEl(ctx, el, cardRect, options) {
+    if (!el) return;
+    options = options || {};
+
+    var cs = window.getComputedStyle(el);
+    var rect = el.getBoundingClientRect();
+    var x = rect.left - cardRect.left;
+    var y = rect.top - cardRect.top;
+    var text = el.textContent.replace(/\s+/g, ' ').trim();
+
+    if (!text) return;
+    if (cs.textTransform === 'uppercase') text = text.toUpperCase();
+
+    var fontSize = parseFloat(cs.fontSize);
+    var lineHeight = parseFloat(cs.lineHeight);
+    if (!lineHeight || isNaN(lineHeight)) lineHeight = fontSize * 1.2;
+
+    var padLeft = parseFloat(cs.paddingLeft) || 0;
+    var padRight = parseFloat(cs.paddingRight) || 0;
+    var padTop = parseFloat(cs.paddingTop) || 0;
+    x += padLeft;
+    y += padTop;
+
+    ctx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + fontSize + 'px ' + cs.fontFamily;
+    if ('letterSpacing' in ctx && cs.letterSpacing !== 'normal') {
+      ctx.letterSpacing = cs.letterSpacing;
+    }
+    ctx.textBaseline = 'alphabetic';
+
+    var maxWidth = Math.max(10, el.clientWidth - padLeft - padRight);
+    var words = text.split(' ');
+    var lines = [];
+    var line = '';
+
+    words.forEach(function (word) {
+      var probe = line ? line + ' ' + word : word;
+      if (line && ctx.measureText(probe).width > maxWidth) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = probe;
+      }
+    });
+    if (line) lines.push(line);
+
+    lines.forEach(function (ln, i) {
+      var metrics = ctx.measureText(ln);
+      var ascent = metrics.fontBoundingBoxAscent || metrics.actualBoundingBoxAscent;
+      var descent = metrics.fontBoundingBoxDescent || metrics.actualBoundingBoxDescent;
+      var hasMetrics = typeof ascent === 'number' && typeof descent === 'number' && isFinite(ascent) && isFinite(descent) && ascent + descent > 0;
+      var baseline;
+
+      if (hasMetrics) {
+        baseline = y + i * lineHeight + (lineHeight - ascent - descent) / 2 + ascent;
+      } else {
+        baseline = y + i * lineHeight + (lineHeight + fontSize * 0.72) / 2 - fontSize * 0.08;
+      }
+
+      if (options.stroke) {
+        ctx.strokeStyle = cs.webkitTextStrokeColor || cs.color;
+        ctx.lineWidth = Math.max(1, parseFloat(cs.webkitTextStrokeWidth) || 1);
+        ctx.strokeText(ln, x, baseline);
+      } else {
+        ctx.fillStyle = cs.color;
+        ctx.fillText(ln, x, baseline);
+      }
+    });
+
+    if ('letterSpacing' in ctx) {
+      ctx.letterSpacing = '0px';
+    }
+  }
+
+  function ritualDrawRuleEl(ctx, el, cardRect) {
+    if (!el) return;
+    var cs = window.getComputedStyle(el);
+    var rect = el.getBoundingClientRect();
+    if (rect.width < 1 || rect.height < 1) return;
+    ctx.fillStyle = cs.backgroundColor;
+    ctx.fillRect(rect.left - cardRect.left, rect.top - cardRect.top, rect.width, rect.height);
+  }
+
+  function ritualDrawBoxEl(ctx, el, cardRect) {
+    if (!el) return;
+    var cs = window.getComputedStyle(el);
+    var rect = el.getBoundingClientRect();
+    if (rect.width < 1 || rect.height < 1) return;
+
+    var x = rect.left - cardRect.left;
+    var y = rect.top - cardRect.top;
+    var radius = Math.min(parseFloat(cs.borderTopLeftRadius) || 0, rect.height / 2);
+
+    ctx.beginPath();
+    if (typeof ctx.roundRect === 'function') {
+      ctx.roundRect(x, y, rect.width, rect.height, radius);
+    } else {
+      ctx.rect(x, y, rect.width, rect.height);
+    }
+
+    if (cs.backgroundColor && cs.backgroundColor !== 'rgba(0, 0, 0, 0)') {
+      ctx.fillStyle = cs.backgroundColor;
+      ctx.fill();
+    }
+
+    var borderWidth = parseFloat(cs.borderTopWidth) || 0;
+    if (borderWidth > 0) {
+      ctx.strokeStyle = cs.borderTopColor;
+      ctx.lineWidth = borderWidth;
+      ctx.stroke();
+    }
+  }
+
+  var ritualPeelVertexSource = [
+    'attribute vec2 aPos;',
+    'uniform vec4 uFrom;',
+    'uniform vec4 uTo;',
+    'uniform float uShow;',
+    'uniform vec2 uViewport;',
+    'varying vec2 vUv;',
+    'varying vec2 vRectWH;',
+    'void main(){',
+    'vec2 p=aPos;',
+    'float downBias=pow(1.0-p.y,1.35)*0.42;',
+    'float cornerBias=(pow(p.x*p.x,0.78)+pow(1.0-p.y,1.6))*0.35;',
+    'float pw=1.0-downBias-cornerBias;',
+    'float sr=smoothstep(pw*0.42,0.54+pw*0.42,uShow);',
+    'vec4 rect=mix(uFrom,uTo,sr);',
+    'rect.x+=mix(rect.z,0.0,cos(sr*6.2831853)*0.5+0.5)*0.055;',
+    'rect.y+=(1.0-sr)*(1.0-p.y)*18.0;',
+    'vec2 sp=rect.xy+p*rect.zw;',
+    'float rot=(smoothstep(0.0,1.0,sr)-sr)*-1.08;',
+    'vec2 ctr=rect.xy+rect.zw*0.5;',
+    'vec2 rel=sp-ctr;',
+    'float s=sin(rot);',
+    'float c=cos(rot);',
+    'rel=mat2(c,-s,s,c)*rel;',
+    'sp=ctr+rel;',
+    'vec2 clip=(sp/uViewport)*2.0-1.0;',
+    'gl_Position=vec4(clip.x,-clip.y,0.0,1.0);',
+    'vUv=p;',
+    'vRectWH=rect.zw;',
+    '}'
+  ].join('');
+
+  var ritualPeelFragmentSource = [
+    'precision highp float;',
+    'uniform sampler2D uTex;',
+    'uniform float uImageAspect;',
+    'uniform float uR0;',
+    'uniform float uR1;',
+    'uniform float uShow;',
+    'varying vec2 vUv;',
+    'varying vec2 vRectWH;',
+    'void main(){',
+    'float planeAspect=vRectWH.x/max(vRectWH.y,1.0);',
+    'vec2 s=planeAspect>uImageAspect?vec2(1.0,uImageAspect/planeAspect):vec2(planeAspect/uImageAspect,1.0);',
+    'vec2 uv=(vUv-0.5)*s+0.5;',
+    'vec3 col=texture2D(uTex,uv).rgb;',
+    'vec2 p=vUv*vRectWH;',
+    'vec2 halfRes=vRectWH*0.5;',
+    'float r=min(mix(uR0,uR1,uShow),min(halfRes.x,halfRes.y));',
+    'vec2 q=abs(p-halfRes)-(halfRes-vec2(r));',
+    'float d=length(max(q,0.0))+min(max(q.x,q.y),0.0)-r;',
+    'float a=1.0-smoothstep(-1.0,1.0,d);',
+    'gl_FragColor=vec4(col*a,a);',
+    '}'
+  ].join('');
+
+  function ritualCreatePeelMedia(canvas, count) {
+    var gl = canvas.getContext('webgl', {
+      alpha: true,
+      antialias: true,
+      premultipliedAlpha: true
+    });
+
+    if (!gl) return null;
+
+    function compile(type, source) {
+      var shader = gl.createShader(type);
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        gl.deleteShader(shader);
+        return null;
+      }
+      return shader;
+    }
+
+    var vertex = compile(gl.VERTEX_SHADER, ritualPeelVertexSource);
+    var fragment = compile(gl.FRAGMENT_SHADER, ritualPeelFragmentSource);
+    if (!vertex || !fragment) return null;
+
+    var program = gl.createProgram();
+    gl.attachShader(program, vertex);
+    gl.attachShader(program, fragment);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      gl.deleteProgram(program);
+      return null;
+    }
+    gl.useProgram(program);
+
+    var segmentX = 128;
+    var segmentY = 80;
+    var vertices = [];
+    var indices = [];
+
+    for (var iy = 0; iy <= segmentY; iy++) {
+      for (var ix = 0; ix <= segmentX; ix++) {
+        vertices.push(ix / segmentX, iy / segmentY);
+      }
+    }
+
+    for (iy = 0; iy < segmentY; iy++) {
+      for (ix = 0; ix < segmentX; ix++) {
+        var a = iy * (segmentX + 1) + ix;
+        var b = a + 1;
+        var c = a + segmentX + 1;
+        var d = c + 1;
+        indices.push(a, c, b, b, c, d);
+      }
+    }
+
+    var vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+    var indexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+
+    var position = gl.getAttribLocation(program, 'aPos');
+    gl.enableVertexAttribArray(position);
+    gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+
+    var uniforms = {
+      from: gl.getUniformLocation(program, 'uFrom'),
+      to: gl.getUniformLocation(program, 'uTo'),
+      show: gl.getUniformLocation(program, 'uShow'),
+      viewport: gl.getUniformLocation(program, 'uViewport'),
+      imageAspect: gl.getUniformLocation(program, 'uImageAspect'),
+      r0: gl.getUniformLocation(program, 'uR0'),
+      r1: gl.getUniformLocation(program, 'uR1')
+    };
+
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+    var textures = [];
+    for (var i = 0; i < count; i++) {
+      var texture = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      textures.push({ texture: texture, aspect: 16 / 9, ready: false });
+    }
+
+    function upload(index, sourceCanvas) {
+      var record = textures[index];
+      if (!record || !sourceCanvas) return;
+      try {
+        record.aspect = sourceCanvas.width / Math.max(1, sourceCanvas.height);
+        gl.bindTexture(gl.TEXTURE_2D, record.texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, sourceCanvas);
+        record.ready = true;
+      } catch (e) {
+        record.ready = false;
+      }
+    }
+
+    var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+
+    function resize() {
+      canvas.width = Math.round(window.innerWidth * dpr);
+      canvas.height = Math.round(window.innerHeight * dpr);
+      gl.viewport(0, 0, canvas.width, canvas.height);
+    }
+
+    function clear() {
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+    }
+
+    function draw(config) {
+      var record = textures[config.imageIndex];
+      clear();
+      if (!record || !record.ready) return false;
+
+      gl.useProgram(program);
+      gl.bindTexture(gl.TEXTURE_2D, record.texture);
+      gl.uniform4f(uniforms.from, config.from.x, config.from.y, Math.max(1, config.from.w), Math.max(1, config.from.h));
+      gl.uniform4f(uniforms.to, config.to.x, config.to.y, Math.max(1, config.to.w), Math.max(1, config.to.h));
+      gl.uniform1f(uniforms.show, config.show);
+      gl.uniform2f(uniforms.viewport, window.innerWidth, window.innerHeight);
+      gl.uniform1f(uniforms.imageAspect, record.aspect);
+      gl.uniform1f(uniforms.r0, Math.max(0, config.r0));
+      gl.uniform1f(uniforms.r1, Math.max(0, config.r1));
+      gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+      return true;
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+
+    return {
+      draw: draw,
+      clear: clear,
+      upload: upload,
+      isReady: function (index) {
+        return !!(textures[index] && textures[index].ready);
+      }
+    };
+  }
+
   function initRituals(root) {
     root.querySelectorAll('[data-veylique-ritual]').forEach(function (section) {
       if (section.dataset.veyliqueRitualReady === 'true') return;
       section.dataset.veyliqueRitualReady = 'true';
 
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        section.classList.add('is-ritual-static');
+        return;
+      }
+
+      var stage = section.querySelector('.veylique-ritual-stage');
       var cards = Array.prototype.slice.call(section.querySelectorAll('.veylique-ritual-card'));
-      var dots = Array.prototype.slice.call(section.querySelectorAll('.veylique-ritual-dot'));
-      var label = section.querySelector('[data-veylique-ritual-label]');
-      if (!cards.length) return;
+      var dots = section.querySelector('.veylique-ritual-progress-dots');
+      var slideLabel = section.querySelector('[data-veylique-ritual-label]');
 
-      function setActive(index, progressInStep) {
-        cards.forEach(function (card, cardIndex) {
-          card.classList.toggle('is-base', cardIndex === index);
+      if (!window.matchMedia('(min-width: 992px)').matches || !stage || cards.length < 2) return;
+
+      /* Rasterize a whole card (surface + image + text) into an offscreen
+         canvas from its real computed styles and geometry — the texture is
+         only ever seen mid-flight and distorted. */
+      function renderCardToCanvas(card) {
+        var cardRect = card.getBoundingClientRect();
+        if (cardRect.width < 10 || cardRect.height < 10) return null;
+
+        var scale = Math.min(window.devicePixelRatio || 1, 2);
+        var snapshot = document.createElement('canvas');
+        snapshot.width = Math.round(cardRect.width * scale);
+        snapshot.height = Math.round(cardRect.height * scale);
+
+        var ctx = snapshot.getContext('2d');
+        if (!ctx) return null;
+        ctx.scale(scale, scale);
+
+        var cardStyle = window.getComputedStyle(card);
+        ctx.fillStyle = cardStyle.backgroundColor && cardStyle.backgroundColor !== 'rgba(0, 0, 0, 0)' ? cardStyle.backgroundColor : '#ffffff';
+        ctx.fillRect(0, 0, cardRect.width, cardRect.height);
+
+        var body = card.querySelector('.veylique-ritual-card-body');
+        if (body) {
+          var bodyRect = body.getBoundingClientRect();
+          var bx = bodyRect.left - cardRect.left;
+          var by = bodyRect.top - cardRect.top;
+          var gradient = ctx.createRadialGradient(bx, by, 0, bx, by, Math.max(bodyRect.width * 1.2, bodyRect.height * 0.8));
+          gradient.addColorStop(0, 'rgba(166, 94, 85, 0.06)');
+          gradient.addColorStop(0.55, 'rgba(166, 94, 85, 0)');
+          ctx.fillStyle = gradient;
+          ctx.fillRect(bx, by, bodyRect.width, bodyRect.height);
+        }
+
+        var mediaEl = card.querySelector('.veylique-ritual-card-media');
+        var img = mediaEl ? mediaEl.querySelector('img') : null;
+        if (img && img.complete && img.naturalWidth) {
+          var mediaRect = mediaEl.getBoundingClientRect();
+          ritualCoverDraw(ctx, img, mediaRect.left - cardRect.left, mediaRect.top - cardRect.top, mediaRect.width, mediaRect.height);
+        }
+
+        var kicker = card.querySelector('.veylique-ritual-card-kicker');
+        ritualDrawTextEl(ctx, card.querySelector('.veylique-ritual-card-num'), cardRect);
+        ritualDrawBoxEl(ctx, kicker, cardRect);
+        ritualDrawTextEl(ctx, kicker, cardRect);
+        ritualDrawTextEl(ctx, card.querySelector('.veylique-ritual-card-title-main'), cardRect);
+        ritualDrawTextEl(ctx, card.querySelector('.veylique-ritual-card-title-alt'), cardRect);
+        ritualDrawRuleEl(ctx, card.querySelector('.veylique-ritual-card-rule'), cardRect);
+        ritualDrawTextEl(ctx, card.querySelector('.veylique-ritual-card-text'), cardRect);
+
+        return snapshot;
+      }
+
+      // Reduced-motion static state can leave a canvas behind on editor re-render.
+      Array.prototype.slice.call(document.querySelectorAll('.veylique-ritual-peel-canvas')).forEach(function (existing) {
+        if (existing.ritualSection && !document.contains(existing.ritualSection)) existing.remove();
+      });
+
+      var canvas = document.createElement('canvas');
+      canvas.className = 'veylique-ritual-peel-canvas';
+      canvas.setAttribute('aria-hidden', 'true');
+      canvas.ritualSection = section;
+      document.body.appendChild(canvas);
+
+      var peel = window.WebGLRenderingContext ? ritualCreatePeelMedia(canvas, cards.length) : null;
+
+      var rebuildTimer = null;
+
+      function buildTextures() {
+        if (!peel) return;
+        cards.forEach(function (card, index) {
+          var snapshot = renderCardToCanvas(card);
+          if (snapshot) peel.upload(index, snapshot);
+        });
+      }
+
+      function queueBuildTextures() {
+        clearTimeout(rebuildTimer);
+        rebuildTimer = setTimeout(buildTextures, 180);
+      }
+
+      if (peel) {
+        var fontsReady = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+        fontsReady.then(queueBuildTextures);
+
+        cards.forEach(function (card) {
+          var img = card.querySelector('.veylique-ritual-card-media img');
+          if (img && !img.complete) img.addEventListener('load', queueBuildTextures);
         });
 
-        dots.forEach(function (dot, dotIndex) {
-          var bar = dot.querySelector('span');
-          dot.classList.toggle('is-current', dotIndex === index);
-          if (!bar) return;
-          if (dotIndex < index) bar.style.transform = 'scaleX(1)';
-          else if (dotIndex === index) bar.style.transform = 'scaleX(' + progressInStep + ')';
-          else bar.style.transform = 'scaleX(0)';
-        });
+        window.addEventListener('resize', queueBuildTextures);
+        queueBuildTextures();
+      }
 
-        if (label) {
-          var title = cards[index].dataset.title || '';
-          var step = String(index + 1).padStart(2, '0');
-          var total = String(cards.length).padStart(2, '0');
-          label.textContent = title + ' - ' + step + ' / ' + total;
+      // Pre-decode each card image so the DOM card is paint-ready when it docks.
+      cards.forEach(function (card) {
+        var img = card.querySelector('.veylique-ritual-card-media img');
+        if (img && typeof img.decode === 'function') img.decode().catch(function () {});
+      });
+
+      var scrollProgress = 0;
+      var activeBase = 0;
+      var activeCaption = 0;
+      var flying = -1;
+      var flightIndex = -1;
+      var flightMode = '';
+      var dockLinger = 0;
+
+      function setBase(index) {
+        if (activeBase === index) return;
+        activeBase = index;
+        cards.forEach(function (card, i) {
+          card.classList.toggle('is-base', i === index);
+        });
+      }
+
+      function setCaption(index) {
+        if (activeCaption === index || !cards[index]) return;
+        activeCaption = index;
+        if (slideLabel) {
+          slideLabel.textContent = (cards[index].dataset.title || '') + ' · ' + String(index + 1).padStart(2, '0') + ' / ' + String(cards.length).padStart(2, '0');
         }
       }
 
-      function update() {
-        if (window.matchMedia('(max-width: 991px)').matches) return;
+      function updateDots(raw) {
+        if (!dots) return;
+        Array.prototype.slice.call(dots.children).forEach(function (dot, index) {
+          var fill = dot.firstElementChild;
+          var amount = ritualClamp(raw - index + 1, 0, 1);
+          dot.classList.toggle('is-current', index === Math.round(raw));
+          if (fill) fill.style.transform = 'scaleX(' + amount + ')';
+        });
+      }
 
-        var rect = section.getBoundingClientRect();
-        var scrollable = Math.max(1, rect.height - window.innerHeight);
-        var progress = Math.min(1, Math.max(0, -rect.top / scrollable));
-        var exact = progress * cards.length;
-        var index = Math.min(cards.length - 1, Math.max(0, Math.floor(exact)));
-        var progressInStep = Math.min(1, Math.max(0.08, exact - index));
+      function clearDomFlight() {
+        if (flying < 0) return;
+        var card = cards[flying];
+        card.style.opacity = '';
+        card.style.transform = '';
+        card.style.transformOrigin = '';
+        card.style.borderRadius = '';
+        card.style.clipPath = '';
+        card.style.zIndex = '';
+        flying = -1;
+      }
 
-        if (progress >= 1) progressInStep = 1;
-        setActive(index, progressInStep);
+      function renderDomFlight(index, t) {
+        var card = cards[index];
+        if (!card) return;
+
+        if (flying !== index) clearDomFlight();
+        flying = index;
+
+        var eased = ritualSmooth(t);
+        var radius = 999 - eased * 975;
+
+        card.style.zIndex = '3';
+        card.style.opacity = t > 0.015 ? '1' : '0';
+        card.style.transformOrigin = '50% 100%';
+        card.style.transform = 'translateY(' + ((1 - eased) * 112) + '%) scale(' + (0.72 + eased * 0.28) + ') rotate(' + ((1 - eased) * -5) + 'deg)';
+        card.style.borderRadius = radius + 'px';
+        card.style.clipPath = 'inset(' + ((1 - eased) * 22) + '% ' + ((1 - eased) * 20) + '% 0 round ' + radius + 'px)';
+      }
+
+      function peelRects() {
+        var rect = stage.getBoundingClientRect();
+        return {
+          from: {
+            x: rect.left + rect.width * 0.22,
+            y: Math.max(window.innerHeight + 36, rect.bottom + rect.height * 0.22),
+            w: rect.width * 0.56,
+            h: Math.max(96, rect.height * 0.22)
+          },
+          to: {
+            x: rect.left,
+            y: rect.top,
+            w: rect.width,
+            h: rect.height
+          }
+        };
+      }
+
+      function drawPeel(index, show) {
+        var rects = peelRects();
+        return peel.draw({
+          imageIndex: index,
+          from: rects.from,
+          to: rects.to,
+          show: show,
+          r0: Math.min(rects.from.w, rects.from.h) / 2,
+          r1: 24
+        });
+      }
+
+      function render() {
+        var last = cards.length - 1;
+        var raw = ritualClamp(scrollProgress * last, 0, last);
+        var current = Math.floor(raw);
+
+        if (current >= last) current = last - 1;
+
+        var next = current + 1;
+        var t = ritualClamp(raw - current, 0, 1);
+
+        setCaption(ritualClamp(Math.round(raw), 0, last));
+        updateDots(raw);
+
+        if (t < 0.006 || t > 0.994) {
+          var landed = t > 0.994;
+          setBase(landed ? next : current);
+          clearDomFlight();
+
+          if (landed && flightMode === 'gl' && dockLinger < 3 && peel) {
+            dockLinger++;
+            if (drawPeel(next, 1)) {
+              canvas.style.opacity = '1';
+              return;
+            }
+          }
+
+          flightIndex = -1;
+          flightMode = '';
+          dockLinger = 0;
+          canvas.style.opacity = '0';
+          if (peel) peel.clear();
+          return;
+        }
+
+        dockLinger = 0;
+        setBase(current);
+
+        if (flightIndex !== next) {
+          flightIndex = next;
+          flightMode = peel && peel.isReady(next) ? 'gl' : 'dom';
+        }
+
+        if (flightMode === 'gl') {
+          var drawn = drawPeel(next, t);
+          canvas.style.opacity = drawn ? '1' : '0';
+          if (drawn) {
+            clearDomFlight();
+          } else {
+            flightMode = 'dom';
+            renderDomFlight(next, t);
+          }
+        } else {
+          canvas.style.opacity = '0';
+          if (peel) peel.clear();
+          renderDomFlight(next, t);
+        }
       }
 
       var ticking = false;
-      function requestUpdate() {
+      function onScroll() {
         if (ticking) return;
         ticking = true;
         window.requestAnimationFrame(function () {
           ticking = false;
-          update();
+          var distance = Math.max(1, section.offsetHeight - window.innerHeight);
+          scrollProgress = ritualClamp((window.scrollY - section.offsetTop) / distance, 0, 1);
+          render();
         });
       }
 
-      window.addEventListener('scroll', requestUpdate, { passive: true });
-      window.addEventListener('resize', requestUpdate);
-      update();
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll);
+      window.addEventListener('load', queueBuildTextures);
+      onScroll();
+      render();
     });
   }
 
