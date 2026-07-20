@@ -4845,3 +4845,588 @@ function veyliqueCreatePeelMedia( canvas, count ) {
     } );
   } );
 } )();
+
+/* ===== Interior page scripts: contact.js ===== */
+( function () {
+	'use strict';
+
+	function ready( fn ) {
+		if ( document.readyState !== 'loading' ) {
+			fn();
+			return;
+		}
+
+		document.addEventListener( 'DOMContentLoaded', fn );
+	}
+
+	ready( function () {
+		var controls = [];
+
+		function closeAll( except ) {
+			controls.forEach( function ( control ) {
+				if ( control !== except ) {
+					control.classList.remove( 'is-open' );
+					var trigger = control.querySelector( '.veylique-contact-select-button' );
+					if ( trigger ) {
+						trigger.setAttribute( 'aria-expanded', 'false' );
+					}
+				}
+			} );
+		}
+
+		document.querySelectorAll( '.veylique-contact-select' ).forEach( function ( select, index ) {
+			if ( select.dataset.veyliqueSelect ) {
+				return;
+			}
+
+			select.dataset.veyliqueSelect = 'enhanced';
+			select.classList.add( 'veylique-contact-select-native' );
+			select.setAttribute( 'aria-hidden', 'true' );
+			select.tabIndex = -1;
+
+			var id = select.id || 'veylique-contact-select-' + index;
+			var label = select.id ? document.querySelector( 'label[for="' + select.id + '"]' ) : null;
+			var ui = document.createElement( 'div' );
+			var button = document.createElement( 'button' );
+			var value = document.createElement( 'span' );
+			var icon = document.createElement( 'span' );
+			var list = document.createElement( 'div' );
+			var items = [];
+
+			ui.className = 'veylique-contact-select-ui';
+			button.type = 'button';
+			button.className = 'veylique-contact-select-button';
+			button.setAttribute( 'aria-haspopup', 'listbox' );
+			button.setAttribute( 'aria-expanded', 'false' );
+			button.setAttribute( 'aria-controls', id + '-list' );
+			button.setAttribute( 'aria-label', label ? label.textContent.replace( '*', '' ).trim() : id );
+			value.className = 'veylique-contact-select-value';
+			icon.className = 'veylique-contact-select-icon';
+			list.className = 'veylique-contact-select-list';
+			list.id = id + '-list';
+			list.setAttribute( 'role', 'listbox' );
+			list.tabIndex = -1;
+
+			button.appendChild( value );
+			button.appendChild( icon );
+			ui.appendChild( button );
+			ui.appendChild( list );
+			select.insertAdjacentElement( 'afterend', ui );
+
+			function currentOption() {
+				return select.options[ select.selectedIndex ] || select.options[0];
+			}
+
+			function sync() {
+				var option = currentOption();
+				value.textContent = option ? option.textContent : '';
+
+				items.forEach( function ( item ) {
+					var selected = item.dataset.value === select.value;
+					item.classList.toggle( 'is-selected', selected );
+					item.setAttribute( 'aria-selected', selected ? 'true' : 'false' );
+				} );
+			}
+
+			function focusItem( step ) {
+				var active = document.activeElement;
+				var current = items.indexOf( active );
+
+				if ( current < 0 ) {
+					current = items.findIndex( function ( item ) {
+						return item.dataset.value === select.value;
+					} );
+				}
+
+				var next = current + step;
+
+				if ( next < 0 ) {
+					next = items.length - 1;
+				}
+
+				if ( next >= items.length ) {
+					next = 0;
+				}
+
+				if ( items[ next ] ) {
+					items[ next ].focus();
+				}
+			}
+
+			function setOpen( open ) {
+				closeAll( open ? ui : null );
+				ui.classList.toggle( 'is-open', open );
+				button.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
+
+				if ( open ) {
+					window.requestAnimationFrame( function () {
+						var selected = items.find( function ( item ) {
+							return item.dataset.value === select.value;
+						} );
+
+						( selected || items[0] || button ).focus();
+					} );
+				}
+			}
+
+			function choose( item ) {
+				select.value = item.dataset.value;
+				sync();
+				select.dispatchEvent( new Event( 'change', { bubbles: true } ) );
+				setOpen( false );
+				button.focus();
+			}
+
+			Array.prototype.forEach.call( select.options, function ( option ) {
+				var item = document.createElement( 'button' );
+				item.type = 'button';
+				item.className = 'veylique-contact-select-option';
+				item.dataset.value = option.value;
+				item.textContent = option.textContent;
+				item.setAttribute( 'role', 'option' );
+
+				item.addEventListener( 'click', function () {
+					choose( item );
+				} );
+
+				item.addEventListener( 'keydown', function ( event ) {
+					if ( event.key === 'ArrowDown' ) {
+						event.preventDefault();
+						focusItem( 1 );
+					}
+
+					if ( event.key === 'ArrowUp' ) {
+						event.preventDefault();
+						focusItem( -1 );
+					}
+
+					if ( event.key === 'Escape' ) {
+						event.preventDefault();
+						setOpen( false );
+						button.focus();
+					}
+
+					if ( event.key === 'Enter' || event.key === ' ' ) {
+						event.preventDefault();
+						choose( item );
+					}
+				} );
+
+				items.push( item );
+				list.appendChild( item );
+			} );
+
+			button.addEventListener( 'click', function () {
+				setOpen( ! ui.classList.contains( 'is-open' ) );
+			} );
+
+			button.addEventListener( 'keydown', function ( event ) {
+				if ( event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ' ) {
+					event.preventDefault();
+					setOpen( true );
+				}
+			} );
+
+			select.addEventListener( 'change', sync );
+			controls.push( ui );
+			sync();
+		} );
+
+		document.addEventListener( 'click', function ( event ) {
+			if ( ! controls.some( function ( control ) {
+				return control.contains( event.target );
+			} ) ) {
+				closeAll();
+			}
+		} );
+	} );
+}() );
+
+( function () {
+	'use strict';
+
+	function ready( fn ) {
+		if ( document.readyState !== 'loading' ) {
+			fn();
+			return;
+		}
+
+		document.addEventListener( 'DOMContentLoaded', fn );
+	}
+
+	function buildErrorsMarkup( errors ) {
+		var el = document.createElement( 'div' );
+		el.className = 'veylique-contact-errors';
+		el.setAttribute( 'data-veylique-contact-errors', '' );
+		errors.forEach( function ( message ) {
+			var p = document.createElement( 'p' );
+			p.textContent = message;
+			el.appendChild( p );
+		} );
+		return el;
+	}
+
+	function buildSuccessMarkup( title, text ) {
+		var el = document.createElement( 'div' );
+		el.className = 'veylique-contact-success';
+		el.innerHTML =
+			'<div class="veylique-contact-success-icon">' +
+				'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>' +
+			'</div>' +
+			'<h2 class="veylique-contact-success-title"></h2>' +
+			'<p class="veylique-contact-success-text"></p>';
+		el.querySelector( '.veylique-contact-success-title' ).textContent = title;
+		el.querySelector( '.veylique-contact-success-text' ).textContent = text;
+		return el;
+	}
+
+	function insertErrors( wrap, form, errors ) {
+		var titleEl = wrap.querySelector( '.veylique-contact-card-title' );
+		var errorsEl = buildErrorsMarkup( errors );
+
+		if ( titleEl ) {
+			titleEl.insertAdjacentElement( 'beforebegin', errorsEl );
+		} else {
+			form.insertAdjacentElement( 'beforebegin', errorsEl );
+		}
+	}
+
+	ready( function () {
+		var wrap = document.querySelector( '[data-veylique-contact-wrap]' );
+		var form = wrap ? wrap.querySelector( '[data-veylique-contact-form]' ) : null;
+
+		if ( ! wrap || ! form ) {
+			return;
+		}
+
+		if ( typeof window.veyliqueData === 'undefined' || ! window.veyliqueData.ajaxUrl || window.veyliqueData.ajaxUrl === '#' ) {
+			return; // no ajax endpoint available — let the form submit normally
+		}
+
+		form.addEventListener( 'submit', function ( e ) {
+			e.preventDefault();
+
+			var existingErrors = wrap.querySelector( '[data-veylique-contact-errors]' );
+			if ( existingErrors ) {
+				existingErrors.remove();
+			}
+
+			var submitBtn = form.querySelector( 'button[type="submit"]' );
+			if ( submitBtn ) {
+				submitBtn.disabled = true;
+			}
+
+			var formData = new FormData( form );
+			formData.append( 'action', 'veylique_contact_submit' );
+
+			fetch( window.veyliqueData.ajaxUrl, {
+				method: 'POST',
+				credentials: 'same-origin',
+				body: formData
+			} )
+				.then( function ( response ) {
+					return response.json();
+				} )
+				.then( function ( payload ) {
+					if ( payload && payload.success ) {
+						wrap.innerHTML = '';
+						wrap.appendChild( buildSuccessMarkup( payload.data.title, payload.data.text ) );
+						return;
+					}
+
+					var errors = ( payload && payload.data && payload.data.errors && payload.data.errors.length )
+						? payload.data.errors
+						: [ 'Something went wrong. Please try again.' ];
+
+					insertErrors( wrap, form, errors );
+
+					if ( submitBtn ) {
+						submitBtn.disabled = false;
+					}
+				} )
+				.catch( function () {
+					insertErrors( wrap, form, [ 'Something went wrong. Please try again.' ] );
+
+					if ( submitBtn ) {
+						submitBtn.disabled = false;
+					}
+				} );
+		} );
+	} );
+}() );
+
+
+/* ===== Interior page scripts: faq.js ===== */
+( function () {
+  'use strict';
+
+  var tabs = document.querySelectorAll( '[data-faq-tab]' );
+  var panels = document.querySelectorAll( '.veylique-faq-panel' );
+
+  function setAnswerHeight( answer, height ) {
+    answer.style.height = height + 'px';
+  }
+
+  function onAnswerTransitionEnd( answer, state ) {
+    var done = false;
+    var finish = function () {
+      if ( done ) {
+        return;
+      }
+
+      done = true;
+      answer.removeEventListener( 'transitionend', handler );
+
+      if ( answer.dataset.faqState !== state ) {
+        return;
+      }
+
+      if ( state === 'opening' ) {
+        answer.style.height = 'auto';
+        answer.dataset.faqState = 'open';
+      }
+
+      if ( state === 'closing' ) {
+        answer.hidden = true;
+        answer.dataset.faqState = 'closed';
+      }
+    };
+    var handler = function ( event ) {
+      if ( event.target !== answer || event.propertyName !== 'height' ) {
+        return;
+      }
+
+      finish();
+    };
+
+    answer.addEventListener( 'transitionend', handler );
+    window.setTimeout( finish, 420 );
+  }
+
+  function openItem( item ) {
+    var button = item.querySelector( '.veylique-faq-question' );
+    var answer = item.querySelector( '.veylique-faq-answer' );
+
+    if ( ! button || ! answer || answer.dataset.faqState === 'opening' || answer.dataset.faqState === 'open' ) {
+      return;
+    }
+
+    answer.hidden = false;
+    answer.dataset.faqState = 'opening';
+    answer.style.height = '0px';
+    answer.getBoundingClientRect();
+    item.classList.add( 'is-open' );
+    button.setAttribute( 'aria-expanded', 'true' );
+    setAnswerHeight( answer, answer.scrollHeight );
+    onAnswerTransitionEnd( answer, 'opening' );
+  }
+
+  function closeItem( item ) {
+    var button = item.querySelector( '.veylique-faq-question' );
+    var answer = item.querySelector( '.veylique-faq-answer' );
+
+    if ( ! button || ! answer || answer.hidden || answer.dataset.faqState === 'closing' || answer.dataset.faqState === 'closed' ) {
+      return;
+    }
+
+    answer.dataset.faqState = 'closing';
+    setAnswerHeight( answer, answer.scrollHeight );
+    answer.getBoundingClientRect();
+    item.classList.remove( 'is-open' );
+    button.setAttribute( 'aria-expanded', 'false' );
+    setAnswerHeight( answer, 0 );
+    onAnswerTransitionEnd( answer, 'closing' );
+  }
+
+  tabs.forEach( function ( tab ) {
+    tab.addEventListener( 'click', function () {
+      var key = tab.getAttribute( 'data-faq-tab' );
+
+      tabs.forEach( function ( item ) {
+        var selected = item === tab;
+        item.classList.toggle( 'is-active', selected );
+        item.setAttribute( 'aria-selected', selected ? 'true' : 'false' );
+        item.setAttribute( 'tabindex', selected ? '0' : '-1' );
+      } );
+
+      panels.forEach( function ( panel ) {
+        var active = panel.id === 'veylique-faq-panel-' + key;
+        panel.classList.toggle( 'is-active', active );
+        panel.hidden = ! active;
+      } );
+    } );
+
+    tab.addEventListener( 'keydown', function ( event ) {
+      if ( event.key !== 'ArrowLeft' && event.key !== 'ArrowRight' ) {
+        return;
+      }
+
+      event.preventDefault();
+      var current = Array.prototype.indexOf.call( tabs, tab );
+      var offset = event.key === 'ArrowRight' ? 1 : -1;
+      var next = ( current + offset + tabs.length ) % tabs.length;
+      tabs[ next ].focus();
+      tabs[ next ].click();
+    } );
+  } );
+
+  document.querySelectorAll( '[data-faq-item]' ).forEach( function ( item ) {
+    var button = item.querySelector( '.veylique-faq-question' );
+    var answer = item.querySelector( '.veylique-faq-answer' );
+
+    if ( ! button || ! answer ) {
+      return;
+    }
+
+    answer.dataset.faqState = answer.hidden ? 'closed' : 'open';
+    answer.style.height = answer.hidden ? '0px' : 'auto';
+
+    button.addEventListener( 'click', function () {
+      var isOpen = ! answer.hidden;
+      var panel = item.closest( '.veylique-faq-panel' );
+
+      if ( panel ) {
+        panel.querySelectorAll( '[data-faq-item]' ).forEach( function ( sibling ) {
+          if ( sibling !== item ) {
+            closeItem( sibling );
+          }
+        } );
+      }
+
+      if ( ! isOpen ) {
+        openItem( item );
+      } else {
+        closeItem( item );
+      }
+    } );
+  } );
+} )();
+
+
+/* ===== Interior page scripts: services.js ===== */
+( function () {
+	'use strict';
+
+	var reduceMotion = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+	var canHover     = window.matchMedia( '(hover: hover)' ).matches;
+
+	/* ── Service cards — random photo tilt on hover ──────────────── */
+
+	if ( ! reduceMotion && canHover ) {
+		document.querySelectorAll( '.veylique-svc-card-link' ).forEach( function ( card ) {
+			var imgs = card.querySelectorAll( '.veylique-svc-photo img' );
+			if ( ! imgs.length ) return;
+
+			card.addEventListener( 'mouseenter', function () {
+				imgs.forEach( function ( img ) {
+					var tilt = Math.random() * 30 - 15;
+					img.style.transform = 'rotate(' + tilt + 'deg)';
+				} );
+			} );
+
+			card.addEventListener( 'mouseleave', function () {
+				imgs.forEach( function ( img ) {
+					img.style.transform = 'rotate(0deg)';
+				} );
+			} );
+		} );
+	}
+
+	/* ── Method steps — scroll-driven sticky showcase ─────────────
+	   As each step name crosses the viewport centre: the name lights
+	   up, its photo springs into the sticky panel (scale + rotate,
+	   expo.out), and the sticky description swaps. The photo panel
+	   also drifts gently with the mouse. */
+
+	if ( reduceMotion ) return;
+	if ( typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined' ) return;
+
+	var wrap = document.querySelector( '[data-svc-steps]' );
+	if ( ! wrap ) return;
+
+	gsap.registerPlugin( ScrollTrigger );
+
+	var steps     = gsap.utils.toArray( '[data-svc-step]' );
+	var names     = gsap.utils.toArray( '[data-svc-step-name]' );
+	var imgs      = gsap.utils.toArray( '[data-svc-img]' );
+	var descs     = gsap.utils.toArray( '[data-svc-desc]' );
+	var imgsOuter = document.querySelector( '[data-svc-imgs-outer]' );
+	var imgsWrap  = document.querySelector( '[data-svc-imgs]' );
+
+	if ( ! steps.length || ! imgsWrap ) return;
+
+	gsap.set( names, { autoAlpha: 0 } );
+	gsap.set( imgsWrap, { scale: 0, rotate: 45 } );
+	gsap.set( imgs, { autoAlpha: 0, scale: 0, rotate: 45, yPercent: -50 } );
+	gsap.set( descs, { autoAlpha: 0, scale: 0.75, xPercent: 25 } );
+
+	function showStep( index, skipMedia ) {
+		gsap.to( names, { autoAlpha: 0, duration: 0.5, ease: 'expo.out' } );
+		gsap.to( names[ index ], { autoAlpha: 1, duration: 0.5, ease: 'expo.out' } );
+
+		if ( skipMedia ) return;
+
+		imgs.forEach( function ( img, i ) {
+			if ( i === index ) return;
+			gsap.to( img, { autoAlpha: 0, scale: 0, yPercent: -50, rotate: -45, duration: 0.66, ease: 'expo.out' } );
+		} );
+		gsap.fromTo( imgs[ index ],
+			{ autoAlpha: 0, scale: 0, rotate: 45, yPercent: 50 },
+			{ autoAlpha: 1, scale: 1, rotate: 0, yPercent: 0, duration: 0.66, ease: 'expo.out' }
+		);
+
+		descs.forEach( function ( desc, i ) {
+			if ( i === index ) return;
+			gsap.to( desc, { autoAlpha: 0, scale: 0.75, xPercent: 25, duration: 0.66, ease: 'expo.out' } );
+		} );
+		gsap.fromTo( descs[ index ],
+			{ autoAlpha: 0, scale: 0.75, xPercent: -25 },
+			{ autoAlpha: 1, scale: 1, xPercent: 0, duration: 0.66, ease: 'expo.out' }
+		);
+	}
+
+	ScrollTrigger.create( {
+		trigger: imgsWrap,
+		start: 'bottom 80%',
+		onEnter: function () {
+			gsap.to( imgsWrap, { rotate: 0, scale: 1, duration: 1, ease: 'expo.out' } );
+			gsap.to( imgs[ 0 ], { autoAlpha: 1, rotate: 0, scale: 1, yPercent: 0, duration: 1, ease: 'expo.out', delay: 0.22 } );
+			gsap.to( names[ 0 ], { autoAlpha: 1, duration: 1, ease: 'expo.out', delay: 0.22 } );
+			gsap.fromTo( descs[ 0 ],
+				{ autoAlpha: 0, scale: 0.75, xPercent: -25 },
+				{ autoAlpha: 1, scale: 1, xPercent: 0, duration: 1, ease: 'expo.out', delay: 0.44 }
+			);
+		},
+		onLeaveBack: function () {
+			gsap.to( imgsWrap, { rotate: 45, scale: 0, duration: 1, ease: 'expo.out', delay: 0.22 } );
+			gsap.to( imgs[ 0 ], { autoAlpha: 0, rotate: 45, scale: 0, duration: 1, ease: 'expo.out' } );
+			gsap.to( names[ 0 ], { autoAlpha: 0, duration: 1, ease: 'expo.out' } );
+			gsap.to( descs[ 0 ], { autoAlpha: 0, scale: 0.75, xPercent: 25, duration: 0.66, ease: 'expo.out' } );
+		},
+	} );
+
+	steps.forEach( function ( el, index ) {
+		ScrollTrigger.create( {
+			trigger: el,
+			start: 'top center',
+			onEnter: function () {
+				showStep( index, index === 0 );
+			},
+			onLeaveBack: function () {
+				if ( index > 0 ) showStep( index - 1 );
+			},
+		} );
+	} );
+
+	if ( imgsOuter && canHover ) {
+		var quickX      = gsap.quickTo( imgsOuter, 'x', { duration: 0.6, ease: 'power3.out' } );
+		var quickRotate = gsap.quickTo( imgsOuter, 'rotation', { duration: 0.6, ease: 'power3.out' } );
+
+		window.addEventListener( 'mousemove', function ( event ) {
+			var relativeX = ( event.clientX / window.innerWidth ) * 2 - 1;
+			quickX( relativeX * 40 );
+			quickRotate( relativeX * 4 );
+		} );
+	}
+} )();
+

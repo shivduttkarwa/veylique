@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+	<script>if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; } window.scrollTo(0, 0);</script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Services - Mustard</title>
+	<meta name="description" content="Explore Mustard styling services, fit guidance, wardrobe edits, event dressing, and virtual style coaching.">
+	<link rel="preload" href="vendor/fonts/clash-display/clash-display-400.woff2" as="font" type="font/woff2" crossorigin>
+	<link rel="preload" href="vendor/fonts/clash-display/clash-display-500.woff2" as="font" type="font/woff2" crossorigin>
+	<link rel="preload" href="vendor/fonts/clash-display/clash-display-600.woff2" as="font" type="font/woff2" crossorigin>
+	<link rel="stylesheet" href="vendor/fonts/clash-display/clash-display.css">
+	<link rel="stylesheet" href="vendor/fonts/inter/inter.css">
+	<link rel="stylesheet" href="vendor/bootstrap/bootstrap.min.css">
+	<link rel="stylesheet" href="vendor/swiper/swiper-bundle.min.css">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body class="template-page veylique-services-template mustard-theme"><a class="skip-link screen-reader-text" href="#veyliquePage">Skip to content</a>
+
+<!-- Sticky Header -->
+<header class="veylique-header" id="veyliqueHeader" role="banner">
+	<div class="veylique-header-inner container-fluid px-3 px-sm-4 px-lg-5">
+		<div class="row w-100 g-0 align-items-center">
+			<div class="col-6 col-xl-3">
+					<a href="index.html" class="veylique-header-logo" rel="home">MUSTARD</a>
+					</div>
+
+			<div class="d-none d-xl-flex col-xl-6 justify-content-center">
+		<nav class="veylique-header-nav" aria-label="Primary navigation">
+			<ul id="menu-primary-menu" class="veylique-nav-list">
+<li class="menu-item"><a href="index.html">Home</a></li>
+<li class="menu-item"><a href="about.html">About</a></li>
+<li class="menu-item"><a href="services.html">Services</a></li>
+<li class="menu-item"><a href="faq.html">FAQ</a></li>
+<li class="menu-item"><a href="contact.html">Contact</a></li>
+</ul>		</nav>
+			</div>
+
+			<div class="col-6 col-xl-3">
+		<div class="veylique-header-actions d-flex align-items-center justify-content-end">
+
+			<!-- Search -->
+			<button type="button" class="veylique-header-icon-btn" aria-label="Search" data-veylique-search-trigger>
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+			</button>
+
+			<!-- Account -->
+			<div class="veylique-account-wrap" data-veylique-account-wrap>
+				<button type="button" class="veylique-header-icon-btn" aria-label="My account" aria-expanded="false" aria-haspopup="true" aria-controls="veyliqueAccountDropdown" data-veylique-account-trigger>
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+				</button>
+				<div class="veylique-account-dropdown" id="veyliqueAccountDropdown" aria-hidden="true" inert data-veylique-account-dropdown>
+					<div class="veylique-account-panel">
+						<p class="veylique-account-panel-eyebrow">Welcome</p>
+						<p class="veylique-account-panel-text">To access your account and manage orders</p>
+						<a href="#" class="veylique-account-panel-cta">Login / Signup</a>
+					</div>
+				</div>
+			</div>
+
+			<!-- Wishlist -->
+			<div class="veylique-wishlist-wrap">
+				<a class="veylique-header-icon-btn" aria-label="Favourites" href="#">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+					<span class="veylique-wishlist-count" aria-hidden="true"></span>
+				</a>
+			</div>
+
+			<!-- Cart -->
+			<button type="button" class="veylique-cart-trigger" aria-label="Open cart" data-veylique-cart-trigger>
+				<svg class="veylique-cart-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.95" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+					<path d="M2 5.25h2.4a1.2 1.2 0 0 1 1.14.86l2.3 7.73"></path>
+					<path d="M6.95 7.2h15.15l-1.25 4.75a2.45 2.45 0 0 1-2.34 1.82l-10.67.95"></path>
+					<path d="M8.1 15.8a1.85 1.85 0 0 0 1.74 2.45h8.56"></path>
+					<circle cx="9.4" cy="19.1" r="1.9"></circle>
+					<circle cx="17.9" cy="19.1" r="1.9"></circle>
+				</svg>
+				<span class="veylique-cart-count" aria-live="polite" aria-atomic="true">0</span>
+			</button>
+
+			<button type="button" class="veylique-nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="veyliqueMobileNav" data-veylique-nav-toggle>
+				<span class="veylique-nav-toggle-bars" aria-hidden="true"><span></span><span></span></span>
+			</button>
+		</div>
+			</div>
+		</div>
+
+	</div>
+</header>
+
+<!-- Search Overlay -->
+<div class="veylique-search-overlay" id="veyliqueSearchOverlay" aria-hidden="true" inert data-veylique-search-overlay>
+	<canvas class="veylique-search-rain-canvas" aria-hidden="true" data-veylique-search-rain data-veylique-rain-image="https://images.unsplash.com/photo-1636153279424-cb5d1e00f5a2?w=1600&h=1000&fit=crop&q=80&auto=format"></canvas>
+	<button type="button" class="veylique-search-overlay-close" aria-label="Close search" data-veylique-search-close>
+		<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+		<span class="veylique-search-overlay-close-esc" aria-hidden="true">ESC</span>
+	</button>
+
+	<div class="veylique-search-overlay-inner">
+
+		<p class="veylique-search-overlay-label">What are you looking for?</p>
+
+		<form class="veylique-search-overlay-form" role="search" method="get" action="#">
+			<input
+				type="search"
+				class="veylique-search-overlay-input"
+				name="s"
+				placeholder="Search products, articles..."
+				autocomplete="off"
+				aria-label="Search"
+			>
+			<button type="button" class="veylique-search-overlay-clear" aria-label="Clear search" data-veylique-search-clear hidden>
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+			</button>
+			<button type="submit" class="veylique-search-overlay-submit" aria-label="Search">
+				<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+			</button>
+		</form>
+
+		<div class="veylique-search-overlay-quick">
+			<span class="veylique-search-overlay-quick-label">Popular</span>
+			<div class="veylique-search-overlay-chips">
+				<a href="#" class="veylique-search-overlay-chip">New In</a>
+				<a href="#" class="veylique-search-overlay-chip">Bestseller</a>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+<!-- Mobile Nav -->
+<div class="veylique-mobile-nav" id="veyliqueMobileNav" aria-hidden="true" inert data-veylique-mobile-nav>
+
+	<div class="veylique-mobile-nav-inner">
+		<nav aria-label="Mobile navigation">
+			<ul id="menu-primary-menu-1" class="veylique-mobile-nav-list">
+<li class="menu-item"><a href="index.html">Home</a></li>
+<li class="menu-item"><a href="about.html">About</a></li>
+<li class="menu-item"><a href="services.html">Services</a></li>
+<li class="menu-item"><a href="faq.html">FAQ</a></li>
+<li class="menu-item"><a href="contact.html">Contact</a></li>
+</ul>		</nav>
+
+		<div class="veylique-mobile-nav-foot">
+			<div class="veylique-mobile-nav-pills">
+				<a href="#">Bag</a>
+				<a href="#">Wishlist</a>
+				<a href="#">Account</a>
+				<a href="contact.html">Contact</a>
+			</div>
+			<p class="veylique-mobile-nav-note">Modern fits, real comfort — for every body.</p>
+		</div>
+	</div>
+
+</div>
+
+
+<main class="veylique-services-page" id="veyliquePage">
+
+	
+	
+	
+	
+		<section
+	class="veylique-page-hero"
+		style="--mustard-page-hero-bg: url(&#039;images/hero-3.webp&#039;); --mustard-page-hero-bg-mobile: url(&#039;images/hero-3.webp&#039;)"
+		aria-label="Our Services"
+>
+	<div class="veylique-page-hero-body">
+
+				<p class="veylique-about-label veylique-page-hero-label">
+			What We Offer		</p>
+		
+		<h1 class="veylique-page-hero-h1 veylique-page-hero-reveal-js">
+			<span class="veylique-page-hero-line">Our Services</span>
+					</h1>
+
+				<p class="veylique-page-hero-sub">
+			Personal styling, fit guidance, wardrobe edits, and occasion dressing designed around how you actually live.		</p>
+		
+		
+	</div>
+
+		<button type="button" class="veylique-scroll-down" aria-label="Scroll down">
+		<span class="veylique-scroll-dot"></span>
+		<span class="veylique-scroll-dot"></span>
+		<span class="veylique-scroll-dot"></span>
+	</button>
+	
+</section>
+		<!-- ② SERVICE CARDS ─────────────────────────────────────── -->
+	<section class="veylique-svc-section" aria-label="What We Do">
+
+		<div class="veylique-section-intro veylique-section-intro-js veylique-section-intro--flush">
+	<div class="veylique-container-wide container-fluid">
+		<div class="row">
+			<div class="col-12 col-xl-10">
+
+								<span class="veylique-eyebrow">Our Expertise</span>
+				
+				<h2 class="veylique-section-title">What We Do</h2>
+
+								<p class="veylique-section-desc">Services designed around your wardrobe — from first consultation to outfits you keep reaching for.</p>
+				
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+		<div class="veylique-container-wide">
+
+			<ul class="veylique-svc-cards">
+								<li class="veylique-svc-cell veylique-reveal-js veylique-reveal--fade-js">
+					<a href="contact.html" class="veylique-svc-card-link">
+
+						<div class="veylique-svc-card">
+							<div class="veylique-svc-card-top">
+								<span class="veylique-svc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a7 7 0 0 1 7 7c0 2.5-1.4 4.1-2.6 5.4-.8.9-1.4 1.9-1.4 3.1h-6c0-1.2-.6-2.2-1.4-3.1C6.4 14.1 5 12.5 5 10a7 7 0 0 1 7-7Z"/><path d="M9.5 21.5h5"/></svg></span>
+								<span class="veylique-svc-meta">60 min · from $90</span>
+							</div>
+							<div class="veylique-svc-card-body">
+								<h3 class="veylique-svc-title">Personal Styling Consultation</h3>
+								<p class="veylique-svc-desc">A one-on-one session to understand your fit preferences, lifestyle, colour comfort, and everyday outfit goals.</p>
+								<span class="veylique-svc-more">
+									Book this service									<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+								</span>
+							</div>
+						</div>
+
+						<div class="veylique-svc-photos" aria-hidden="true">
+							<div class="veylique-svc-photo veylique-svc-photo--first">
+																<img src="images/service-1-consult-1.jpg" alt="" loading="lazy">
+															</div>
+							<div class="veylique-svc-photo veylique-svc-photo--second">
+																<img src="images/service-1-consult-2.jpg" alt="" loading="lazy">
+															</div>
+						</div>
+
+					</a>
+				</li>
+								<li class="veylique-svc-cell veylique-reveal-js veylique-reveal--fade-js">
+					<a href="contact.html" class="veylique-svc-card-link">
+
+						<div class="veylique-svc-card">
+							<div class="veylique-svc-card-top">
+								<span class="veylique-svc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21c-4 0-7-3-7-7 0-5 5-8.5 7-11 2 2.5 7 6 7 11 0 4-3 7-7 7Z"/><path d="M12 17a3.5 3.5 0 0 1-3.5-3.5"/></svg></span>
+								<span class="veylique-svc-meta">45 min · from $120</span>
+							</div>
+							<div class="veylique-svc-card-body">
+								<h3 class="veylique-svc-title">Wardrobe Edit &amp; Outfit Planning</h3>
+								<p class="veylique-svc-desc">A practical edit of what to keep, what to pair, and which missing pieces will make getting dressed easier.</p>
+								<span class="veylique-svc-more">
+									Book this service									<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+								</span>
+							</div>
+						</div>
+
+						<div class="veylique-svc-photos" aria-hidden="true">
+							<div class="veylique-svc-photo veylique-svc-photo--first">
+																<img src="images/service-2-consult-1.jpg" alt="" loading="lazy">
+															</div>
+							<div class="veylique-svc-photo veylique-svc-photo--second">
+																<img src="images/service-2-consult-2.jpg" alt="" loading="lazy">
+															</div>
+						</div>
+
+					</a>
+				</li>
+								<li class="veylique-svc-cell veylique-reveal-js veylique-reveal--fade-js">
+					<a href="contact.html" class="veylique-svc-card-link">
+
+						<div class="veylique-svc-card">
+							<div class="veylique-svc-card-top">
+								<span class="veylique-svc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v2M12 18v2M4 12H6M18 12h2M6.3 6.3l1.4 1.4M16.3 16.3l1.4 1.4M6.3 17.7l1.4-1.4M16.3 7.7l1.4-1.4"/><circle cx="12" cy="12" r="3.5"/></svg></span>
+								<span class="veylique-svc-meta">75 min · from $150</span>
+							</div>
+							<div class="veylique-svc-card-body">
+								<h3 class="veylique-svc-title">Occasion Dressing Session</h3>
+								<p class="veylique-svc-desc">Looks for weddings, festive days, work events, and travel, styled with comfort, proportion, and repeat wear in mind.</p>
+								<span class="veylique-svc-more">
+									Book this service									<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+								</span>
+							</div>
+						</div>
+
+						<div class="veylique-svc-photos" aria-hidden="true">
+							<div class="veylique-svc-photo veylique-svc-photo--first">
+																<img src="images/service-3-consult-1.jpg" alt="" loading="lazy">
+															</div>
+							<div class="veylique-svc-photo veylique-svc-photo--second">
+																<img src="images/service-3-consult-2.jpg" alt="" loading="lazy">
+															</div>
+						</div>
+
+					</a>
+				</li>
+								<li class="veylique-svc-cell veylique-reveal-js veylique-reveal--fade-js">
+					<a href="contact.html" class="veylique-svc-card-link">
+
+						<div class="veylique-svc-card">
+							<div class="veylique-svc-card-top">
+								<span class="veylique-svc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M21 21l-4.5-4.5"/><path d="M8.5 11a2.5 2.5 0 0 1 2.5-2.5"/></svg></span>
+								<span class="veylique-svc-meta">30 min · from $70</span>
+							</div>
+							<div class="veylique-svc-card-body">
+								<h3 class="veylique-svc-title">Fit &amp; Size Guidance</h3>
+								<p class="veylique-svc-desc">Measurements, silhouette notes, and fabric guidance to help you choose the right size before you order.</p>
+								<span class="veylique-svc-more">
+									Book this service									<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+								</span>
+							</div>
+						</div>
+
+						<div class="veylique-svc-photos" aria-hidden="true">
+							<div class="veylique-svc-photo veylique-svc-photo--first">
+																<img src="images/service-4-consult-1.jpg" alt="" loading="lazy">
+															</div>
+							<div class="veylique-svc-photo veylique-svc-photo--second">
+																<img src="images/service-4-consult-2.jpg" alt="" loading="lazy">
+															</div>
+						</div>
+
+					</a>
+				</li>
+								<li class="veylique-svc-cell veylique-reveal-js veylique-reveal--fade-js">
+					<a href="contact.html" class="veylique-svc-card-link">
+
+						<div class="veylique-svc-card">
+							<div class="veylique-svc-card-top">
+								<span class="veylique-svc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4L12 3Z"/><path d="M18.5 15l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9.9-2.1Z"/></svg></span>
+								<span class="veylique-svc-meta">12 weeks · from $480</span>
+							</div>
+							<div class="veylique-svc-card-body">
+								<h3 class="veylique-svc-title">Bridal &amp; Event Styling</h3>
+								<p class="veylique-svc-desc">A focused styling programme for ceremonies, parties, and milestone moments, planned look by look.</p>
+								<span class="veylique-svc-more">
+									Book this service									<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+								</span>
+							</div>
+						</div>
+
+						<div class="veylique-svc-photos" aria-hidden="true">
+							<div class="veylique-svc-photo veylique-svc-photo--first">
+																<img src="images/service-5-consult-1.jpg" alt="" loading="lazy">
+															</div>
+							<div class="veylique-svc-photo veylique-svc-photo--second">
+																<img src="images/service-5-consult-2.jpg" alt="" loading="lazy">
+															</div>
+						</div>
+
+					</a>
+				</li>
+								<li class="veylique-svc-cell veylique-reveal-js veylique-reveal--fade-js">
+					<a href="contact.html" class="veylique-svc-card-link">
+
+						<div class="veylique-svc-card">
+							<div class="veylique-svc-card-top">
+								<span class="veylique-svc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2.5"/><path d="M16 10.5l5-2.5v8l-5-2.5"/></svg></span>
+								<span class="veylique-svc-meta">30 min · from $50</span>
+							</div>
+							<div class="veylique-svc-card-body">
+								<h3 class="veylique-svc-title">Virtual Style Coaching</h3>
+								<p class="veylique-svc-desc">Expert guidance from anywhere, with seasonal check-ins to keep your wardrobe feeling current and useful.</p>
+								<span class="veylique-svc-more">
+									Book this service									<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+								</span>
+							</div>
+						</div>
+
+						<div class="veylique-svc-photos" aria-hidden="true">
+							<div class="veylique-svc-photo veylique-svc-photo--first">
+																<img src="images/service-6-consult-2.jpg" alt="" loading="lazy">
+															</div>
+							<div class="veylique-svc-photo veylique-svc-photo--second">
+																<img src="images/service-6-consult-1.jpg" alt="" loading="lazy">
+															</div>
+						</div>
+
+					</a>
+				</li>
+							</ul>
+
+		</div>
+	</section>
+		<!-- ③ THE MUSTARD METHOD ──────────────────────────────────── -->
+	<section class="veylique-svc-method" aria-label="The MUSTARD Method">
+
+		<div class="veylique-section-intro veylique-section-intro-js veylique-section-intro--flush">
+	<div class="veylique-container-wide container-fluid">
+		<div class="row">
+			<div class="col-12 col-xl-10">
+
+								<span class="veylique-eyebrow">The MUSTARD Method</span>
+				
+				<h2 class="veylique-section-title">Four steps to better outfits.</h2>
+
+				
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+		<div class="veylique-container-wide">
+
+			<div class="veylique-svc-method-wrap" data-svc-steps>
+
+				<div class="veylique-svc-method-label">
+					<span class="veylique-svc-method-count">(04)</span>
+				</div>
+
+				<div class="veylique-svc-method-main">
+
+					<ol class="veylique-svc-steps">
+												<li class="veylique-svc-step" data-svc-step>
+							<span class="veylique-svc-step-n">01</span>
+							<h3 class="veylique-svc-step-name-wrap">
+								<span class="veylique-svc-step-name">Discover</span>
+								<span class="veylique-svc-step-name veylique-svc-step-name--active" data-svc-step-name aria-hidden="true">Discover</span>
+							</h3>
+							<p class="veylique-svc-step-desc-inline">We begin with a conversation about your lifestyle, fit preferences, colour comfort, and wardrobe gaps.</p>
+						</li>
+												<li class="veylique-svc-step" data-svc-step>
+							<span class="veylique-svc-step-n">02</span>
+							<h3 class="veylique-svc-step-name-wrap">
+								<span class="veylique-svc-step-name">Fit</span>
+								<span class="veylique-svc-step-name veylique-svc-step-name--active" data-svc-step-name aria-hidden="true">Fit</span>
+							</h3>
+							<p class="veylique-svc-step-desc-inline">We map sizing, proportions, fabric preferences, and the occasions your clothes need to handle.</p>
+						</li>
+												<li class="veylique-svc-step" data-svc-step>
+							<span class="veylique-svc-step-n">03</span>
+							<h3 class="veylique-svc-step-name-wrap">
+								<span class="veylique-svc-step-name">Curate</span>
+								<span class="veylique-svc-step-name veylique-svc-step-name--active" data-svc-step-name aria-hidden="true">Curate</span>
+							</h3>
+							<p class="veylique-svc-step-desc-inline">We build outfit ideas and product recommendations that work together instead of sitting alone.</p>
+						</li>
+												<li class="veylique-svc-step" data-svc-step>
+							<span class="veylique-svc-step-n">04</span>
+							<h3 class="veylique-svc-step-name-wrap">
+								<span class="veylique-svc-step-name">Wear</span>
+								<span class="veylique-svc-step-name veylique-svc-step-name--active" data-svc-step-name aria-hidden="true">Wear</span>
+							</h3>
+							<p class="veylique-svc-step-desc-inline">We refine your wardrobe season by season as your plans, climate, and personal style evolve.</p>
+						</li>
+											</ol>
+
+					<div class="veylique-svc-method-imgs-outer" data-svc-imgs-outer aria-hidden="true">
+						<div class="veylique-svc-method-imgs" data-svc-imgs>
+														<div class="veylique-svc-method-img" data-svc-img>
+																<img src="images/method-1-discover.jpg" alt="" loading="lazy">
+															</div>
+														<div class="veylique-svc-method-img" data-svc-img>
+																<img src="images/method-2-analyse.jpg" alt="" loading="lazy">
+															</div>
+														<div class="veylique-svc-method-img" data-svc-img>
+																<img src="images/method-3-Curate.jpg" alt="" loading="lazy">
+															</div>
+														<div class="veylique-svc-method-img" data-svc-img>
+																<img src="images/method-4-Glow.jpg" alt="" loading="lazy">
+															</div>
+													</div>
+					</div>
+
+				</div>
+
+				<div class="veylique-svc-method-descs" aria-hidden="true">
+					<div class="veylique-svc-method-desc-list">
+												<p class="veylique-svc-method-desc" data-svc-desc>We begin with a conversation about your lifestyle, fit preferences, colour comfort, and wardrobe gaps.</p>
+												<p class="veylique-svc-method-desc" data-svc-desc>We map sizing, proportions, fabric preferences, and the occasions your clothes need to handle.</p>
+												<p class="veylique-svc-method-desc" data-svc-desc>We build outfit ideas and product recommendations that work together instead of sitting alone.</p>
+												<p class="veylique-svc-method-desc" data-svc-desc>We refine your wardrobe season by season as your plans, climate, and personal style evolve.</p>
+											</div>
+				</div>
+
+			</div>
+
+		</div>
+	</section>
+		<section
+	class="veylique-fullcta"
+	aria-label="Begin Your Wardrobe"
+		style="--cta-bg: url(&#039;images/hero-4.webp&#039;)"
+	>
+	<div class="veylique-fullcta-overlay"></div>
+	<div class="veylique-fullcta-inner">
+
+				<p class="veylique-fullcta-label veylique-reveal-js veylique-reveal--static-js">
+			Begin Your Wardrobe		</p>
+		
+		<h2 class="veylique-fullcta-heading veylique-reveal-js veylique-reveal--static-js">
+			Ready when<br />your wardrobe is.		</h2>
+
+				<div class="veylique-fullcta-btns">
+			<a
+				href="contact.html"
+				class="veylique-fullcta-btn veylique-reveal-js veylique-reveal--static-js"
+				data-veylique-delay="0.15"
+			>
+				<span>Book a Consultation</span>
+				<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+			</a>
+						<a
+				href="#"
+				class="veylique-fullcta-btn veylique-fullcta-btn--outline veylique-reveal-js veylique-reveal--static-js"
+				data-veylique-delay="0.28"
+			>
+				<span>Shop the Collection</span>
+			</a>
+					</div>
+		
+	</div>
+</section>
+	
+</main><!-- /#veyliquePage -->
+
+<footer class="veylique-footer" role="contentinfo">
+
+	<div class="veylique-footer-main">
+		<div class="veylique-footer-inner">
+
+			<div class="veylique-footer-col veylique-footer-col--cta">
+				<p class="veylique-footer-headline">Discover your next favourite outfit. Shop today.</p>
+				<a href="#" class="veylique-footer-cta-btn">
+					<span>Shop Collection</span>
+					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+				</a>
+				<p class="veylique-footer-copy">&copy; 2026 Mustard &middot; Women's Fashion</p>
+				<nav class="veylique-footer-legal" aria-label="Legal">
+					<a href="#">Privacy Policy</a>
+					<a href="#">Refund Policy</a>
+				</nav>
+			</div>
+
+			<nav class="veylique-footer-col veylique-footer-col--nav" aria-label="Footer navigation">
+				<ul class="veylique-footer-menu"><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="services.html">Services</a></li><li><a href="faq.html">FAQ</a></li><li><a href="contact.html">Contact</a></li></ul>
+			</nav>
+
+			<div class="veylique-footer-col veylique-footer-col--connect">
+				<h2 class="veylique-footer-connect-h">Connect</h2>
+				<div class="veylique-footer-social">
+					<a href="#" aria-label="Instagram" tabindex="-1">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" stroke="none"/></svg>
+					</a>
+					<a href="#" aria-label="TikTok" tabindex="-1">
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.22 8.22 0 0 0 4.84 1.55V6.79a4.85 4.85 0 0 1-1.07-.1z"/></svg>
+					</a>
+					<a href="#" aria-label="Pinterest" tabindex="-1">
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Brand mask (video through letters) -->
+	<div class="veylique-footer-brand" aria-hidden="true">
+		<div class="veylique-footer-brand-text">MUSTARD</div>
+		<video class="veylique-footer-brand-video" autoplay muted loop playsinline poster="images/cta.webp" preload="none">
+			<source src="images/footer-video.mp4" type="video/mp4">
+		</video>
+	</div>
+
+</footer>
+
+<div class="veylique-cart-overlay" data-veylique-cart-overlay aria-hidden="true"></div>
+<aside class="veylique-cart-drawer" id="veyliqueCartDrawer" aria-label="Shopping cart" aria-hidden="true" inert data-veylique-cart-drawer>
+	<div class="veylique-drawer-head">
+		<h2 class="veylique-drawer-title">Your Cart</h2>
+		<button type="button" class="veylique-drawer-close" aria-label="Close cart" data-veylique-cart-close>
+			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+		</button>
+	</div>
+	<div class="veylique-drawer-body">
+		<div class="veylique-drawer-items"><div class="veylique-drawer-empty-state"><p class="veylique-drawer-empty">Your cart is empty.</p><a href="#" class="veylique-drawer-empty-btn veylique-btn btn-black">Shop Products</a></div></div>	</div>
+	<div class="veylique-drawer-footer"></div>
+</aside>
+
+<script id="veylique-bootstrap-js" src="vendor/bootstrap/bootstrap.bundle.min.js"></script>
+<script id="gsap-js" src="vendor/gsap/gsap.min.js"></script>
+<script id="gsap-scrolltrigger-js" src="vendor/gsap/ScrollTrigger.min.js"></script>
+<script id="gsap-splittext-js" src="vendor/gsap/SplitText.min.js"></script>
+<script id="veylique-rainyday-js" src="vendor/rainyday/rainyday.js"></script>
+<script id="veylique-main-js-extra">
+var veyliqueData = {"ajaxUrl":"#","nonce":"static-demo","cartNonce":"static-demo","shopUrl":"#","cartUrl":"#","i18n":{"addToWishlist":"Add to wishlist","removeFromWishlist":"Remove from wishlist","addToCart":"Add to Cart","viewProduct":"View Product","viewCart":"View Cart","quantity":"Quantity","decrease":"Decrease","increase":"Increase","loadingFavourites":"Loading favourites...","remove":"Remove","removeFromWishlistOf":"Remove %s from wishlist","openMenu":"Open menu","closeMenu":"Close menu","showPassword":"Show password","hidePassword":"Hide password","pwWeak":"Weak","pwFair":"Fair","pwGood":"Good","pwStrong":"Strong"}};
+</script>
+<script src="vendor/swiper/swiper-bundle.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

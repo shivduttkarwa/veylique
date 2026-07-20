@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+	<script>if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; } window.scrollTo(0, 0);</script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>About - Mustard</title>
+	<meta name="description" content="Meet Mustard: modern women's fashion designed around comfort, confident silhouettes, and everyday polish.">
+	<link rel="preload" href="vendor/fonts/clash-display/clash-display-400.woff2" as="font" type="font/woff2" crossorigin>
+	<link rel="preload" href="vendor/fonts/clash-display/clash-display-500.woff2" as="font" type="font/woff2" crossorigin>
+	<link rel="preload" href="vendor/fonts/clash-display/clash-display-600.woff2" as="font" type="font/woff2" crossorigin>
+	<link rel="stylesheet" href="vendor/fonts/clash-display/clash-display.css">
+	<link rel="stylesheet" href="vendor/fonts/inter/inter.css">
+	<link rel="stylesheet" href="vendor/bootstrap/bootstrap.min.css">
+	<link rel="stylesheet" href="vendor/swiper/swiper-bundle.min.css">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body class="template-page page-about veylique-about-template mustard-theme"><a class="skip-link screen-reader-text" href="#veyliquePage">Skip to content</a>
+
+<!-- Sticky Header -->
+<header class="veylique-header" id="veyliqueHeader" role="banner">
+	<div class="veylique-header-inner container-fluid px-3 px-sm-4 px-lg-5">
+		<div class="row w-100 g-0 align-items-center">
+			<div class="col-6 col-xl-3">
+					<a href="index.html" class="veylique-header-logo" rel="home">MUSTARD</a>
+					</div>
+
+			<div class="d-none d-xl-flex col-xl-6 justify-content-center">
+		<nav class="veylique-header-nav" aria-label="Primary navigation">
+			<ul id="menu-primary-menu" class="veylique-nav-list">
+<li class="menu-item"><a href="index.html">Home</a></li>
+<li class="menu-item"><a href="about.html">About</a></li>
+<li class="menu-item"><a href="services.html">Services</a></li>
+<li class="menu-item"><a href="faq.html">FAQ</a></li>
+<li class="menu-item"><a href="contact.html">Contact</a></li>
+</ul>		</nav>
+			</div>
+
+			<div class="col-6 col-xl-3">
+		<div class="veylique-header-actions d-flex align-items-center justify-content-end">
+
+			<!-- Search -->
+			<button type="button" class="veylique-header-icon-btn" aria-label="Search" data-veylique-search-trigger>
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+			</button>
+
+			<!-- Account -->
+			<div class="veylique-account-wrap" data-veylique-account-wrap>
+				<button type="button" class="veylique-header-icon-btn" aria-label="My account" aria-expanded="false" aria-haspopup="true" aria-controls="veyliqueAccountDropdown" data-veylique-account-trigger>
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+				</button>
+				<div class="veylique-account-dropdown" id="veyliqueAccountDropdown" aria-hidden="true" inert data-veylique-account-dropdown>
+					<div class="veylique-account-panel">
+						<p class="veylique-account-panel-eyebrow">Welcome</p>
+						<p class="veylique-account-panel-text">To access your account and manage orders</p>
+						<a href="#" class="veylique-account-panel-cta">Login / Signup</a>
+					</div>
+				</div>
+			</div>
+
+			<!-- Wishlist -->
+			<div class="veylique-wishlist-wrap">
+				<a class="veylique-header-icon-btn" aria-label="Favourites" href="#">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+					<span class="veylique-wishlist-count" aria-hidden="true"></span>
+				</a>
+			</div>
+
+			<!-- Cart -->
+			<button type="button" class="veylique-cart-trigger" aria-label="Open cart" data-veylique-cart-trigger>
+				<svg class="veylique-cart-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.95" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+					<path d="M2 5.25h2.4a1.2 1.2 0 0 1 1.14.86l2.3 7.73"></path>
+					<path d="M6.95 7.2h15.15l-1.25 4.75a2.45 2.45 0 0 1-2.34 1.82l-10.67.95"></path>
+					<path d="M8.1 15.8a1.85 1.85 0 0 0 1.74 2.45h8.56"></path>
+					<circle cx="9.4" cy="19.1" r="1.9"></circle>
+					<circle cx="17.9" cy="19.1" r="1.9"></circle>
+				</svg>
+				<span class="veylique-cart-count" aria-live="polite" aria-atomic="true">0</span>
+			</button>
+
+			<button type="button" class="veylique-nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="veyliqueMobileNav" data-veylique-nav-toggle>
+				<span class="veylique-nav-toggle-bars" aria-hidden="true"><span></span><span></span></span>
+			</button>
+		</div>
+			</div>
+		</div>
+
+	</div>
+</header>
+
+<!-- Search Overlay -->
+<div class="veylique-search-overlay" id="veyliqueSearchOverlay" aria-hidden="true" inert data-veylique-search-overlay>
+	<canvas class="veylique-search-rain-canvas" aria-hidden="true" data-veylique-search-rain data-veylique-rain-image="https://images.unsplash.com/photo-1636153279424-cb5d1e00f5a2?w=1600&h=1000&fit=crop&q=80&auto=format"></canvas>
+	<button type="button" class="veylique-search-overlay-close" aria-label="Close search" data-veylique-search-close>
+		<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+		<span class="veylique-search-overlay-close-esc" aria-hidden="true">ESC</span>
+	</button>
+
+	<div class="veylique-search-overlay-inner">
+
+		<p class="veylique-search-overlay-label">What are you looking for?</p>
+
+		<form class="veylique-search-overlay-form" role="search" method="get" action="#">
+			<input
+				type="search"
+				class="veylique-search-overlay-input"
+				name="s"
+				placeholder="Search products, articles..."
+				autocomplete="off"
+				aria-label="Search"
+			>
+			<button type="button" class="veylique-search-overlay-clear" aria-label="Clear search" data-veylique-search-clear hidden>
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+			</button>
+			<button type="submit" class="veylique-search-overlay-submit" aria-label="Search">
+				<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+			</button>
+		</form>
+
+		<div class="veylique-search-overlay-quick">
+			<span class="veylique-search-overlay-quick-label">Popular</span>
+			<div class="veylique-search-overlay-chips">
+				<a href="#" class="veylique-search-overlay-chip">New In</a>
+				<a href="#" class="veylique-search-overlay-chip">Bestseller</a>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+<!-- Mobile Nav -->
+<div class="veylique-mobile-nav" id="veyliqueMobileNav" aria-hidden="true" inert data-veylique-mobile-nav>
+
+	<div class="veylique-mobile-nav-inner">
+		<nav aria-label="Mobile navigation">
+			<ul id="menu-primary-menu-1" class="veylique-mobile-nav-list">
+<li class="menu-item"><a href="index.html">Home</a></li>
+<li class="menu-item"><a href="about.html">About</a></li>
+<li class="menu-item"><a href="services.html">Services</a></li>
+<li class="menu-item"><a href="faq.html">FAQ</a></li>
+<li class="menu-item"><a href="contact.html">Contact</a></li>
+</ul>		</nav>
+
+		<div class="veylique-mobile-nav-foot">
+			<div class="veylique-mobile-nav-pills">
+				<a href="#">Bag</a>
+				<a href="#">Wishlist</a>
+				<a href="#">Account</a>
+				<a href="contact.html">Contact</a>
+			</div>
+			<p class="veylique-mobile-nav-note">Modern fits, real comfort — for every body.</p>
+		</div>
+	</div>
+
+</div>
+
+
+<main class="veylique-about-page" id="veyliquePage">
+
+	
+	
+	
+	
+	
+	
+	
+	
+		<section
+	class="veylique-page-hero"
+		style="--mustard-page-hero-bg: url(&#039;images/hero-2.webp&#039;); --mustard-page-hero-bg-mobile: url(&#039;images/hero-2.webp&#039;)"
+		aria-label="Designed for real life."
+>
+	<div class="veylique-page-hero-body">
+
+				<p class="veylique-about-label veylique-page-hero-label">
+			About MUSTARD		</p>
+		
+		<h1 class="veylique-page-hero-h1 veylique-page-hero-reveal-js">
+			<span class="veylique-page-hero-line">Designed for</span>
+						<span class="veylique-page-hero-line veylique-page-hero-line--soft">real life.</span>
+					</h1>
+
+				<p class="veylique-page-hero-sub">
+			We create women's fashion with easy silhouettes, expressive prints, and comfort that moves through real life.		</p>
+		
+		
+	</div>
+
+		<button type="button" class="veylique-scroll-down" aria-label="Scroll down">
+		<span class="veylique-scroll-dot"></span>
+		<span class="veylique-scroll-dot"></span>
+		<span class="veylique-scroll-dot"></span>
+	</button>
+	
+</section>
+	<!-- ③ MANIFESTO ─────────────────────────────────────────── -->
+	<section class="veylique-about-manifesto">
+		<div class="veylique-about-manifesto-inner">
+			<blockquote class="veylique-about-manifesto-q">
+				&ldquo;The best clothes do more than complete an outfit. They make the day feel easier, brighter, and more your own.&rdquo;
+			</blockquote>
+			<cite class="veylique-about-manifesto-cite">&mdash;&nbsp;Sophie Laurent, Founder &amp; Creative Director</cite>
+		</div>
+	</section>
+		<!-- ④ STATS ─────────────────────────────────────────────── -->
+	<section class="veylique-about-stats">
+		<div class="veylique-about-stats-row">
+			<div class="veylique-about-stat-cell veylique-about-stat-reveal-js">
+				<span class="veylique-about-stat-tag">Considered details</span>
+				<span class="veylique-about-stat-n">48+</span>
+			</div>
+			<div class="veylique-about-stat-cell veylique-about-stat-reveal-js">
+				<span class="veylique-about-stat-tag">Vendor partners</span>
+				<span class="veylique-about-stat-n veylique-about-stat-n--stroke">12</span>
+			</div>
+			<div class="veylique-about-stat-cell veylique-about-stat-reveal-js">
+				<span class="veylique-about-stat-tag">Comfort-first fits</span>
+				<span class="veylique-about-stat-n">100%</span>
+			</div>
+			<div class="veylique-about-stat-cell veylique-about-stat-reveal-js">
+				<span class="veylique-about-stat-tag">Founded in Paris</span>
+				<span class="veylique-about-stat-n veylique-about-stat-n--stroke">2018</span>
+			</div>
+		</div>
+	</section>
+		<!-- ⑤ STORY ─────────────────────────────────────────────── -->
+		<section class="veylique-about-story">
+		<div class="veylique-about-story-img-col">
+			<div class="veylique-about-story-img-pin">
+								<img src="images/founder.jpg" alt="Sophie Laurent - Founder &amp; Creative Director" loading="lazy">
+								<div class="veylique-about-story-veil" aria-hidden="true"></div>
+
+				<div class="veylique-about-story-badge" aria-hidden="true">
+					<svg class="veylique-about-story-badge-orbit" viewBox="0 0 120 120" focusable="false">
+						<defs>
+							<path id="veyliqueStoryOrbit" d="M 60,60 m -46,0 a 46,46 0 1,1 92,0 a 46,46 0 1,1 -92,0"/>
+						</defs>
+						<text>
+							<textPath href="#veyliqueStoryOrbit" textLength="289" lengthAdjust="spacingAndGlyphs">Founded in Paris — 2018 — Founded in Paris — 2018 — </textPath>
+						</text>
+					</svg>
+					<svg class="veylique-about-story-badge-star" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M12 0c.6 6.4 5.6 11.4 12 12-6.4.6-11.4 5.6-12 12-.6-6.4-5.6-11.4-12-12C6.4 11.4 11.4 6.4 12 0Z"/></svg>
+				</div>
+
+				<div class="veylique-about-founder-card">
+										<span class="veylique-about-founder-kicker">Founder</span>
+										<span class="veylique-about-founder-name">Sophie Laurent</span>
+										<span class="veylique-about-founder-role">Founder &amp; Creative Director</span>
+									</div>
+			</div>
+		</div>
+		<div class="veylique-about-story-text-col">
+			<span class="veylique-about-story-rail" aria-hidden="true"><span class="veylique-about-story-rail-fill veylique-about-story-rail-js"></span></span>
+
+			<div class="veylique-about-story-panel veylique-about-story-panel-js">
+				<div class="veylique-about-story-meta">
+					<span class="veylique-about-story-num">01</span>
+					<span class="veylique-about-story-meta-line" aria-hidden="true"></span>
+					<p class="veylique-about-label veylique-about-label--warm">The Beginning</p>
+				</div>
+				<h2 class="veylique-about-story-h2">A fashion line rooted in real life</h2>
+				<p class="veylique-about-body veylique-about-body--lead">MUSTARD was born from a simple idea: everyday clothes should feel polished without asking you to compromise on comfort. Each collection is built around wearable silhouettes, reliable fabrics, and details that earn their place.</p>
+								<a href="#" class="veylique-about-link">
+					Explore fabrics					<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+				</a>
+								<span class="veylique-about-story-ghost" aria-hidden="true">01</span>
+			</div>
+
+			<div class="veylique-about-story-panel veylique-about-story-panel--alt veylique-about-story-panel-js">
+				<div class="veylique-about-story-meta">
+					<span class="veylique-about-story-num">02</span>
+					<span class="veylique-about-story-meta-line" aria-hidden="true"></span>
+					<p class="veylique-about-label veylique-about-label--warm">Our Process</p>
+				</div>
+				<h2 class="veylique-about-story-h2">From sketch to wardrobe</h2>
+				<p class="veylique-about-body veylique-about-body--lead">We work with trusted mills, pattern makers, and finishing partners to refine every piece before it reaches your wardrobe.</p>
+				<p class="veylique-about-body">Every garment is fit-tested for movement, drape, wash feel, and repeat wear, so it looks good beyond the first try-on.</p>
+				<span class="veylique-about-story-ghost" aria-hidden="true">02</span>
+			</div>
+		</div>
+	</section>
+		<!-- ⑥ VALUES ────────────────────────────────────────────── -->
+		<section class="veylique-about-values" style="--mustard-about-bg: url(&#039;images/hero-4.webp&#039;)">
+		<div class="veylique-section-intro veylique-section-intro-js veylique-section-intro--flush">
+	<div class="veylique-container-wide container-fluid">
+		<div class="row">
+			<div class="col-12 col-xl-10">
+
+								<span class="veylique-eyebrow">What We Stand For</span>
+				
+				<h2 class="veylique-section-title">Three principles. Every decision.</h2>
+
+				
+				
+			</div>
+		</div>
+	</div>
+</div>
+		<div class="veylique-about-values-wrap">
+			<div class="veylique-about-values-grid">
+								<div class="veylique-about-val veylique-about-val-reveal-js">
+					<div class="veylique-about-val-wm">I</div>
+					<span class="veylique-about-val-idx">01</span>
+					<h3 class="veylique-about-val-h3">Material Honesty</h3>
+					<p class="veylique-about-val-p">We choose breathable weaves, soft linings, and finishes that feel good against the body and stand up to everyday wear.</p>
+				</div>
+								<div class="veylique-about-val veylique-about-val-reveal-js">
+					<div class="veylique-about-val-wm">II</div>
+					<span class="veylique-about-val-idx">02</span>
+					<h3 class="veylique-about-val-h3">Fit Precision</h3>
+					<p class="veylique-about-val-p">A beautiful print is only half the work. We tune proportions, seams, and closures until every piece feels natural to move in.</p>
+				</div>
+								<div class="veylique-about-val veylique-about-val-reveal-js">
+					<div class="veylique-about-val-wm">III</div>
+					<span class="veylique-about-val-idx">03</span>
+					<h3 class="veylique-about-val-h3">Mindful Fashion</h3>
+					<p class="veylique-about-val-p">Premium should feel considered. We design versatile pieces that can be styled often, cared for easily, and loved longer.</p>
+				</div>
+							</div>
+		</div>
+	</section>
+		<!-- ⑦ materials ───────────────────────────────────────── -->
+	<div class="veylique-section-intro veylique-section-intro-js">
+	<div class="veylique-container-wide container-fluid">
+		<div class="row">
+			<div class="col-12 col-xl-10">
+
+								<span class="veylique-eyebrow">Fabric Philosophy</span>
+				
+				<h2 class="veylique-section-title">Thoughtful by design.</h2>
+
+								<p class="veylique-section-desc">Signature materials, selected for comfort, drape, durability, and everyday ease.</p>
+				
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+	<section class="veylique-about-materials">
+		<div class="veylique-about-ing-inner">
+
+			<div class="veylique-about-ing-grid">
+								<div class="veylique-about-ing-card veylique-about-ing-card-reveal-js">
+										<img class="veylique-about-ing-img" src="images/about-ingredient-rose-otto.jpg" alt="" loading="lazy">
+										<span class="veylique-about-ing-tag">I</span>
+					<div class="veylique-about-ing-body">
+						<h3 class="veylique-about-ing-name">Cotton Voile</h3>
+						<p class="veylique-about-ing-desc">Light, breathable, and soft against the skin, chosen for everyday dresses and easy summer layers.</p>
+					</div>
+				</div>
+								<div class="veylique-about-ing-card veylique-about-ing-card-reveal-js">
+										<img class="veylique-about-ing-img" src="images/about-ingredient-bakuchiol.jpg" alt="" loading="lazy">
+										<span class="veylique-about-ing-tag">II</span>
+					<div class="veylique-about-ing-body">
+						<h3 class="veylique-about-ing-name">Linen Blend</h3>
+						<p class="veylique-about-ing-desc">Textured without feeling stiff, giving co-ords and separates a relaxed yet polished structure.</p>
+					</div>
+				</div>
+								<div class="veylique-about-ing-card veylique-about-ing-card-reveal-js">
+										<img class="veylique-about-ing-img" src="images/about-ingredient-blue-tansy.jpg" alt="" loading="lazy">
+										<span class="veylique-about-ing-tag">III</span>
+					<div class="veylique-about-ing-body">
+						<h3 class="veylique-about-ing-name">Viscose Crepe</h3>
+						<p class="veylique-about-ing-desc">Fluid, drapey, and crease-friendly, selected for pieces that need to move from desk to dinner.</p>
+					</div>
+				</div>
+							</div>
+
+			<ul class="veylique-about-check-list">
+								<li>No scratchy linings</li>
+								<li>No fussy care rituals</li>
+								<li>Comfort-first fit standard</li>
+								<li>Responsible sourcing where possible</li>
+							</ul>
+
+		</div>
+	</section>
+		<!-- ⑧ PRESS ─────────────────────────────────────────────── -->
+	<section class="veylique-about-press">
+				<p class="veylique-about-press-label veylique-reveal-js veylique-reveal--static-js">As Featured In</p>
+				<div class="veylique-about-press-scroll" aria-hidden="true">
+			<div class="veylique-about-press-track">
+								<span class="veylique-about-press-n">The Style Edit</span><span class="veylique-about-press-sep">&middot;</span>
+										<span class="veylique-about-press-n">Modern Wardrobe</span><span class="veylique-about-press-sep">&middot;</span>
+										<span class="veylique-about-press-n">Style Journal</span><span class="veylique-about-press-sep">&middot;</span>
+										<span class="veylique-about-press-n">The Style Report</span><span class="veylique-about-press-sep">&middot;</span>
+										<span class="veylique-about-press-n">Considered Living</span><span class="veylique-about-press-sep">&middot;</span>
+										<span class="veylique-about-press-n">Daily Fits</span><span class="veylique-about-press-sep">&middot;</span>
+										<span class="veylique-about-press-n">The Wardrobe Review</span><span class="veylique-about-press-sep">&middot;</span>
+										<span class="veylique-about-press-n">The Style Edit</span><span class="veylique-about-press-sep">&middot;</span>
+										<span class="veylique-about-press-n">Modern Wardrobe</span><span class="veylique-about-press-sep">&middot;</span>
+										<span class="veylique-about-press-n">Style Journal</span><span class="veylique-about-press-sep">&middot;</span>
+										<span class="veylique-about-press-n">The Style Report</span><span class="veylique-about-press-sep">&middot;</span>
+										<span class="veylique-about-press-n">Considered Living</span><span class="veylique-about-press-sep">&middot;</span>
+										<span class="veylique-about-press-n">Daily Fits</span><span class="veylique-about-press-sep">&middot;</span>
+										<span class="veylique-about-press-n">The Wardrobe Review</span><span class="veylique-about-press-sep">&middot;</span>
+										<span class="veylique-about-press-n">The Style Edit</span><span class="veylique-about-press-sep">&middot;</span>
+										<span class="veylique-about-press-n">Modern Wardrobe</span><span class="veylique-about-press-sep">&middot;</span>
+										<span class="veylique-about-press-n">Style Journal</span><span class="veylique-about-press-sep">&middot;</span>
+										<span class="veylique-about-press-n">The Style Report</span><span class="veylique-about-press-sep">&middot;</span>
+										<span class="veylique-about-press-n">Considered Living</span><span class="veylique-about-press-sep">&middot;</span>
+										<span class="veylique-about-press-n">Daily Fits</span><span class="veylique-about-press-sep">&middot;</span>
+										<span class="veylique-about-press-n">The Wardrobe Review</span><span class="veylique-about-press-sep">&middot;</span>
+									</div>
+		</div>
+	</section>
+		<section
+	class="veylique-fullcta"
+	aria-label="Begin Your Wardrobe"
+		style="--cta-bg: url(&#039;images/hero-3.webp&#039;); --cta-bg-mobile: url(&#039;images/hero-3.webp&#039;)"
+	>
+	<div class="veylique-fullcta-overlay"></div>
+	<div class="veylique-fullcta-inner">
+
+				<p class="veylique-fullcta-label veylique-reveal-js veylique-reveal--static-js">
+			Begin Your Wardrobe		</p>
+		
+		<h2 class="veylique-fullcta-heading veylique-reveal-js veylique-reveal--static-js">
+			Your wardrobe refresh awaits.		</h2>
+
+				<div class="veylique-fullcta-btns">
+			<a
+				href="#"
+				class="veylique-fullcta-btn veylique-reveal-js veylique-reveal--static-js"
+				data-veylique-delay="0.15"
+			>
+				<span>Shop All Products</span>
+				<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+			</a>
+						<a
+				href="contact.html"
+				class="veylique-fullcta-btn veylique-fullcta-btn--outline veylique-reveal-js veylique-reveal--static-js"
+				data-veylique-delay="0.28"
+			>
+				<span>Get In Touch</span>
+			</a>
+					</div>
+		
+	</div>
+</section>
+	
+</main><!-- /#veyliquePage -->
+
+<footer class="veylique-footer" role="contentinfo">
+
+	<div class="veylique-footer-main">
+		<div class="veylique-footer-inner">
+
+			<div class="veylique-footer-col veylique-footer-col--cta">
+				<p class="veylique-footer-headline">Discover your next favourite outfit. Shop today.</p>
+				<a href="#" class="veylique-footer-cta-btn">
+					<span>Shop Collection</span>
+					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+				</a>
+				<p class="veylique-footer-copy">&copy; 2026 Mustard &middot; Women's Fashion</p>
+				<nav class="veylique-footer-legal" aria-label="Legal">
+					<a href="#">Privacy Policy</a>
+					<a href="#">Refund Policy</a>
+				</nav>
+			</div>
+
+			<nav class="veylique-footer-col veylique-footer-col--nav" aria-label="Footer navigation">
+				<ul class="veylique-footer-menu"><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="services.html">Services</a></li><li><a href="faq.html">FAQ</a></li><li><a href="contact.html">Contact</a></li></ul>
+			</nav>
+
+			<div class="veylique-footer-col veylique-footer-col--connect">
+				<h2 class="veylique-footer-connect-h">Connect</h2>
+				<div class="veylique-footer-social">
+					<a href="#" aria-label="Instagram" tabindex="-1">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" stroke="none"/></svg>
+					</a>
+					<a href="#" aria-label="TikTok" tabindex="-1">
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.22 8.22 0 0 0 4.84 1.55V6.79a4.85 4.85 0 0 1-1.07-.1z"/></svg>
+					</a>
+					<a href="#" aria-label="Pinterest" tabindex="-1">
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Brand mask (video through letters) -->
+	<div class="veylique-footer-brand" aria-hidden="true">
+		<div class="veylique-footer-brand-text">MUSTARD</div>
+		<video class="veylique-footer-brand-video" autoplay muted loop playsinline poster="images/cta.webp" preload="none">
+			<source src="images/footer-video.mp4" type="video/mp4">
+		</video>
+	</div>
+
+</footer>
+
+<div class="veylique-cart-overlay" data-veylique-cart-overlay aria-hidden="true"></div>
+<aside class="veylique-cart-drawer" id="veyliqueCartDrawer" aria-label="Shopping cart" aria-hidden="true" inert data-veylique-cart-drawer>
+	<div class="veylique-drawer-head">
+		<h2 class="veylique-drawer-title">Your Cart</h2>
+		<button type="button" class="veylique-drawer-close" aria-label="Close cart" data-veylique-cart-close>
+			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+		</button>
+	</div>
+	<div class="veylique-drawer-body">
+		<div class="veylique-drawer-items"><div class="veylique-drawer-empty-state"><p class="veylique-drawer-empty">Your cart is empty.</p><a href="#" class="veylique-drawer-empty-btn veylique-btn btn-black">Shop Products</a></div></div>	</div>
+	<div class="veylique-drawer-footer"></div>
+</aside>
+
+<script id="veylique-bootstrap-js" src="vendor/bootstrap/bootstrap.bundle.min.js"></script>
+<script id="gsap-js" src="vendor/gsap/gsap.min.js"></script>
+<script id="gsap-scrolltrigger-js" src="vendor/gsap/ScrollTrigger.min.js"></script>
+<script id="gsap-splittext-js" src="vendor/gsap/SplitText.min.js"></script>
+<script id="veylique-rainyday-js" src="vendor/rainyday/rainyday.js"></script>
+<script id="veylique-main-js-extra">
+var veyliqueData = {"ajaxUrl":"#","nonce":"static-demo","cartNonce":"static-demo","shopUrl":"#","cartUrl":"#","i18n":{"addToWishlist":"Add to wishlist","removeFromWishlist":"Remove from wishlist","addToCart":"Add to Cart","viewProduct":"View Product","viewCart":"View Cart","quantity":"Quantity","decrease":"Decrease","increase":"Increase","loadingFavourites":"Loading favourites...","remove":"Remove","removeFromWishlistOf":"Remove %s from wishlist","openMenu":"Open menu","closeMenu":"Close menu","showPassword":"Show password","hidePassword":"Hide password","pwWeak":"Weak","pwFair":"Fair","pwGood":"Good","pwStrong":"Strong"}};
+</script>
+<script src="vendor/swiper/swiper-bundle.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
