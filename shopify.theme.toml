@@ -1,0 +1,3 @@
+[environments.default]
+store = "veylique-development.myshopify.com"
+theme = "159857541305"

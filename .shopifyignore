@@ -10,6 +10,7 @@ static-demo/*
 # Local Shopify and validation configuration
 .shopifyignore
 .theme-check.yml
+shopify.theme.toml
 
 # AI development instructions
 AGENTS.md
