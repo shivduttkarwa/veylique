@@ -1,14 +1,18 @@
 <div class="veylique-section-intro veylique-section-intro-js full-width">
   <div class="veylique-container-wide">
-    <h2 class="veylique-section-title">{{ section.settings.heading }}</h2>
-    <p class="veylique-section-desc">{{ section.settings.text }}</p>
+    <div class="row">
+      <div class="col-12 col-xl-10">
+        <h2 id="VeyliqueBestsellersTitle-{{ section.id }}" class="veylique-section-title">{{ section.settings.heading }}</h2>
+        <p class="veylique-section-desc">{{ section.settings.text }}</p>
+      </div>
+    </div>
   </div>
 </div>
 
-<section class="veylique-best-section full-width" aria-label="{{ section.settings.heading | escape }}">
+<section class="veylique-best-section full-width" aria-labelledby="VeyliqueBestsellersTitle-{{ section.id }}">
   <div class="veylique-best-inner">
     <div class="veylique-best-slider-area" data-veylique-card-slider>
-      <div class="veylique-best-swiper" tabindex="0" data-veylique-card-slider-viewport>
+      <div class="swiper veylique-best-swiper" tabindex="0" data-veylique-card-slider-viewport>
         <div class="swiper-wrapper" data-veylique-card-slider-track>
           {% for block in section.blocks %}
             <div class="swiper-slide" {{ block.shopify_attributes }}>
@@ -30,12 +34,12 @@
       </div>
 
       {% if section.settings.show_navigation %}
-        <div class="veylique-best-nav" aria-label="{{ section.settings.controls_label | escape }}">
-          <button class="veylique-best-nav-btn veylique-best-prev" type="button" data-veylique-card-slider-prev aria-label="{{ section.settings.previous_label | escape }}">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <div class="veylique-carousel-nav veylique-best-nav" aria-label="{{ section.settings.controls_label | escape }}">
+          <button class="veylique-carousel-nav-btn veylique-best-nav-btn veylique-best-prev" type="button" data-veylique-card-slider-prev aria-label="{{ section.settings.previous_label | escape }}">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
           </button>
-          <button class="veylique-best-nav-btn veylique-best-next" type="button" data-veylique-card-slider-next aria-label="{{ section.settings.next_label | escape }}">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <button class="veylique-carousel-nav-btn veylique-best-nav-btn veylique-best-next" type="button" data-veylique-card-slider-next aria-label="{{ section.settings.next_label | escape }}">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
         </div>
       {% endif %}
@@ -106,6 +110,9 @@
     {
       "name": "Veylique bestsellers",
       "blocks": [
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
         { "type": "product" },
         { "type": "product" },
         { "type": "product" },

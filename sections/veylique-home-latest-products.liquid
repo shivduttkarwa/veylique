@@ -1,30 +1,49 @@
 <div class="veylique-section-intro veylique-section-intro-js veylique-latest-intro full-width">
   <div class="veylique-container-wide">
-    <h2 class="veylique-section-title">{{ section.settings.heading }}</h2>
-    <p class="veylique-section-desc">{{ section.settings.text }}</p>
+    <div class="row">
+      <div class="col-12 col-xl-10">
+        <h2 id="VeyliqueLatestTitle-{{ section.id }}" class="veylique-section-title">{{ section.settings.heading }}</h2>
+        <p class="veylique-section-desc">{{ section.settings.text }}</p>
+      </div>
+    </div>
   </div>
 </div>
 
-<section class="veylique-latest full-width" aria-label="{{ section.settings.heading | escape }}">
-  <div class="veylique-latest-grid">
-    {% for block in section.blocks %}
-      <div {{ block.shopify_attributes }}>
-        {% render 'veylique-home-product-card',
-          variant: 'latest',
-          product: block.settings.product,
-          title: block.settings.title,
-          category: block.settings.category,
-          badge: block.settings.badge,
-          price: block.settings.price,
-          compare_price: block.settings.compare_price,
-          image: block.settings.image,
-          hover_image: block.settings.hover_image,
-          fallback: block.settings.fallback,
-          hover_fallback: block.settings.hover_fallback,
-          link: block.settings.link
-        %}
+<section class="veylique-latest full-width" aria-labelledby="VeyliqueLatestTitle-{{ section.id }}">
+  <div class="veylique-latest-slider-area" data-veylique-card-slider>
+    <div class="swiper veylique-latest-swiper" tabindex="0" data-veylique-card-slider-viewport>
+      <div class="swiper-wrapper veylique-latest-grid" data-veylique-card-slider-track>
+        {% for block in section.blocks %}
+          <div class="swiper-slide" {{ block.shopify_attributes }}>
+            {% render 'veylique-home-product-card',
+              variant: 'latest',
+              product: block.settings.product,
+              title: block.settings.title,
+              category: block.settings.category,
+              badge: block.settings.badge,
+              price: block.settings.price,
+              compare_price: block.settings.compare_price,
+              image: block.settings.image,
+              hover_image: block.settings.hover_image,
+              fallback: block.settings.fallback,
+              hover_fallback: block.settings.hover_fallback,
+              link: block.settings.link
+            %}
+          </div>
+        {% endfor %}
       </div>
-    {% endfor %}
+    </div>
+
+    {% if section.settings.show_navigation %}
+      <div class="veylique-carousel-nav veylique-latest-nav" aria-label="{{ section.settings.controls_label | escape }}">
+        <button class="veylique-carousel-nav-btn veylique-latest-prev" type="button" data-veylique-card-slider-prev aria-label="{{ section.settings.previous_label | escape }}">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        </button>
+        <button class="veylique-carousel-nav-btn veylique-latest-next" type="button" data-veylique-card-slider-next aria-label="{{ section.settings.next_label | escape }}">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    {% endif %}
   </div>
 
   {% if section.settings.button_label != blank %}
@@ -41,6 +60,10 @@
   "settings": [
     { "type": "text", "id": "heading", "label": "Heading", "default": "Latest Products" },
     { "type": "textarea", "id": "text", "label": "Text", "default": "Freshly launched styles and seasonal essentials selected for your next outfit." },
+    { "type": "checkbox", "id": "show_navigation", "label": "Show navigation", "default": true },
+    { "type": "text", "id": "controls_label", "label": "Controls label", "default": "Latest products carousel controls" },
+    { "type": "text", "id": "previous_label", "label": "Previous label", "default": "Previous products" },
+    { "type": "text", "id": "next_label", "label": "Next label", "default": "Next products" },
     { "type": "text", "id": "button_label", "label": "Button label", "default": "View All Products" },
     { "type": "url", "id": "button_link", "label": "Button link" }
   ],

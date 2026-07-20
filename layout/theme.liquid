@@ -34,7 +34,7 @@
     {{ content_for_header }}
   </head>
 
-  <body>
+  <body class="template-{{ template.name }}{% if template.suffix %} template-{{ template.name }}-{{ template.suffix }}{% endif %}">
     <a class="skip-to-content-link" href="#MainContent">
       {{ 'accessibility.skip_to_content' | t }}
     </a>

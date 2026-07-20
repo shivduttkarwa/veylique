@@ -1,5 +1,6 @@
 # Local source/demo files
 static-demo/*
+shopify-upload/*
 
 # Editor and repository metadata
 .git/*
@@ -26,17 +27,3 @@ LICENSE.md
 # Local deployment utilities
 deploy.bat
 scripts/*
-
-# Old static-demo vendor/font artifacts from the rejected shortcut conversion
-assets/bootstrap*.css
-assets/bootstrap*.js
-assets/swiper*.css
-assets/swiper*.js
-assets/gsap*.js
-assets/ScrollTrigger*.js
-assets/SplitText*.js
-assets/rainyday*.js
-assets/clash-display*
-assets/inter*
-assets/demo-vid.mp4
-assets/footer-video.mp4

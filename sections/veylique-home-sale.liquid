@@ -41,10 +41,19 @@
     <div class="veylique-eos-media">
       {% if section.settings.video != blank %}
         {{ section.settings.video | video_tag: autoplay: true, muted: true, loop: true, playsinline: true, preload: 'auto', class: 'veylique-eos-video' }}
+      {% elsif section.settings.poster != blank %}
+        {{
+          section.settings.poster
+          | image_url: width: 1600
+          | image_tag:
+            class: 'veylique-eos-video',
+            loading: 'lazy',
+            widths: '600, 900, 1200, 1600',
+            sizes: '100vw',
+            alt: section.settings.poster.alt | default: section.settings.aria_label
+        }}
       {% else %}
-        <video class="veylique-eos-video" autoplay muted loop playsinline preload="auto">
-          <source src="{{ 'demo-vid.mp4' | asset_url }}" type="video/mp4">
-        </video>
+        {{ 'lifestyle-2' | placeholder_svg_tag: 'veylique-eos-video veylique-eos-video--placeholder' }}
       {% endif %}
       <div class="veylique-eos-veil" aria-hidden="true"></div>
       <div class="veylique-eos-sticker" aria-hidden="true">
@@ -85,6 +94,7 @@
     { "type": "url", "id": "button_link", "label": "Button link" },
     { "type": "text", "id": "note", "label": "Note", "default": "On sale items - while sizes last" },
     { "type": "video", "id": "video", "label": "Video" },
+    { "type": "image_picker", "id": "poster", "label": "Video fallback image", "info": "Shown when no video is set. Recommended for performance." },
     { "type": "text", "id": "sticker_text", "label": "Sticker text", "default": "More Items * More Savings * Up to 40% Off * More Items * More Savings *" },
     { "type": "text", "id": "sticker_core", "label": "Sticker center", "default": "-40%" }
   ],

@@ -288,9 +288,9 @@
             "product": "",
             "fallback": "cta.webp",
             "hover_fallback": "hero-2.webp",
-            "badge": "New",
+            "badge": "Bestseller",
             "title": "Puff Sleeve Crop Top",
-            "price": "$38.00",
+            "price": "$28.00",
             "link": ""
           }
         },
@@ -300,9 +300,21 @@
             "product": "",
             "fallback": "manifest-cta.jpg",
             "hover_fallback": "founder.jpg",
-            "badge": "Limited",
+            "badge": "Bestseller",
+            "title": "Ruffle Sleeve Blouse",
+            "price": "$34.00",
+            "link": ""
+          }
+        },
+        "best_7": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "fallback": "founder.jpg",
+            "hover_fallback": "manifest-cta.jpg",
+            "badge": "New",
             "title": "Satin Slip Dress",
-            "price": "$78.00",
+            "price": "$72.00",
             "link": ""
           }
         }
@@ -313,7 +325,8 @@
         "best_3",
         "best_4",
         "best_5",
-        "best_6"
+        "best_6",
+        "best_7"
       ],
       "settings": {
         "heading": "Shop Bestsellers",
@@ -605,6 +618,10 @@
       "settings": {
         "heading": "Latest Products",
         "text": "Freshly launched styles and seasonal essentials selected for your next outfit.",
+        "show_navigation": true,
+        "controls_label": "Latest products carousel controls",
+        "previous_label": "Previous products",
+        "next_label": "Next products",
         "button_label": "View All Products",
         "button_link": ""
       }
