@@ -23,6 +23,33 @@ body {
   grid-column: 1 / -1;
 }
 
+/* Minimal Bootstrap-grid shim — only the classes the demo markup relies on
+   (row / col-12 / col-xl-10 / container-fluid / px-0). Replaces the full
+   Bootstrap stylesheet the static demo loaded. */
+.container-fluid {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 0.75rem;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+.col-12 {
+  flex: 0 0 auto;
+  width: 100%;
+}
+@media (min-width: 1200px) {
+  .col-xl-10 {
+    flex: 0 0 auto;
+    width: 83.333333%;
+  }
+}
+.px-0 {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
 .veylique-container {
   width: min(100% - (var(--veylique-container-gutter) * 2), var(--veylique-container));
   margin-inline: auto;
@@ -3119,6 +3146,24 @@ body {
   display: block;
   opacity: 0;
   pointer-events: none;
+}
+
+/* Entrance overlay on the first card's media — dissolving mosaic tiles. */
+.veylique-mosaic-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  pointer-events: none;
+}
+
+.veylique-mosaic-tile {
+  background: #ffffff;
+  border: 0.0625rem solid rgba(36, 24, 22, 0.04);
+  transform-origin: center;
+  will-change: transform, opacity;
 }
 
 /* Reduced motion: no scroll pinning, first card just shows. */

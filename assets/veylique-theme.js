@@ -1977,6 +1977,10 @@
 
       if (!window.matchMedia('(min-width: 992px)').matches || !stage || cards.length < 2) return;
 
+      var hasGsap = typeof gsap !== 'undefined';
+      var hasScrollTrigger = hasGsap && typeof ScrollTrigger !== 'undefined';
+      if (hasScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+
       /* Rasterize a whole card (surface + image + text) into an offscreen
          canvas from its real computed styles and geometry — the texture is
          only ever seen mid-flight and distorted. */
@@ -2074,6 +2078,109 @@
         var img = card.querySelector('.veylique-ritual-card-media img');
         if (img && typeof img.decode === 'function') img.decode().catch(function () {});
       });
+
+      /* One-time entrance on the first card: mosaic-tile dissolve + image
+         un-blur + content stagger. GSAP-gated; the peel runs regardless. */
+      function initRitualEntrance() {
+        if (!hasGsap || !hasScrollTrigger) return;
+
+        var desktop = section.querySelector('.veylique-ritual-desktop');
+        var progressRow = section.querySelector('.veylique-ritual-progress-row');
+        var baseCard = cards[0];
+        if (!desktop || !baseCard) return;
+
+        var media = baseCard.querySelector('.veylique-ritual-card-media');
+        var mediaImg = media ? media.querySelector('img') : null;
+        var body = baseCard.querySelector('.veylique-ritual-card-body');
+        var contentEls = body ? Array.prototype.slice.call(body.children) : [];
+        var mosaic = null;
+        var tiles = [];
+        var entranceTrigger = null;
+        var entrancePlayed = false;
+
+        if (progressRow) contentEls.push(progressRow);
+
+        if (media) {
+          media.style.overflow = 'hidden';
+          mosaic = document.createElement('div');
+          mosaic.className = 'veylique-mosaic-grid';
+          for (var i = 0; i < 24; i++) {
+            var tile = document.createElement('span');
+            tile.className = 'veylique-mosaic-tile';
+            mosaic.appendChild(tile);
+          }
+          media.appendChild(mosaic);
+          tiles = Array.prototype.slice.call(mosaic.querySelectorAll('.veylique-mosaic-tile'));
+        }
+
+        if (mediaImg) {
+          gsap.set(mediaImg, { scale: 1.18, filter: 'blur(8px)', transformOrigin: 'top right' });
+        }
+
+        if (contentEls.length) {
+          gsap.set(contentEls, { autoAlpha: 0, y: 24 });
+        }
+
+        function playEntrance() {
+          if (entrancePlayed) return;
+          entrancePlayed = true;
+          if (entranceTrigger) entranceTrigger.kill(false);
+
+          if (tiles.length) {
+            gsap.to(tiles, {
+              opacity: 0,
+              scale: 0.4,
+              rotate: function () { return gsap.utils.random(-18, 18); },
+              yPercent: function () { return gsap.utils.random(-80, 80); },
+              xPercent: function () { return gsap.utils.random(-80, 80); },
+              duration: 0.9,
+              ease: 'power4.inOut',
+              stagger: { amount: 0.65, from: 'random' },
+              onComplete: function () { gsap.set(mosaic, { display: 'none' }); }
+            });
+          }
+
+          if (mediaImg) {
+            gsap.to(mediaImg, {
+              scale: 1,
+              filter: 'blur(0px)',
+              duration: 1.35,
+              ease: 'power4.out',
+              onComplete: function () {
+                gsap.set(mediaImg, { clearProps: 'filter,transform' });
+                queueBuildTextures();
+              }
+            });
+          }
+
+          if (contentEls.length) {
+            gsap.to(contentEls, {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.7,
+              ease: 'power3.out',
+              stagger: 0.12,
+              delay: 0.12,
+              onComplete: function () { gsap.set(contentEls, { clearProps: 'visibility,opacity,transform' }); }
+            });
+          }
+        }
+
+        entranceTrigger = ScrollTrigger.create({
+          trigger: desktop,
+          start: 'top 60%',
+          once: true,
+          onEnter: playEntrance,
+          onEnterBack: playEntrance
+        });
+
+        window.requestAnimationFrame(function () {
+          var rect = section.getBoundingClientRect();
+          if (rect.top < window.innerHeight * 0.82 && rect.bottom > 0) playEntrance();
+        });
+      }
+
+      initRitualEntrance();
 
       var scrollProgress = 0;
       var activeBase = 0;
@@ -2227,23 +2334,38 @@
         }
       }
 
-      var ticking = false;
-      function onScroll() {
-        if (ticking) return;
-        ticking = true;
-        window.requestAnimationFrame(function () {
-          ticking = false;
-          var distance = Math.max(1, section.offsetHeight - window.innerHeight);
-          scrollProgress = ritualClamp((window.scrollY - section.offsetTop) / distance, 0, 1);
-          render();
+      if (hasScrollTrigger) {
+        ScrollTrigger.create({
+          trigger: section,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: true,
+          onUpdate: function (self) { scrollProgress = self.progress; }
         });
+        gsap.ticker.add(render);
+      } else {
+        var ticking = false;
+        var onScroll = function () {
+          if (ticking) return;
+          ticking = true;
+          window.requestAnimationFrame(function () {
+            ticking = false;
+            var distance = Math.max(1, section.offsetHeight - window.innerHeight);
+            scrollProgress = ritualClamp((window.scrollY - section.offsetTop) / distance, 0, 1);
+            render();
+          });
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll);
+        onScroll();
       }
 
-      window.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', onScroll);
-      window.addEventListener('load', queueBuildTextures);
-      onScroll();
       render();
+
+      window.addEventListener('load', function () {
+        if (hasScrollTrigger) ScrollTrigger.refresh();
+        queueBuildTextures();
+      });
     });
   }
 
