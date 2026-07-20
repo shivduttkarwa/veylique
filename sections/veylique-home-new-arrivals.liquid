@@ -1,7 +1,19 @@
 {% liquid
-  assign first_slide = section.blocks.first
-  assign first_text = first_slide.settings.text | default: 'Fresh off the rack — fluid silhouettes and considered fabrics for effortless, everyday style.'
-  assign first_link = first_slide.settings.link | default: routes.all_products_collection_url
+  assign product_collection = section.settings.collection
+  assign products_to_show = section.settings.products_to_show
+  assign has_products = false
+  if product_collection != blank and product_collection.products.size > 0
+    assign has_products = true
+  endif
+
+  if has_products
+    assign first_product = product_collection.products.first
+    assign first_text = first_product.title
+    assign first_link = first_product.url
+  else
+    assign first_text = section.settings.text
+    assign first_link = routes.all_products_collection_url
+  endif
 %}
 
 <div class="veylique-arrivals-band full-width" data-veylique-arrivals>
@@ -19,38 +31,67 @@
   <section class="veylique-slider-section container-fluid px-0" aria-label="{{ section.settings.aria_label | escape }}">
     <div class="veylique-slider-stage is-loading" id="veyliqueSlider-{{ section.id }}">
       <div class="veylique-slides" id="veyliqueSlides-{{ section.id }}">
-        {% for block in section.blocks %}
-          {% liquid
-            assign slide_number = forloop.index | prepend: '0' | slice: -2, 2
-            assign slide_link = block.settings.link | default: routes.all_products_collection_url
-            assign slide_loading = 'lazy'
-            assign slide_alt = block.settings.alt | default: block.settings.text
-            if forloop.first
-              assign slide_loading = 'eager'
-            endif
-          %}
-          <div
-            class="veylique-slide{% if forloop.first %} is-active{% elsif forloop.index == 2 %} is-next{% else %} is-hidden-right{% endif %}"
-            data-veylique-arrivals-slide
-            data-index="{{ forloop.index0 }}"
-            data-number="{{ slide_number }}"
-            data-text="{{ block.settings.text | escape }}"
-            data-url="{{ slide_link }}"
-            {{ block.shopify_attributes }}
-          >
-            <div class="veylique-slide-inner">
-              {% render 'veylique-responsive-image',
-                image: block.settings.image,
-                fallback: block.settings.fallback,
-                class: '',
-                alt: slide_alt,
-                width: 1200,
-                height: 1500,
-                loading: slide_loading
-              %}
+        {% if has_products %}
+          {% for product in product_collection.products limit: products_to_show %}
+            {% liquid
+              assign slide_number = forloop.index | prepend: '0' | slice: -2, 2
+              assign slide_loading = 'lazy'
+              if forloop.first
+                assign slide_loading = 'eager'
+              endif
+            %}
+            <div
+              class="veylique-slide{% if forloop.first %} is-active{% elsif forloop.index == 2 %} is-next{% else %} is-hidden-right{% endif %}"
+              data-veylique-arrivals-slide
+              data-index="{{ forloop.index0 }}"
+              data-number="{{ slide_number }}"
+              data-text="{{ product.title | escape }}"
+              data-url="{{ product.url }}"
+            >
+              <div class="veylique-slide-inner">
+                {% render 'veylique-responsive-image',
+                  image: product.featured_image,
+                  class: '',
+                  alt: product.title,
+                  width: 1200,
+                  height: 1500,
+                  loading: slide_loading,
+                  placeholder: true
+                %}
+              </div>
             </div>
-          </div>
-        {% endfor %}
+          {% endfor %}
+        {% else %}
+          {% for i in (1..products_to_show) %}
+            {% liquid
+              assign slide_number = forloop.index | prepend: '0' | slice: -2, 2
+              assign slide_loading = 'lazy'
+              if forloop.first
+                assign slide_loading = 'eager'
+              endif
+            %}
+            <div
+              class="veylique-slide{% if forloop.first %} is-active{% elsif forloop.index == 2 %} is-next{% else %} is-hidden-right{% endif %}"
+              data-veylique-arrivals-slide
+              data-index="{{ forloop.index0 }}"
+              data-number="{{ slide_number }}"
+              data-text="{{ section.settings.text | escape }}"
+              data-url="{{ routes.all_products_collection_url }}"
+            >
+              <div class="veylique-slide-inner">
+                {% render 'veylique-responsive-image',
+                  class: '',
+                  alt: section.settings.heading,
+                  width: 1200,
+                  height: 1500,
+                  loading: slide_loading,
+                  placeholder: true,
+                  placeholder_name: 'product-apparel-1'
+                %}
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
       </div>
 
       <div class="veylique-hit-area" aria-hidden="true">
@@ -94,6 +135,20 @@
       "default": "The newest pieces to land in the collection, fresh off the rack and ready to wear."
     },
     {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:sections.veylique-home-new-arrivals.settings.collection.label"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "default": 4,
+      "label": "t:sections.veylique-home-new-arrivals.settings.products_to_show.label"
+    },
+    {
       "type": "text",
       "id": "button_label",
       "label": "t:sections.veylique-home-new-arrivals.settings.button_label.label",
@@ -124,59 +179,9 @@
       "default": "Next slide"
     }
   ],
-  "blocks": [
-    {
-      "type": "slide",
-      "name": "t:sections.veylique-home-new-arrivals.blocks.slide.name",
-      "settings": [
-        {
-          "type": "image_picker",
-          "id": "image",
-          "label": "t:sections.veylique-home-new-arrivals.blocks.slide.settings.image.label"
-        },
-        {
-          "type": "text",
-          "id": "fallback",
-          "label": "t:sections.veylique-home-new-arrivals.blocks.slide.settings.fallback.label",
-          "default": "hero-1.webp"
-        },
-        {
-          "type": "text",
-          "id": "alt",
-          "label": "t:sections.veylique-home-new-arrivals.blocks.slide.settings.alt.label",
-          "default": "Veylique new arrival look"
-        },
-        {
-          "type": "textarea",
-          "id": "text",
-          "label": "t:sections.veylique-home-new-arrivals.blocks.slide.settings.text.label",
-          "default": "Fresh off the rack — fluid silhouettes and considered fabrics for effortless, everyday style."
-        },
-        {
-          "type": "url",
-          "id": "link",
-          "label": "t:sections.veylique-home-new-arrivals.blocks.slide.settings.link.label"
-        }
-      ]
-    }
-  ],
   "presets": [
     {
-      "name": "t:sections.veylique-home-new-arrivals.presets.name",
-      "blocks": [
-        {
-          "type": "slide"
-        },
-        {
-          "type": "slide"
-        },
-        {
-          "type": "slide"
-        },
-        {
-          "type": "slide"
-        }
-      ]
+      "name": "t:sections.veylique-home-new-arrivals.presets.name"
     }
   ]
 }

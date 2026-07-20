@@ -13,24 +13,27 @@
   <div class="veylique-latest-slider-area" data-veylique-card-slider>
     <div class="swiper veylique-latest-swiper" tabindex="0" data-veylique-card-slider-viewport>
       <div class="swiper-wrapper veylique-latest-grid" data-veylique-card-slider-track>
-        {% for block in section.blocks %}
-          <div class="swiper-slide" {{ block.shopify_attributes }}>
-            {% render 'veylique-home-product-card',
-              variant: 'latest',
-              product: block.settings.product,
-              title: block.settings.title,
-              category: block.settings.category,
-              badge: block.settings.badge,
-              price: block.settings.price,
-              compare_price: block.settings.compare_price,
-              image: block.settings.image,
-              hover_image: block.settings.hover_image,
-              fallback: block.settings.fallback,
-              hover_fallback: block.settings.hover_fallback,
-              link: block.settings.link
-            %}
-          </div>
-        {% endfor %}
+        {% liquid
+          assign products_to_show = section.settings.products_to_show
+          assign product_collection = section.settings.collection
+          assign has_products = false
+          if product_collection != blank and product_collection.products.size > 0
+            assign has_products = true
+          endif
+        %}
+        {% if has_products %}
+          {% for product in product_collection.products limit: products_to_show %}
+            <div class="swiper-slide">
+              {% render 'veylique-home-product-card', variant: 'latest', product: product %}
+            </div>
+          {% endfor %}
+        {% else %}
+          {% for i in (1..products_to_show) %}
+            <div class="swiper-slide">
+              {% render 'veylique-home-product-card', variant: 'latest', placeholder: true %}
+            </div>
+          {% endfor %}
+        {% endif %}
       </div>
     </div>
 
@@ -71,6 +74,20 @@
       "default": "Freshly launched styles and seasonal essentials selected for your next outfit."
     },
     {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:sections.veylique-home-latest-products.settings.collection.label"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "default": 10,
+      "label": "t:sections.veylique-home-latest-products.settings.products_to_show.label"
+    },
+    {
       "type": "checkbox",
       "id": "show_navigation",
       "label": "t:sections.veylique-home-latest-products.settings.show_navigation.label",
@@ -106,95 +123,9 @@
       "label": "t:sections.veylique-home-latest-products.settings.button_link.label"
     }
   ],
-  "blocks": [
-    {
-      "type": "product",
-      "name": "t:sections.veylique-home-latest-products.blocks.product.name",
-      "settings": [
-        {
-          "type": "product",
-          "id": "product",
-          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.product.label"
-        },
-        {
-          "type": "image_picker",
-          "id": "image",
-          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.image.label"
-        },
-        {
-          "type": "image_picker",
-          "id": "hover_image",
-          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.hover_image.label"
-        },
-        {
-          "type": "text",
-          "id": "fallback",
-          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.fallback.label",
-          "default": "hero-1.webp"
-        },
-        {
-          "type": "text",
-          "id": "hover_fallback",
-          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.hover_fallback.label",
-          "default": "hero-2.webp"
-        },
-        {
-          "type": "text",
-          "id": "category",
-          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.category.label",
-          "default": "Dresses"
-        },
-        {
-          "type": "text",
-          "id": "badge",
-          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.badge.label",
-          "default": "New"
-        },
-        {
-          "type": "text",
-          "id": "title",
-          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.title.label",
-          "default": "Linen Wrap Dress"
-        },
-        {
-          "type": "text",
-          "id": "price",
-          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.price.label",
-          "default": "$72.00"
-        },
-        {
-          "type": "text",
-          "id": "compare_price",
-          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.compare_price.label"
-        },
-        {
-          "type": "url",
-          "id": "link",
-          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.link.label"
-        }
-      ]
-    }
-  ],
   "presets": [
     {
-      "name": "t:sections.veylique-home-latest-products.presets.name",
-      "blocks": [
-        {
-          "type": "product"
-        },
-        {
-          "type": "product"
-        },
-        {
-          "type": "product"
-        },
-        {
-          "type": "product"
-        },
-        {
-          "type": "product"
-        }
-      ]
+      "name": "t:sections.veylique-home-latest-products.presets.name"
     }
   ]
 }

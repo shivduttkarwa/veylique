@@ -59,5 +59,12 @@
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",
     "results_for_html": "{{ count }} results found for {{ terms }}"
+  },
+  "products": {
+    "add_to_cart": "Add to cart",
+    "view_cart": "View cart",
+    "select_size": "Select size",
+    "add_to_wishlist": "Add {{ title }} to wishlist",
+    "badge_sale": "Sale"
   }
 }

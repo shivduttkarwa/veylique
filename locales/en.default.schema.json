@@ -366,40 +366,12 @@
         },
         "next_label": {
           "label": "Next label"
-        }
-      },
-      "blocks": {
-        "product": {
-          "name": "Product",
-          "settings": {
-            "product": {
-              "label": "Product"
-            },
-            "image": {
-              "label": "Image"
-            },
-            "hover_image": {
-              "label": "Hover image"
-            },
-            "fallback": {
-              "label": "Fallback asset filename"
-            },
-            "hover_fallback": {
-              "label": "Hover fallback asset filename"
-            },
-            "badge": {
-              "label": "Badge"
-            },
-            "title": {
-              "label": "Fallback title"
-            },
-            "price": {
-              "label": "Fallback price"
-            },
-            "link": {
-              "label": "Fallback link"
-            }
-          }
+        },
+        "collection": {
+          "label": "Collection"
+        },
+        "products_to_show": {
+          "label": "Products to show"
         }
       },
       "presets": {
@@ -596,46 +568,12 @@
         },
         "button_link": {
           "label": "Button link"
-        }
-      },
-      "blocks": {
-        "product": {
-          "name": "Product",
-          "settings": {
-            "product": {
-              "label": "Product"
-            },
-            "image": {
-              "label": "Image"
-            },
-            "hover_image": {
-              "label": "Hover image"
-            },
-            "fallback": {
-              "label": "Fallback asset filename"
-            },
-            "hover_fallback": {
-              "label": "Hover fallback asset filename"
-            },
-            "category": {
-              "label": "Category"
-            },
-            "badge": {
-              "label": "Badge"
-            },
-            "title": {
-              "label": "Fallback title"
-            },
-            "price": {
-              "label": "Fallback price"
-            },
-            "compare_price": {
-              "label": "Fallback compare price"
-            },
-            "link": {
-              "label": "Fallback link"
-            }
-          }
+        },
+        "collection": {
+          "label": "Collection"
+        },
+        "products_to_show": {
+          "label": "Products to show"
         }
       },
       "presets": {
@@ -665,28 +603,12 @@
         },
         "next_label": {
           "label": "Next button label"
-        }
-      },
-      "blocks": {
-        "slide": {
-          "name": "Slide",
-          "settings": {
-            "image": {
-              "label": "Image"
-            },
-            "fallback": {
-              "label": "Fallback asset filename"
-            },
-            "alt": {
-              "label": "Alt text"
-            },
-            "text": {
-              "label": "Card text"
-            },
-            "link": {
-              "label": "Link"
-            }
-          }
+        },
+        "collection": {
+          "label": "Collection"
+        },
+        "products_to_show": {
+          "label": "Products to show"
         }
       },
       "presets": {

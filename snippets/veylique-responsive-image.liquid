@@ -1,13 +1,16 @@
 {% doc %}
-  Renders a merchant-selected image with a theme asset fallback.
+  Renders a merchant-selected image with a theme asset fallback, or a Shopify
+  placeholder SVG for onboarding/empty states.
 
   @param {image} [image] - Image selected in the theme editor or from a Shopify object.
-  @param {string} fallback - Asset filename used when no image is selected.
+  @param {string} [fallback] - Asset filename used when no image is selected.
   @param {string} [class] - Image class.
   @param {string} [alt] - Fallback alt text.
   @param {number} [width] - Maximum image width.
   @param {number} [height] - Fallback image height for static assets.
   @param {string} [loading] - Loading behavior.
+  @param {boolean} [placeholder] - When true and no image is set, render a Shopify placeholder SVG.
+  @param {string} [placeholder_name] - Placeholder SVG name (e.g. "product-apparel-1").
 
   @example
   {% render 'veylique-responsive-image', image: section.settings.image, fallback: 'hero-1.webp', class: 'veylique-media' %}
@@ -18,6 +21,7 @@
   assign fallback_height = height | default: 2200
   assign image_loading = loading | default: 'lazy'
   assign image_alt = alt | default: ''
+  assign placeholder_svg = placeholder_name | default: 'product-apparel-1'
 %}
 
 {% if image != blank %}
@@ -31,7 +35,9 @@
       sizes: '100vw',
       alt: image.alt | default: image_alt
   }}
-{% else %}
+{% elsif placeholder %}
+  {{ placeholder_svg | placeholder_svg_tag: class }}
+{% elsif fallback != blank %}
   <img
     class="{{ class }}"
     src="{{ fallback | asset_url }}"
@@ -40,4 +46,6 @@
     alt="{{ image_alt | escape }}"
     loading="{{ image_loading }}"
   >
+{% else %}
+  {{ placeholder_svg | placeholder_svg_tag: class }}
 {% endif %}
