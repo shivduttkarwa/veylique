@@ -1,0 +1,32 @@
+/* Clash Display — ITF Free Font License (free for personal & commercial use) */
+/* https://www.fontshare.com/fonts/clash-display */
+
+@font-face {
+	font-family: 'Clash Display';
+	src: url('clash-display-400.woff2') format('woff2'),
+	     url('clash-display-400.woff') format('woff'),
+	     url('clash-display-400.ttf') format('truetype');
+	font-weight: 400;
+	font-style: normal;
+	font-display: block;
+}
+
+@font-face {
+	font-family: 'Clash Display';
+	src: url('clash-display-500.woff2') format('woff2'),
+	     url('clash-display-500.woff') format('woff'),
+	     url('clash-display-500.ttf') format('truetype');
+	font-weight: 500;
+	font-style: normal;
+	font-display: block;
+}
+
+@font-face {
+	font-family: 'Clash Display';
+	src: url('clash-display-600.woff2') format('woff2'),
+	     url('clash-display-600.woff') format('woff'),
+	     url('clash-display-600.ttf') format('truetype');
+	font-weight: 600;
+	font-style: normal;
+	font-display: block;
+}
