@@ -121,8 +121,7 @@ body {
 .veylique-home-hero {
   position: relative;
   width: 100%;
-  min-height: 100vh;
-  min-height: 100svh;
+  min-height: 87vh;
   overflow: hidden;
   isolation: isolate;
   color: #fff;
@@ -167,9 +166,16 @@ body {
 .veylique-home-hero__content {
   position: relative;
   z-index: 2;
-  min-height: 100vh;
-  min-height: 100svh;
+  min-height: 90vh;
   pointer-events: none;
+}
+
+@media (min-width: 992px) {
+  .veylique-home-hero,
+  .veylique-home-hero__content {
+    min-height: 100vh;
+    min-height: 100svh;
+  }
 }
 
 .veylique-home-hero__label,
@@ -199,9 +205,9 @@ body {
   font-family: var(--font-heading--family);
   font-style: var(--font-heading--style);
   font-size: clamp(2rem, 3.4vw, 3.25rem);
-  font-weight: 800;
+  font-weight: 600;
   line-height: 0.9;
-  letter-spacing: 0;
+  letter-spacing: -0.03em;
   text-transform: uppercase;
   will-change: clip-path, opacity, transform, filter;
 }
@@ -222,11 +228,11 @@ body {
   border-bottom: 0.0625rem dashed rgba(255, 255, 255, 0.72);
   padding-bottom: 0.95rem;
   color: #fff;
-  font-family: var(--font-heading--family);
-  font-style: var(--font-heading--style);
+  font-family: var(--font-body--family);
+  font-style: var(--font-body--style);
   font-size: clamp(0.8rem, 1vw, 1.06rem);
   font-weight: 800;
-  letter-spacing: 0;
+  letter-spacing: -0.06em;
   line-height: 1;
   text-transform: uppercase;
   text-shadow: 0 0.125rem 1rem rgba(0, 0, 0, 0.28);
@@ -261,9 +267,9 @@ body {
   font-family: var(--font-heading--family);
   font-style: var(--font-heading--style);
   font-size: clamp(4.875rem, 17vw, 20rem);
-  font-weight: var(--font-heading--weight);
+  font-weight: 400;
   line-height: 0.78;
-  letter-spacing: -0.085em;
+  letter-spacing: -0.095em;
   text-align: center;
   text-shadow: 0 0.375rem 2.5rem rgba(0, 0, 0, 0.12);
   text-transform: uppercase;
@@ -399,7 +405,7 @@ body {
   }
   to {
     opacity: 1;
-    letter-spacing: -0.085em;
+    letter-spacing: -0.095em;
     transform: scale(1);
   }
 }
@@ -639,7 +645,7 @@ body {
   font: inherit;
 }
 
-@media (max-width: 900px) {
+@media (min-width: 576px) and (max-width: 991.98px) {
   .veylique-section-head,
   .veylique-editorial {
     grid-template-columns: 1fr;
@@ -677,7 +683,7 @@ body {
   }
 }
 
-@media (max-width: 620px) {
+@media (max-width: 575.98px) {
   .veylique-card-grid {
     grid-template-columns: 1fr;
   }
@@ -686,10 +692,12 @@ body {
     font-size: clamp(3.4rem, 19vw, 5.8rem);
   }
 
-  .veylique-home-hero,
+  .veylique-home-hero {
+    min-height: 87vh;
+  }
+
   .veylique-home-hero__content {
-    min-height: 100vh;
-    min-height: 100svh;
+    min-height: 90vh;
   }
 
   .veylique-home-hero__label {
