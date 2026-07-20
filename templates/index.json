@@ -147,7 +147,7 @@
           "settings": {
             "fallback": "hero-1.webp",
             "alt": "Veylique flowing floral dress",
-            "text": "Fresh off the rack - fluid silhouettes and considered fabrics for effortless, everyday style.",
+            "text": "Fresh off the rack — fluid silhouettes and considered fabrics for effortless, everyday style.",
             "link": ""
           }
         },
@@ -156,7 +156,7 @@
           "settings": {
             "fallback": "hero-2.webp",
             "alt": "Veylique soft printed co-ord",
-            "text": "Soft tailoring, expressive prints, and occasion-ready layers designed to move with you.",
+            "text": "Just landed: clean tailoring and soft textures for a modern wardrobe.",
             "link": ""
           }
         },
@@ -165,7 +165,16 @@
           "settings": {
             "fallback": "hero-3.webp",
             "alt": "Veylique embroidered occasion dress",
-            "text": "Polished pieces with lightness, comfort, and detail built into every line.",
+            "text": "This week's new-season staples, made for real, everyday movement.",
+            "link": ""
+          }
+        },
+        "arrival_4": {
+          "type": "slide",
+          "settings": {
+            "fallback": "hero-4.webp",
+            "alt": "Veylique new season printed outfit",
+            "text": "New in: bold prints and easy fits for effortless, wardrobe-first confidence.",
             "link": ""
           }
         }
@@ -173,7 +182,8 @@
       "block_order": [
         "arrival_1",
         "arrival_2",
-        "arrival_3"
+        "arrival_3",
+        "arrival_4"
       ],
       "settings": {
         "heading": "New Arrivals",

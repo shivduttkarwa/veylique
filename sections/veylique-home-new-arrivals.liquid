@@ -1,20 +1,24 @@
 {% liquid
   assign first_slide = section.blocks.first
-  assign first_text = first_slide.settings.text | default: 'Fresh off the rack - fluid silhouettes and considered fabrics for effortless, everyday style.'
+  assign first_text = first_slide.settings.text | default: 'Fresh off the rack — fluid silhouettes and considered fabrics for effortless, everyday style.'
   assign first_link = first_slide.settings.link | default: routes.all_products_collection_url
 %}
 
 <div class="veylique-arrivals-band full-width" data-veylique-arrivals>
   <div class="veylique-section-intro veylique-section-intro-js">
     <div class="veylique-container-wide">
-      <h2 class="veylique-section-title">{{ section.settings.heading }}</h2>
-      <p class="veylique-section-desc">{{ section.settings.text }}</p>
+      <div class="row">
+        <div class="col-12 col-xl-10">
+          <h2 class="veylique-section-title">{{ section.settings.heading }}</h2>
+          <p class="veylique-section-desc">{{ section.settings.text }}</p>
+        </div>
+      </div>
     </div>
   </div>
 
-  <section class="veylique-slider-section" aria-label="{{ section.settings.aria_label | escape }}">
-    <div class="veylique-slider-stage is-loading">
-      <div class="veylique-slides">
+  <section class="veylique-slider-section container-fluid px-0" aria-label="{{ section.settings.aria_label | escape }}">
+    <div class="veylique-slider-stage is-loading" id="veyliqueSlider-{{ section.id }}">
+      <div class="veylique-slides" id="veyliqueSlides-{{ section.id }}">
         {% for block in section.blocks %}
           {% liquid
             assign slide_number = forloop.index | prepend: '0' | slice: -2, 2
@@ -50,24 +54,24 @@
       </div>
 
       <div class="veylique-hit-area" aria-hidden="true">
-        <button type="button" data-veylique-arrivals-dir="prev" aria-label="{{ section.settings.previous_label | escape }}"></button>
-        <button type="button" data-veylique-arrivals-dir="next" aria-label="{{ section.settings.next_label | escape }}"></button>
+        <button type="button" data-direction="prev" data-veylique-arrivals-dir="prev" aria-label="{{ section.settings.previous_label | escape }}"></button>
+        <button type="button" data-direction="next" data-veylique-arrivals-dir="next" aria-label="{{ section.settings.next_label | escape }}"></button>
       </div>
 
-      <article class="veylique-content-card">
+      <article class="veylique-content-card" id="veyliqueCard-{{ section.id }}">
         <div class="veylique-card-body">
-          <span class="veylique-slide-number veylique-reveal-js veylique-reveal--static-js" data-veylique-arrivals-number>01</span>
-          <p class="veylique-card-text veylique-reveal-js veylique-reveal--static-js" data-veylique-arrivals-text>{{ first_text }}</p>
+          <span class="veylique-slide-number veylique-reveal-js veylique-reveal--static-js" id="veyliqueNumber-{{ section.id }}" data-veylique-arrivals-number>01</span>
+          <p class="veylique-card-text veylique-reveal-js veylique-reveal--static-js" id="veyliqueText-{{ section.id }}" data-veylique-arrivals-text>{{ first_text }}</p>
         </div>
-        <a href="{{ first_link }}" class="veylique-card-button veylique-reveal-js veylique-reveal--static-js" data-veylique-arrivals-link>{{ section.settings.button_label }}</a>
+        <a href="{{ first_link }}" id="veyliqueCardButton-{{ section.id }}" class="veylique-card-button veylique-reveal-js veylique-reveal--static-js" data-veylique-arrivals-link>{{ section.settings.button_label }}</a>
       </article>
 
       <div class="veylique-mobile-arrows" aria-label="{{ section.settings.controls_label | escape }}">
-        <button type="button" class="veylique-mobile-arrow veylique-mobile-arrow--prev" data-veylique-arrivals-dir="prev" aria-label="{{ section.settings.previous_label | escape }}"></button>
-        <button type="button" class="veylique-mobile-arrow veylique-mobile-arrow--next" data-veylique-arrivals-dir="next" aria-label="{{ section.settings.next_label | escape }}"></button>
+        <button type="button" class="veylique-mobile-arrow veylique-mobile-arrow--prev" data-direction="prev" data-veylique-arrivals-dir="prev" aria-label="{{ section.settings.previous_label | escape }}"></button>
+        <button type="button" class="veylique-mobile-arrow veylique-mobile-arrow--next" data-direction="next" data-veylique-arrivals-dir="next" aria-label="{{ section.settings.next_label | escape }}"></button>
       </div>
 
-      <div class="veylique-cursor-arrow" aria-hidden="true"></div>
+      <div class="veylique-cursor-arrow" id="veyliqueCursorArrow-{{ section.id }}" aria-hidden="true"></div>
     </div>
   </section>
 </div>
@@ -146,7 +150,7 @@
           "type": "textarea",
           "id": "text",
           "label": "Card text",
-          "default": "Fresh off the rack - fluid silhouettes and considered fabrics for effortless, everyday style."
+          "default": "Fresh off the rack — fluid silhouettes and considered fabrics for effortless, everyday style."
         },
         {
           "type": "url",
@@ -160,6 +164,7 @@
     {
       "name": "Veylique new arrivals",
       "blocks": [
+        { "type": "slide" },
         { "type": "slide" },
         { "type": "slide" },
         { "type": "slide" }

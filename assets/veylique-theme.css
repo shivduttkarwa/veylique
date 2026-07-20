@@ -1042,6 +1042,8 @@ body {
   --mustard-black: #111111;
   --mustard-white: #ffffff;
   --mustard-glass: rgba(255, 255, 255, 0.34);
+  --mustard-border: rgba(17, 17, 17, 0.92);
+  --mustard-ease: cubic-bezier(0.19, 1, 0.22, 1);
   --mustard-duration: 1280ms;
   position: relative;
   width: 100%;
@@ -1120,6 +1122,8 @@ body {
     opacity 850ms var(--mustard-ease),
     filter 850ms var(--mustard-ease);
   will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
 }
 
 .veylique-slide.is-active,
@@ -1132,6 +1136,7 @@ body {
   --x: 0vw;
   --slide-scale: 0.9;
   z-index: 5;
+  filter: saturate(1);
 }
 
 .veylique-slide.is-prev {
@@ -1151,11 +1156,15 @@ body {
 .veylique-slide.is-hidden-left {
   --x: -112vw;
   --slide-scale: 0.96;
+  z-index: 1;
+  opacity: 0;
 }
 
 .veylique-slide.is-hidden-right {
   --x: 112vw;
   --slide-scale: 0.96;
+  z-index: 1;
+  opacity: 0;
 }
 
 .veylique-slide-inner {
@@ -1165,9 +1174,10 @@ body {
   align-items: center;
   justify-content: center;
   transform: translate3d(0, 0, 0) scale(var(--image-scale, 1.08));
-  transform-origin: center;
+  transform-origin: center center;
   transition: transform var(--mustard-duration) var(--mustard-ease);
   will-change: transform;
+  backface-visibility: hidden;
 }
 
 .veylique-slide.is-active .veylique-slide-inner {
@@ -1194,6 +1204,8 @@ body {
   display: block;
   pointer-events: none;
   user-select: none;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
 }
 
 .veylique-hit-area {
@@ -1229,6 +1241,7 @@ body {
   box-shadow: 0 1.125rem 3.5rem rgba(0, 0, 0, 0.08);
   pointer-events: none;
   transition: opacity 520ms ease, transform 520ms var(--mustard-ease);
+  will-change: opacity, transform;
 }
 
 .veylique-content-card.is-changing {
@@ -1299,6 +1312,7 @@ body {
   opacity: 0;
   transform: translate3d(-50%, -50%, 0) scale(0.7);
   transition: opacity 180ms ease, transform 180ms ease;
+  will-change: transform, opacity;
 }
 
 .veylique-cursor-arrow.is-visible {
@@ -1367,6 +1381,11 @@ body {
   cursor: default;
   opacity: 0.2;
   pointer-events: none;
+}
+
+.veylique-mobile-arrow::after {
+  width: 0.6875rem;
+  height: 0.6875rem;
 }
 
 .veylique-slider-stage.is-loading .veylique-slide,
@@ -3723,6 +3742,10 @@ body {
 
   .veylique-slide-number {
     font-size: 4.5rem;
+  }
+
+  .veylique-slider-section .veylique-card-body {
+    padding: 1.375rem 1.125rem 1.125rem;
   }
 
   .veylique-eos-tier {
