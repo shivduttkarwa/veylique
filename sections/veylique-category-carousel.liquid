@@ -247,10 +247,20 @@
   .veylique-cat-swiper {
     overflow-x: auto;
     overflow-y: visible;
-    scroll-behavior: smooth;
-    scroll-snap-type: x mandatory;
     scrollbar-width: none;
+    cursor: grab;
+    touch-action: pan-y;
+    user-select: none;
     -webkit-overflow-scrolling: touch;
+  }
+
+  .veylique-cat-swiper.is-pointer-down {
+    scroll-behavior: auto;
+    cursor: grabbing;
+  }
+
+  .veylique-cat-swiper.is-dragging .veylique-cat-card {
+    pointer-events: none;
   }
 
   .veylique-cat-swiper::-webkit-scrollbar {
@@ -266,12 +276,13 @@
     display: flex;
     align-items: stretch;
     gap: 1rem;
+    width: max-content;
+    min-width: 100%;
   }
 
   .veylique-cat-swiper .swiper-slide {
-    flex: 0 0 calc((100% - 6.4px) / 1.4);
+    flex: 0 0 calc((100vw - 2.5rem - 0.4rem) / 1.4);
     height: auto;
-    scroll-snap-align: start;
   }
 
   .veylique-cat-card {
@@ -478,7 +489,7 @@
 
   @media (min-width: 600px) {
     .veylique-cat-swiper .swiper-slide {
-      flex-basis: calc((100% - 19.2px) / 2.2);
+      flex-basis: calc((100vw - 3rem - 1.2rem) / 2.2);
     }
   }
 
@@ -488,7 +499,7 @@
     }
 
     .veylique-cat-swiper .swiper-slide {
-      flex-basis: calc((100% - 4.5rem) / 4);
+      flex-basis: calc((min(100vw, 120rem) - 10rem - 4.5rem) / 4);
     }
   }
 

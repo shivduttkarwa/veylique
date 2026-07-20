@@ -624,6 +624,15 @@
       var scroller = carousel.querySelector('[data-veylique-cat-track]');
       var prev = carousel.querySelector('[data-veylique-cat-prev]');
       var next = carousel.querySelector('[data-veylique-cat-next]');
+      var dragState = {
+        active: false,
+        pointerId: null,
+        startX: 0,
+        startY: 0,
+        startScrollLeft: 0,
+        didDrag: false,
+        suppressClickUntil: 0
+      };
 
       carousel.querySelectorAll('[data-veylique-hover-image]').forEach(function (image) {
         function markLoaded() {
@@ -701,6 +710,101 @@
           behavior: reduceMotion ? 'auto' : 'smooth'
         });
       }
+
+      function maxScrollLeft() {
+        return Math.max(0, scroller.scrollWidth - scroller.clientWidth);
+      }
+
+      function nearestSlideLeft() {
+        var slides = Array.prototype.slice.call(scroller.querySelectorAll('.swiper-slide'));
+        var current = scroller.scrollLeft;
+        var nearest = current;
+        var distance = Infinity;
+
+        slides.forEach(function (slide) {
+          var offset = slide.offsetLeft;
+          var slideDistance = Math.abs(offset - current);
+          if (slideDistance < distance) {
+            distance = slideDistance;
+            nearest = offset;
+          }
+        });
+
+        return Math.min(maxScrollLeft(), Math.max(0, nearest));
+      }
+
+      function snapToNearestSlide() {
+        if (!maxScrollLeft()) return;
+        scroller.scrollTo({
+          left: nearestSlideLeft(),
+          behavior: reduceMotion ? 'auto' : 'smooth'
+        });
+      }
+
+      function endDrag(event) {
+        if (!dragState.active) return;
+
+        if (event && scroller.releasePointerCapture) {
+          try {
+            scroller.releasePointerCapture(dragState.pointerId);
+          } catch (error) {
+            // The pointer can already be released if the browser cancels the gesture.
+          }
+        }
+
+        scroller.classList.remove('is-pointer-down', 'is-dragging');
+
+        if (dragState.didDrag) {
+          dragState.suppressClickUntil = Date.now() + 320;
+          window.setTimeout(snapToNearestSlide, 40);
+        }
+
+        dragState.active = false;
+        dragState.pointerId = null;
+      }
+
+      scroller.addEventListener('pointerdown', function (event) {
+        if (event.button !== 0 || !event.isPrimary || !maxScrollLeft()) return;
+        if (event.target.closest('[data-veylique-cat-prev], [data-veylique-cat-next]')) return;
+
+        dragState.active = true;
+        dragState.pointerId = event.pointerId;
+        dragState.startX = event.clientX;
+        dragState.startY = event.clientY;
+        dragState.startScrollLeft = scroller.scrollLeft;
+        dragState.didDrag = false;
+        scroller.classList.add('is-pointer-down');
+
+        if (scroller.setPointerCapture) {
+          scroller.setPointerCapture(event.pointerId);
+        }
+      });
+
+      scroller.addEventListener('pointermove', function (event) {
+        if (!dragState.active || event.pointerId !== dragState.pointerId) return;
+
+        var deltaX = event.clientX - dragState.startX;
+        var deltaY = event.clientY - dragState.startY;
+        var isHorizontal = Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 4;
+
+        if (!dragState.didDrag && !isHorizontal) return;
+
+        dragState.didDrag = true;
+        scroller.classList.add('is-dragging');
+        event.preventDefault();
+        scroller.scrollLeft = dragState.startScrollLeft - deltaX;
+      });
+
+      scroller.addEventListener('pointerup', endDrag);
+      scroller.addEventListener('pointercancel', endDrag);
+      scroller.addEventListener('lostpointercapture', endDrag);
+
+      scroller.addEventListener('click', function (event) {
+        if (Date.now() > dragState.suppressClickUntil) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+      }, true);
 
       if (prev) {
         prev.addEventListener('click', function () {
