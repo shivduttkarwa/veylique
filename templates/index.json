@@ -71,6 +71,7 @@
         "category_dresses": {
           "type": "category",
           "settings": {
+            "collection": "",
             "heading": "Dresses",
             "link": "",
             "fallback": "hero-1.webp",
@@ -80,6 +81,7 @@
         "category_ethnic": {
           "type": "category",
           "settings": {
+            "collection": "",
             "heading": "Ethnic Wear",
             "link": "",
             "fallback": "hero-2.webp",
@@ -89,6 +91,7 @@
         "category_western": {
           "type": "category",
           "settings": {
+            "collection": "",
             "heading": "Western Wear",
             "link": "",
             "fallback": "hero-3.webp",
@@ -98,6 +101,7 @@
         "category_coord": {
           "type": "category",
           "settings": {
+            "collection": "",
             "heading": "Co-ord Sets",
             "link": "",
             "fallback": "hero-4.webp",
@@ -107,6 +111,7 @@
         "category_tops": {
           "type": "category",
           "settings": {
+            "collection": "",
             "heading": "Tops & Shirts",
             "link": "",
             "fallback": "hero-5.webp",
@@ -116,6 +121,7 @@
         "category_accessories": {
           "type": "category",
           "settings": {
+            "collection": "",
             "heading": "Accessories",
             "link": "",
             "fallback": "cta.webp",
@@ -144,6 +150,8 @@
       "settings": {
         "heading": "New Arrivals",
         "text": "The newest pieces to land in the collection, fresh off the rack and ready to wear.",
+        "collection": "",
+        "products_to_show": 4,
         "button_label": "Shop Now",
         "aria_label": "Veylique new arrivals",
         "controls_label": "Slider controls",
@@ -192,6 +200,8 @@
       "settings": {
         "heading": "Shop Bestsellers",
         "text": "Our most-loved styles, trusted by thousands worldwide.",
+        "collection": "",
+        "products_to_show": 8,
         "show_navigation": true,
         "controls_label": "Bestsellers carousel controls",
         "previous_label": "Previous products",
@@ -325,6 +335,8 @@
       "settings": {
         "heading": "Latest Products",
         "text": "Freshly launched styles and seasonal essentials selected for your next outfit.",
+        "collection": "",
+        "products_to_show": 10,
         "show_navigation": true,
         "controls_label": "Latest products carousel controls",
         "previous_label": "Previous products",
@@ -380,7 +392,7 @@
         "ritual_4"
       ],
       "settings": {
-        "heading": "your everyday<br />style edit",
+        "heading": "your everyday<br>style edit",
         "text": "Four considered steps, one confident look. A complete approach to getting dressed, built around real bodies.",
         "aria_label": "Veylique style edit",
         "scroll_height": 420

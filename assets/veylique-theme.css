@@ -2564,6 +2564,10 @@ body {
 .veylique-latest {
   background: #ffffff;
   padding-bottom: 6rem;
+  /* Clip the transform-translated slider track horizontally so a track wider
+     than the viewport can't bleed the page. overflow-x: clip (not hidden) keeps
+     the vertically-offset carousel nav and card hover effects visible. */
+  overflow-x: clip;
 }
 
 .veylique-latest-intro {
