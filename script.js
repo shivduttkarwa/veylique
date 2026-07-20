@@ -5,13 +5,13 @@
 (function () {
   'use strict';
 
-  document.documentElement.classList.add('lumea-js-ready');
+  document.documentElement.classList.add('veylique-js-ready');
 
-  var WISHLIST_STORAGE_KEY = 'lumeaWishlist';
+  var WISHLIST_STORAGE_KEY = 'veyliqueWishlist';
 
   function i18n(key, fallback) {
-    if (window.lumeaData && window.lumeaData.i18n && window.lumeaData.i18n[key]) {
-      return String(window.lumeaData.i18n[key]);
+    if (window.veyliqueData && window.veyliqueData.i18n && window.veyliqueData.i18n[key]) {
+      return String(window.veyliqueData.i18n[key]);
     }
     return fallback;
   }
@@ -75,8 +75,8 @@
   }
 
   function parseMarkup(markup) {
-    var parsed = new DOMParser().parseFromString('<div data-lumea-parser-root>' + String(markup || '') + '</div>', 'text/html');
-    var source = parsed.querySelector('[data-lumea-parser-root]');
+    var parsed = new DOMParser().parseFromString('<div data-veylique-parser-root>' + String(markup || '') + '</div>', 'text/html');
+    var source = parsed.querySelector('[data-veylique-parser-root]');
     var fragment = document.createDocumentFragment();
 
     if (!source) {
@@ -112,7 +112,7 @@
       return toPositiveInt(directId);
     }
 
-    var productRoot = button.closest('.lumea-best-card, .lumea-lp-card, .lumea-shop-card, .product, .type-product');
+    var productRoot = button.closest('.veylique-best-card, .veylique-lp-card, .veylique-shop-card, .product, .type-product');
     if (!productRoot) {
       return 0;
     }
@@ -126,7 +126,7 @@
   }
 
   function getAllWishlistButtons() {
-    return document.querySelectorAll('[data-lumea-wish], [data-wishlist-toggle]');
+    return document.querySelectorAll('[data-veylique-wish], [data-wishlist-toggle]');
   }
 
   function setWishlistButtonState(button, isActive) {
@@ -151,7 +151,7 @@
 
   function updateWishlistCountBadge() {
     var count = getWishlistIds().length;
-    var badges = document.querySelectorAll('.lumea-wishlist-count');
+    var badges = document.querySelectorAll('.veylique-wishlist-count');
 
     badges.forEach(function (badge) {
       if (!badge) {
@@ -159,30 +159,30 @@
       }
       if (count > 0) {
         badge.textContent = String(count);
-        badge.classList.add('lumea-wishlist-count--visible');
+        badge.classList.add('veylique-wishlist-count--visible');
       } else {
         badge.textContent = '';
-        badge.classList.remove('lumea-wishlist-count--visible');
+        badge.classList.remove('veylique-wishlist-count--visible');
       }
     });
   }
 
   function setWishlistCountText(count) {
-    document.querySelectorAll('[data-lumea-wishlist-count-text]').forEach(function (node) {
+    document.querySelectorAll('[data-veylique-wishlist-count-text]').forEach(function (node) {
       node.textContent = String(count);
     });
   }
 
   function revealWishlistBelow() {
-    var below = document.querySelector('[data-lumea-wishlist-below]');
+    var below = document.querySelector('[data-veylique-wishlist-below]');
     if (below) {
       below.hidden = false;
     }
   }
 
   function renderWishlistPage(items) {
-    var list = document.querySelector('[data-lumea-wishlist-page-items]');
-    var empty = document.querySelector('[data-lumea-wishlist-page-empty]');
+    var list = document.querySelector('[data-veylique-wishlist-page-items]');
+    var empty = document.querySelector('[data-veylique-wishlist-page-empty]');
 
     if (!list || !empty) {
       revealWishlistBelow();
@@ -202,14 +202,14 @@
       var actionLabel = item.can_add_to_cart ? (item.cart_text || i18n('addToCart', 'Add to Cart')) : i18n('viewProduct', 'View Product');
       var actionAria = item.cart_aria || actionLabel;
       var removeLabel = i18nWithName('removeFromWishlistOf', 'Remove %s from wishlist', item.name);
-      var cartUrl = (window.lumeaData && window.lumeaData.cartUrl) ? window.lumeaData.cartUrl : '#';
+      var cartUrl = (window.veyliqueData && window.veyliqueData.cartUrl) ? window.veyliqueData.cartUrl : '#';
       var removeText = i18n('remove', 'Remove');
       var qtyLabel = i18n('quantity', 'Quantity');
       var decreaseLabel = i18n('decrease', 'Decrease');
       var increaseLabel = i18n('increase', 'Increase');
       var viewCartLabel = i18n('viewCart', 'View Cart');
       var productType = sanitizeClassToken(item.type);
-      var atcButtonClass = 'lumea-btn btn-black add_to_cart_button button product_type_' + productType;
+      var atcButtonClass = 'veylique-btn btn-black add_to_cart_button button product_type_' + productType;
       var actionMarkup = '';
 
       if (item.can_add_to_cart) {
@@ -217,40 +217,40 @@
           atcButtonClass += ' ajax_add_to_cart';
         }
         actionMarkup = [
-          '<div class="lumea-card-actions lumea-wishlist-page-card-actions">',
-            '<div class="lumea-card-atc-wrap">',
+          '<div class="veylique-card-actions veylique-wishlist-page-card-actions">',
+            '<div class="veylique-card-atc-wrap">',
               '<a href="' + escapeHtml(item.cart_url) + '" class="' + escapeHtml(atcButtonClass) + '" data-product_id="' + item.id + '" data-product_type="' + escapeHtml(productType) + '" data-quantity="1" rel="nofollow" aria-label="' + escapeHtml(actionAria) + '">',
                 escapeHtml(actionLabel),
               '</a>',
-              '<div class="lumea-qty-stepper" aria-label="' + escapeHtml(qtyLabel) + '" data-lumea-qty>',
-                '<button class="lumea-qty-btn lumea-qty-minus" type="button" aria-label="' + escapeHtml(decreaseLabel) + '">&#8722;</button>',
-                '<span class="lumea-qty-num">1</span>',
-                '<button class="lumea-qty-btn lumea-qty-plus" type="button" aria-label="' + escapeHtml(increaseLabel) + '" data-product_id="' + item.id + '">&#43;</button>',
+              '<div class="veylique-qty-stepper" aria-label="' + escapeHtml(qtyLabel) + '" data-veylique-qty>',
+                '<button class="veylique-qty-btn veylique-qty-minus" type="button" aria-label="' + escapeHtml(decreaseLabel) + '">&#8722;</button>',
+                '<span class="veylique-qty-num">1</span>',
+                '<button class="veylique-qty-btn veylique-qty-plus" type="button" aria-label="' + escapeHtml(increaseLabel) + '" data-product_id="' + item.id + '">&#43;</button>',
               '</div>',
             '</div>',
-            '<a href="' + escapeHtml(cartUrl) + '" class="lumea-view-cart-btn" data-lumea-view-cart>',
+            '<a href="' + escapeHtml(cartUrl) + '" class="veylique-view-cart-btn" data-veylique-view-cart>',
               '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path></svg>',
               '<span>' + escapeHtml(viewCartLabel) + '</span>',
             '</a>',
           '</div>'
         ].join('');
       } else {
-        actionMarkup = '<a href="' + escapeHtml(item.url) + '" class="lumea-btn btn-black lumea-wishlist-page-plain-btn" aria-label="' + escapeHtml(actionAria) + '">' + escapeHtml(actionLabel) + '</a>';
+        actionMarkup = '<a href="' + escapeHtml(item.url) + '" class="veylique-btn btn-black veylique-wishlist-page-plain-btn" aria-label="' + escapeHtml(actionAria) + '">' + escapeHtml(actionLabel) + '</a>';
       }
 
       return [
-        '<article class="lumea-wishlist-page-item">',
-          '<button class="lumea-wishlist-page-remove" type="button" data-lumea-wishlist-remove="' + item.id + '" aria-label="' + escapeHtml(removeLabel) + '">',
+        '<article class="veylique-wishlist-page-item">',
+          '<button class="veylique-wishlist-page-remove" type="button" data-veylique-wishlist-remove="' + item.id + '" aria-label="' + escapeHtml(removeLabel) + '">',
             '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
             '<span>' + escapeHtml(removeText) + '</span>',
           '</button>',
-          '<a class="lumea-wishlist-page-media" href="' + escapeHtml(item.url) + '">',
-            item.image ? '<img src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(item.name) + '" loading="lazy">' : '<span class="lumea-wishlist-page-placeholder" aria-hidden="true"></span>',
+          '<a class="veylique-wishlist-page-media" href="' + escapeHtml(item.url) + '">',
+            item.image ? '<img src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(item.name) + '" loading="lazy">' : '<span class="veylique-wishlist-page-placeholder" aria-hidden="true"></span>',
           '</a>',
-          '<div class="lumea-wishlist-page-main">',
-            '<div class="lumea-wishlist-page-info">',
-              '<h2 class="lumea-wishlist-page-item-title"><a href="' + escapeHtml(item.url) + '">' + escapeHtml(item.name) + '</a></h2>',
-              '<p class="lumea-wishlist-page-item-price">' + escapeHtml(item.price) + '</p>',
+          '<div class="veylique-wishlist-page-main">',
+            '<div class="veylique-wishlist-page-info">',
+              '<h2 class="veylique-wishlist-page-item-title"><a href="' + escapeHtml(item.url) + '">' + escapeHtml(item.name) + '</a></h2>',
+              '<p class="veylique-wishlist-page-item-price">' + escapeHtml(item.price) + '</p>',
             '</div>',
             actionMarkup,
           '</div>',
@@ -264,16 +264,16 @@
   }
 
   function fetchWishlistItems(ids) {
-    if (typeof window.lumeaData === 'undefined' || !window.lumeaData.ajaxUrl || !window.lumeaData.nonce) {
+    if (typeof window.veyliqueData === 'undefined' || !window.veyliqueData.ajaxUrl || !window.veyliqueData.nonce) {
       return Promise.resolve([]);
     }
 
-    var body = 'action=lumea_wishlist_items&nonce=' + encodeURIComponent(window.lumeaData.nonce);
+    var body = 'action=veylique_wishlist_items&nonce=' + encodeURIComponent(window.veyliqueData.nonce);
     ids.forEach(function (id) {
       body += '&ids[]=' + encodeURIComponent(String(id));
     });
 
-    return fetch(window.lumeaData.ajaxUrl, {
+    return fetch(window.veyliqueData.ajaxUrl, {
       method: 'POST',
       credentials: 'same-origin',
       headers: {
@@ -343,10 +343,10 @@
   }
 
   /* Scroll-down button */
-  var scrollDownBtn = document.querySelector('.lumea-scroll-down, .lumea-about-scroll-down');
+  var scrollDownBtn = document.querySelector('.veylique-scroll-down, .veylique-about-scroll-down');
   if (scrollDownBtn) {
     scrollDownBtn.addEventListener('click', function () {
-      var hero = document.querySelector('.lumea-page-hero') || document.querySelector('.hero');
+      var hero = document.querySelector('.veylique-page-hero') || document.querySelector('.hero');
       if (hero) {
         window.scrollTo({ top: hero.offsetTop + hero.offsetHeight, behavior: 'smooth' });
       }
@@ -354,7 +354,7 @@
   }
 
   /* Sticky Header */
-  var header = document.getElementById('lumeaHeader');
+  var header = document.getElementById('veyliqueHeader');
 
   if (header) {
     function getHeaderThreshold() {
@@ -372,9 +372,9 @@
   }
 
   /* Mobile Nav */
-  var mobileNav = document.querySelector('[data-lumea-mobile-nav]');
-  var navToggle = document.querySelector('[data-lumea-nav-toggle]');
-  var navCloses = document.querySelectorAll('[data-lumea-nav-close]');
+  var mobileNav = document.querySelector('[data-veylique-mobile-nav]');
+  var navToggle = document.querySelector('[data-veylique-nav-toggle]');
+  var navCloses = document.querySelectorAll('[data-veylique-nav-close]');
 
   function updateMobileNavOrigin() {
     if (!mobileNav || !navToggle) {
@@ -400,11 +400,11 @@
     mobileNav.classList.toggle('is-open', isOpen);
     navToggle.classList.toggle('is-open', isOpen);
     navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    var navI18n = (window.lumeaData && window.lumeaData.i18n) || {};
+    var navI18n = (window.veyliqueData && window.veyliqueData.i18n) || {};
     navToggle.setAttribute('aria-label', isOpen ? navI18n.closeMenu || 'Close menu' : navI18n.openMenu || 'Open menu');
     mobileNav.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
     mobileNav.toggleAttribute('inert', !isOpen);
-    document.body.classList.toggle('lumea-nav-open', isOpen);
+    document.body.classList.toggle('veylique-nav-open', isOpen);
     document.body.style.overflow = isOpen ? 'hidden' : '';
   }
 
@@ -439,12 +439,12 @@
   }
 
   /* Search Overlay */
-  var searchOverlay = document.querySelector('[data-lumea-search-overlay]');
-  var searchTriggers = document.querySelectorAll('[data-lumea-search-trigger]');
-  var searchCloses = document.querySelectorAll('[data-lumea-search-close]');
+  var searchOverlay = document.querySelector('[data-veylique-search-overlay]');
+  var searchTriggers = document.querySelectorAll('[data-veylique-search-trigger]');
+  var searchCloses = document.querySelectorAll('[data-veylique-search-close]');
   var searchInput = searchOverlay ? searchOverlay.querySelector('input[type="search"]') : null;
-  var searchClear = searchOverlay ? searchOverlay.querySelector('[data-lumea-search-clear]') : null;
-  var searchRainCanvas = searchOverlay ? searchOverlay.querySelector('[data-lumea-search-rain]') : null;
+  var searchClear = searchOverlay ? searchOverlay.querySelector('[data-veylique-search-clear]') : null;
+  var searchRainCanvas = searchOverlay ? searchOverlay.querySelector('[data-veylique-search-rain]') : null;
   var searchRainCtx = searchRainCanvas ? searchRainCanvas.getContext('2d') : null;
   var searchRain = null;
   var searchRainImage = null;
@@ -503,7 +503,7 @@
   }
 
   function getSearchRainSource(width, height) {
-    var source = searchRainCanvas ? searchRainCanvas.getAttribute('data-lumea-rain-image') : '';
+    var source = searchRainCanvas ? searchRainCanvas.getAttribute('data-veylique-rain-image') : '';
     if (!source) {
       return getSearchRainFallback(width, height);
     }
@@ -649,9 +649,9 @@
   }
 
   /* Account dropdown */
-  var accountWrap = document.querySelector('[data-lumea-account-wrap]');
-  var accountTrigger = document.querySelector('[data-lumea-account-trigger]');
-  var accountDropdown = document.querySelector('[data-lumea-account-dropdown]');
+  var accountWrap = document.querySelector('[data-veylique-account-wrap]');
+  var accountTrigger = document.querySelector('[data-veylique-account-trigger]');
+  var accountDropdown = document.querySelector('[data-veylique-account-dropdown]');
 
   function closeAccountDropdown() {
     if (!accountTrigger || !accountDropdown) {
@@ -693,15 +693,15 @@
   /* Mega menu — one shared panel shell; only the inner content swaps
      per trigger, so the background/border/shadow never flickers when
      moving between Top wear / Bottom wear / Festive / Winterwear / Sale. */
-  var megaWraps = document.querySelectorAll('[data-lumea-mega-wrap]');
-  var megaPanel = document.querySelector('[data-lumea-mega-panel]');
+  var megaWraps = document.querySelectorAll('[data-veylique-mega-wrap]');
+  var megaPanel = document.querySelector('[data-veylique-mega-panel]');
   var megaContents = megaPanel ? megaPanel.querySelectorAll('[data-mega-content]') : [];
   var megaInstances = [];
   var megaCloseTimer = null;
 
   megaWraps.forEach(function (wrap) {
-    var trigger = wrap.querySelector('[data-lumea-mega-trigger]');
-    var targetKey = trigger ? trigger.getAttribute('data-lumea-mega-target') : null;
+    var trigger = wrap.querySelector('[data-veylique-mega-trigger]');
+    var targetKey = trigger ? trigger.getAttribute('data-veylique-mega-target') : null;
     if (!trigger || !targetKey) {
       return;
     }
@@ -798,8 +798,8 @@
   }
 
   /* Auth tabs (login/register) */
-  var authTabButtons = document.querySelectorAll('[data-lumea-auth-tab]');
-  var authPanels = document.querySelectorAll('.lumea-login-pane[role="tabpanel"]');
+  var authTabButtons = document.querySelectorAll('[data-veylique-auth-tab]');
+  var authPanels = document.querySelectorAll('.veylique-login-pane[role="tabpanel"]');
 
   function setActiveAuthTab(targetTab) {
     if (!targetTab) {
@@ -807,7 +807,7 @@
     }
 
     authTabButtons.forEach(function (button) {
-      var isMatch = button.getAttribute('data-lumea-auth-tab') === targetTab;
+      var isMatch = button.getAttribute('data-veylique-auth-tab') === targetTab;
       button.classList.toggle('is-active', isMatch);
       button.setAttribute('aria-selected', isMatch ? 'true' : 'false');
       button.setAttribute('tabindex', isMatch ? '0' : '-1');
@@ -815,7 +815,7 @@
 
     authPanels.forEach(function (panel) {
       var panelId = panel.id || '';
-      var isPanelMatch = (targetTab === 'login' && panelId === 'lumeaLoginPanel') || (targetTab === 'register' && panelId === 'lumeaRegisterPanel');
+      var isPanelMatch = (targetTab === 'login' && panelId === 'veyliqueLoginPanel') || (targetTab === 'register' && panelId === 'veyliqueRegisterPanel');
       panel.classList.toggle('is-active', isPanelMatch);
       panel.hidden = !isPanelMatch;
     });
@@ -827,41 +827,41 @@
 
     authTabButtons.forEach(function (button) {
       if (button.classList.contains('is-active') && !initialActiveTab) {
-        initialActiveTab = button.getAttribute('data-lumea-auth-tab');
+        initialActiveTab = button.getAttribute('data-veylique-auth-tab');
       }
     });
 
-    if (!initialActiveTab && (authHash === '#lumearegistercard' || authHash === '#lumearegisterpanel')) {
+    if (!initialActiveTab && (authHash === '#veyliqueregistercard' || authHash === '#veyliqueregisterpanel')) {
       initialActiveTab = 'register';
     }
 
     if (!initialActiveTab) {
-      initialActiveTab = authTabButtons[0].getAttribute('data-lumea-auth-tab');
+      initialActiveTab = authTabButtons[0].getAttribute('data-veylique-auth-tab');
     }
 
     setActiveAuthTab(initialActiveTab);
 
     authTabButtons.forEach(function (button) {
       button.addEventListener('click', function () {
-        var requestedTab = button.getAttribute('data-lumea-auth-tab');
+        var requestedTab = button.getAttribute('data-veylique-auth-tab');
         setActiveAuthTab(requestedTab);
       });
     });
   }
 
   /* Exact auth reference switch (b.html behavior) */
-  var authRefContainer = document.querySelector('[data-lumea-auth-ref-container]');
-  var authRefButtons = document.querySelectorAll('[data-lumea-auth-ref-open]');
+  var authRefContainer = document.querySelector('[data-veylique-auth-ref-container]');
+  var authRefButtons = document.querySelectorAll('[data-veylique-auth-ref-open]');
 
   if (authRefContainer && authRefButtons.length) {
     var authRefMobileQuery = window.matchMedia( '(max-width: 860px)' );
     var authRefReducedMotion = window.matchMedia( '(prefers-reduced-motion: reduce)' );
-    var authRefLoginPanel = authRefContainer.querySelector( '.lumea-auth-ref-login' );
-    var authRefRegisterPanel = authRefContainer.querySelector( '.lumea-auth-ref-register' );
-    var authRefFrontPage = authRefContainer.querySelector( '.lumea-auth-ref-page-front' );
-    var authRefBackPage = authRefContainer.querySelector( '.lumea-auth-ref-page-back' );
-    var authRefSwitch = authRefContainer.querySelector( '.lumea-auth-ref-switch' );
-    var authRefSwitchOptions = authRefContainer.querySelectorAll( '.lumea-auth-ref-switch-option' );
+    var authRefLoginPanel = authRefContainer.querySelector( '.veylique-auth-ref-login' );
+    var authRefRegisterPanel = authRefContainer.querySelector( '.veylique-auth-ref-register' );
+    var authRefFrontPage = authRefContainer.querySelector( '.veylique-auth-ref-page-front' );
+    var authRefBackPage = authRefContainer.querySelector( '.veylique-auth-ref-page-back' );
+    var authRefSwitch = authRefContainer.querySelector( '.veylique-auth-ref-switch' );
+    var authRefSwitchOptions = authRefContainer.querySelectorAll( '.veylique-auth-ref-switch-option' );
 
     /* Pin the container to the taller of the two forms, plus room for the
        switch pinned to the bottom, so neither the page nor the switch itself
@@ -981,7 +981,7 @@
         authRefSwitch.classList.toggle( 'is-register', showRegister );
       }
       authRefSwitchOptions.forEach( function ( option ) {
-        var isActive = option.getAttribute( 'data-lumea-auth-ref-open' ) === target;
+        var isActive = option.getAttribute( 'data-veylique-auth-ref-open' ) === target;
         option.classList.toggle( 'is-active', isActive );
         option.setAttribute( 'aria-selected', isActive ? 'true' : 'false' );
       } );
@@ -994,7 +994,7 @@
       }
     }
 
-    var authRefSwitchThumb = authRefSwitch ? authRefSwitch.querySelector( '.lumea-auth-ref-switch-thumb' ) : null;
+    var authRefSwitchThumb = authRefSwitch ? authRefSwitch.querySelector( '.veylique-auth-ref-switch-thumb' ) : null;
     var authRefDrag = null;
     var authRefJustDragged = false;
 
@@ -1004,7 +1004,7 @@
           event.preventDefault();
           return;
         }
-        var target = button.getAttribute('data-lumea-auth-ref-open');
+        var target = button.getAttribute('data-veylique-auth-ref-open');
         setAuthRefState( target );
       });
     });
@@ -1067,7 +1067,7 @@
   }
 
   /* Password visibility toggle */
-  var passwordToggleButtons = document.querySelectorAll('[data-lumea-password-toggle]');
+  var passwordToggleButtons = document.querySelectorAll('[data-veylique-password-toggle]');
 
   if (passwordToggleButtons.length) {
     passwordToggleButtons.forEach(function (button) {
@@ -1091,10 +1091,10 @@
   }
 
   /* Cart Drawer */
-  var drawer = document.querySelector('[data-lumea-cart-drawer]');
-  var overlay = document.querySelector('[data-lumea-cart-overlay]');
-  var cartTriggers = document.querySelectorAll('[data-lumea-cart-trigger]');
-  var cartCloses = document.querySelectorAll('[data-lumea-cart-close]');
+  var drawer = document.querySelector('[data-veylique-cart-drawer]');
+  var overlay = document.querySelector('[data-veylique-cart-overlay]');
+  var cartTriggers = document.querySelectorAll('[data-veylique-cart-trigger]');
+  var cartCloses = document.querySelectorAll('[data-veylique-cart-close]');
 
   var lastCartTrigger = null;
   function openCartDrawer() {
@@ -1168,19 +1168,19 @@
 
   /* Sync all on-page product card steppers for a product to the given qty. */
   function syncPageCards(productId, newQty) {
-    document.querySelectorAll('[data-lumea-qty]').forEach(function (stepper) {
-      if (stepper.closest('.lumea-drawer-item')) {
+    document.querySelectorAll('[data-veylique-qty]').forEach(function (stepper) {
+      if (stepper.closest('.veylique-drawer-item')) {
         return;
       }
 
-      var plus = stepper.querySelector('.lumea-qty-plus');
+      var plus = stepper.querySelector('.veylique-qty-plus');
       if (!plus || plus.getAttribute('data-product_id') !== String(productId)) {
         return;
       }
 
-      var quantityText = stepper.querySelector('.lumea-qty-num');
-      var atcWrap = stepper.closest('.lumea-card-atc-wrap');
-      var cartLink = atcWrap && atcWrap.closest('.lumea-card-actions') && atcWrap.closest('.lumea-card-actions').querySelector('[data-lumea-view-cart]');
+      var quantityText = stepper.querySelector('.veylique-qty-num');
+      var atcWrap = stepper.closest('.veylique-card-atc-wrap');
+      var cartLink = atcWrap && atcWrap.closest('.veylique-card-actions') && atcWrap.closest('.veylique-card-actions').querySelector('[data-veylique-view-cart]');
 
       if (newQty <= 0) {
         quantityText.textContent = '1';
@@ -1229,18 +1229,18 @@
 
   /* POST qty change; calls done(true|false) when the request settles. */
   function updateCartQty(productId, quantity, done) {
-    if (typeof window.lumeaData === 'undefined') {
+    if (typeof window.veyliqueData === 'undefined') {
       done(false);
       return;
     }
 
-    fetch(window.lumeaData.ajaxUrl, {
+    fetch(window.veyliqueData.ajaxUrl, {
       method: 'POST',
       credentials: 'same-origin',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
-      body: 'action=lumea_update_cart_qty&nonce=' + encodeURIComponent(window.lumeaData.cartNonce) + '&product_id=' + encodeURIComponent(productId) + '&quantity=' + encodeURIComponent(quantity)
+      body: 'action=veylique_update_cart_qty&nonce=' + encodeURIComponent(window.veyliqueData.cartNonce) + '&product_id=' + encodeURIComponent(productId) + '&quantity=' + encodeURIComponent(quantity)
     })
       .then(function (response) {
         return response.json();
@@ -1324,7 +1324,7 @@
   }
 
   document.addEventListener('click', function (event) {
-    var wishButton = event.target.closest('[data-lumea-wish], [data-wishlist-toggle]');
+    var wishButton = event.target.closest('[data-veylique-wish], [data-wishlist-toggle]');
     if (wishButton) {
       event.preventDefault();
       var wishProductId = getWishlistButtonProductId(wishButton);
@@ -1334,12 +1334,12 @@
       return;
     }
 
-    var removeButton = event.target.closest('[data-lumea-wishlist-remove]');
+    var removeButton = event.target.closest('[data-veylique-wishlist-remove]');
     if (removeButton) {
       event.preventDefault();
-      var removeId = toPositiveInt(removeButton.getAttribute('data-lumea-wishlist-remove'));
+      var removeId = toPositiveInt(removeButton.getAttribute('data-veylique-wishlist-remove'));
 
-      var pageItem = removeButton.closest('.lumea-wishlist-page-item');
+      var pageItem = removeButton.closest('.veylique-wishlist-page-item');
       if (pageItem) {
         var itemH   = pageItem.offsetHeight;
         var gapPx   = parseFloat(getComputedStyle(pageItem.parentElement).rowGap) || 0;
@@ -1357,9 +1357,9 @@
           syncWishlistButtons();
           updateWishlistCountBadge();
           setWishlistCountText(newIds.length);
-          var pageList  = document.querySelector('[data-lumea-wishlist-page-items]');
-          var pageEmpty = document.querySelector('[data-lumea-wishlist-page-empty]');
-          if (pageList && !pageList.querySelector('.lumea-wishlist-page-item')) {
+          var pageList  = document.querySelector('[data-veylique-wishlist-page-items]');
+          var pageEmpty = document.querySelector('[data-veylique-wishlist-page-empty]');
+          if (pageList && !pageList.querySelector('.veylique-wishlist-page-item')) {
             pageList.replaceChildren();
             if (pageEmpty) { pageEmpty.hidden = false; }
             revealWishlistBelow();
@@ -1372,7 +1372,7 @@
       return;
     }
 
-    var drawerRemoveButton = event.target.closest('.lumea-drawer-item-remove[data-product_id]');
+    var drawerRemoveButton = event.target.closest('.veylique-drawer-item-remove[data-product_id]');
     if (drawerRemoveButton) {
       event.preventDefault();
 
@@ -1403,10 +1403,10 @@
       return;
     }
 
-    var addToCartButton = event.target.closest('.lumea-card-atc-wrap .add_to_cart_button');
+    var addToCartButton = event.target.closest('.veylique-card-atc-wrap .add_to_cart_button');
     if (addToCartButton) {
-      var addWrap = addToCartButton.closest('.lumea-card-atc-wrap');
-      var addCartLink = addToCartButton.closest('.lumea-card-actions') && addToCartButton.closest('.lumea-card-actions').querySelector('[data-lumea-view-cart]');
+      var addWrap = addToCartButton.closest('.veylique-card-atc-wrap');
+      var addCartLink = addToCartButton.closest('.veylique-card-actions') && addToCartButton.closest('.veylique-card-actions').querySelector('[data-veylique-view-cart]');
       if (addWrap) {
         addWrap.classList.add('is-added');
       }
@@ -1416,19 +1416,19 @@
       return;
     }
 
-    var stepperButton = event.target.closest('.lumea-qty-plus, .lumea-qty-minus');
+    var stepperButton = event.target.closest('.veylique-qty-plus, .veylique-qty-minus');
     if (!stepperButton) {
       return;
     }
 
-    var stepper = stepperButton.closest('[data-lumea-qty]');
+    var stepper = stepperButton.closest('[data-veylique-qty]');
     if (!stepper) {
       return;
     }
 
-    var isPlus = stepperButton.classList.contains('lumea-qty-plus');
-    var quantityNode = stepper.querySelector('.lumea-qty-num');
-    var plusButton = stepper.querySelector('.lumea-qty-plus');
+    var isPlus = stepperButton.classList.contains('veylique-qty-plus');
+    var quantityNode = stepper.querySelector('.veylique-qty-num');
+    var plusButton = stepper.querySelector('.veylique-qty-plus');
     var productId = plusButton && plusButton.getAttribute('data-product_id');
 
     if (!productId || !quantityNode) {
@@ -1437,8 +1437,8 @@
 
     var currentQuantity = parseInt(quantityNode.textContent, 10) || 1;
     var newQuantity = isPlus ? currentQuantity + 1 : currentQuantity - 1;
-    var atcWrap = stepper.closest('.lumea-card-atc-wrap');
-    var cartLink = atcWrap && atcWrap.closest('.lumea-card-actions') && atcWrap.closest('.lumea-card-actions').querySelector('[data-lumea-view-cart]');
+    var atcWrap = stepper.closest('.veylique-card-atc-wrap');
+    var cartLink = atcWrap && atcWrap.closest('.veylique-card-actions') && atcWrap.closest('.veylique-card-actions').querySelector('[data-veylique-view-cart]');
 
     setStepperVisual(quantityNode, atcWrap, cartLink, newQuantity);
 
@@ -1471,42 +1471,42 @@
   });
 
   /* Shop filter dropdowns — event delegation survives AJAX DOM replacement */
-  function lumeaCloseAllDropdowns() {
-    document.querySelectorAll('[data-lumea-dropdown]').forEach(function (d) {
+  function veyliqueCloseAllDropdowns() {
+    document.querySelectorAll('[data-veylique-dropdown]').forEach(function (d) {
       d.classList.remove('is-open');
-      var t = d.querySelector('[data-lumea-dropdown-trigger]');
+      var t = d.querySelector('[data-veylique-dropdown-trigger]');
       if (t) { t.setAttribute('aria-expanded', 'false'); }
     });
   }
   document.addEventListener('click', function (e) {
-    var trigger = e.target.closest('[data-lumea-dropdown-trigger]');
+    var trigger = e.target.closest('[data-veylique-dropdown-trigger]');
     if (trigger) {
       e.stopPropagation();
-      var dd      = trigger.closest('[data-lumea-dropdown]');
+      var dd      = trigger.closest('[data-veylique-dropdown]');
       var wasOpen = dd && dd.classList.contains('is-open');
-      lumeaCloseAllDropdowns();
+      veyliqueCloseAllDropdowns();
       if (dd && !wasOpen) {
         dd.classList.add('is-open');
         trigger.setAttribute('aria-expanded', 'true');
       }
       return;
     }
-    if (!e.target.closest('[data-lumea-dropdown]')) {
-      lumeaCloseAllDropdowns();
+    if (!e.target.closest('[data-veylique-dropdown]')) {
+      veyliqueCloseAllDropdowns();
     }
   });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') { lumeaCloseAllDropdowns(); }
+    if (e.key === 'Escape') { veyliqueCloseAllDropdowns(); }
   });
 
   /* Shop AJAX filtering */
-  var shopBody  = document.querySelector('.lumea-shop-body');
-  var filterBar = document.getElementById('lumeaFilterBar');
+  var shopBody  = document.querySelector('.veylique-shop-body');
+  var filterBar = document.getElementById('veyliqueFilterBar');
 
   if (shopBody && filterBar) {
     var fetchCtrl = null;
 
-    function lumeaShopFetch(url, isPop, scrollTop) {
+    function veyliqueShopFetch(url, isPop, scrollTop) {
       if (fetchCtrl) { fetchCtrl.abort(); }
       fetchCtrl = window.AbortController ? new AbortController() : null;
 
@@ -1520,18 +1520,18 @@
         .then(function (r) { return r.text(); })
         .then(function (html) {
           var doc = new DOMParser().parseFromString(html, 'text/html');
-          var nb  = doc.querySelector('.lumea-shop-body');
-          var nf  = doc.querySelector('#lumeaFilterBar');
+          var nb  = doc.querySelector('.veylique-shop-body');
+          var nf  = doc.querySelector('#veyliqueFilterBar');
 
           if (nb) { replaceChildrenFromNode(shopBody, nb); }
           if (nf) { replaceChildrenFromNode(filterBar, nf); }
 
           if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
-            var newFade   = Array.prototype.slice.call(shopBody.querySelectorAll('.lumea-reveal--fade-js'));
-            var newStatic = Array.prototype.slice.call(shopBody.querySelectorAll('.lumea-reveal--static-js:not(.lumea-reveal--fade-js)'));
+            var newFade   = Array.prototype.slice.call(shopBody.querySelectorAll('.veylique-reveal--fade-js'));
+            var newStatic = Array.prototype.slice.call(shopBody.querySelectorAll('.veylique-reveal--static-js:not(.veylique-reveal--fade-js)'));
             if (newFade.length)   gsap.set(newFade,   { y: 30, autoAlpha: 0 });
             if (newStatic.length) gsap.set(newStatic, { autoAlpha: 0 });
-            var newReveals = Array.prototype.slice.call(shopBody.querySelectorAll('.lumea-reveal-js'));
+            var newReveals = Array.prototype.slice.call(shopBody.querySelectorAll('.veylique-reveal-js'));
             if (newReveals.length) {
               ScrollTrigger.batch(newReveals, {
                 start:   'top bottom-=50',
@@ -1544,7 +1544,7 @@
             }
           }
 
-          if (!isPop) { history.pushState({ lumea: 1 }, '', url); }
+          if (!isPop) { history.pushState({ veylique: 1 }, '', url); }
 
           if (scrollTop) {
             shopBody.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1564,29 +1564,29 @@
     }
 
     filterBar.addEventListener('click', function (e) {
-      var link = e.target.closest('a.lumea-filter-option, a.lumea-filter-pill, a.lumea-active-tag, a.lumea-clear-filters');
+      var link = e.target.closest('a.veylique-filter-option, a.veylique-filter-pill, a.veylique-active-tag, a.veylique-clear-filters');
       if (!link) { return; }
       e.preventDefault();
-      lumeaShopFetch(link.href, false, false);
+      veyliqueShopFetch(link.href, false, false);
     });
 
     shopBody.addEventListener('click', function (e) {
-      var link = e.target.closest('.lumea-shop-pagination a');
+      var link = e.target.closest('.veylique-shop-pagination a');
       if (!link) { return; }
       e.preventDefault();
-      lumeaShopFetch(link.href, false, true);
+      veyliqueShopFetch(link.href, false, true);
     });
 
     window.addEventListener('popstate', function () {
-      lumeaShopFetch(location.href, true, false);
+      veyliqueShopFetch(location.href, true, false);
     });
   }
 
-  var checkoutRight = document.querySelector('.lumea-checkout-right');
+  var checkoutRight = document.querySelector('.veylique-checkout-right');
   var checkoutRightUpdateToken = 0;
 
-  function lumeaCheckoutRightReady() {
-    var right = document.querySelector('.lumea-checkout-right');
+  function veyliqueCheckoutRightReady() {
+    var right = document.querySelector('.veylique-checkout-right');
     if (!right) { return; }
 
     right.querySelectorAll('.blockUI').forEach(function (node) {
@@ -1597,8 +1597,8 @@
     });
   }
 
-  function lumeaCheckoutRightSoftBlock() {
-    var right = document.querySelector('.lumea-checkout-right');
+  function veyliqueCheckoutRightSoftBlock() {
+    var right = document.querySelector('.veylique-checkout-right');
     if (!right) { return; }
 
     right.querySelectorAll('.blockUI.blockOverlay').forEach(function (overlay) {
@@ -1610,11 +1610,11 @@
 
   if (checkoutRight) {
     window.addEventListener('pageshow', function () {
-      window.requestAnimationFrame(lumeaCheckoutRightReady);
+      window.requestAnimationFrame(veyliqueCheckoutRightReady);
     });
 
     if ('MutationObserver' in window) {
-      new MutationObserver(lumeaCheckoutRightSoftBlock).observe(checkoutRight, {
+      new MutationObserver(veyliqueCheckoutRightSoftBlock).observe(checkoutRight, {
         childList: true,
         subtree: true
       });
@@ -1623,20 +1623,20 @@
     if (window.jQuery) {
       window.jQuery(document.body).on('update_checkout', function () {
         checkoutRightUpdateToken += 1;
-        setTimeout(lumeaCheckoutRightSoftBlock, 20);
-        setTimeout(lumeaCheckoutRightSoftBlock, 120);
+        setTimeout(veyliqueCheckoutRightSoftBlock, 20);
+        setTimeout(veyliqueCheckoutRightSoftBlock, 120);
       });
 
       window.jQuery(document.body).on('updated_checkout checkout_error', function () {
         var token = checkoutRightUpdateToken;
         window.requestAnimationFrame(function () {
           if (token === checkoutRightUpdateToken) {
-            lumeaCheckoutRightReady();
+            veyliqueCheckoutRightReady();
           }
         });
         setTimeout(function () {
           if (token === checkoutRightUpdateToken) {
-            lumeaCheckoutRightReady();
+            veyliqueCheckoutRightReady();
           }
         }, 120);
       });
@@ -1652,9 +1652,9 @@
   refreshWishlistUI();
 
   /* ── Search page: filter tabs ── */
-  var searchFilters   = document.querySelector('[data-lumea-search-filters]');
-  var searchGrid      = document.querySelector('[data-lumea-search-grid]');
-  var searchPagination = document.querySelector('[data-lumea-search-pagination]');
+  var searchFilters   = document.querySelector('[data-veylique-search-filters]');
+  var searchGrid      = document.querySelector('[data-veylique-search-grid]');
+  var searchPagination = document.querySelector('[data-veylique-search-pagination]');
 
   if (searchFilters && searchGrid) {
     searchFilters.addEventListener('click', function (e) {
@@ -1694,7 +1694,7 @@
   if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
 
   function warmHoverImages() {
-    document.querySelectorAll(".lumea-lp-img--hover, .lumea-best-img--hover").forEach(function (img) {
+    document.querySelectorAll(".veylique-lp-img--hover, .veylique-best-img--hover").forEach(function (img) {
       if (img.getAttribute("loading") === "lazy") img.loading = "eager";
       if (img.complete && img.naturalWidth > 0) img.classList.add("is-loaded");
     });
@@ -1708,9 +1708,9 @@
 
   // cards injected later (e.g. AJAX shop filtering): warm on first approach
   document.addEventListener("pointerover", function (e) {
-    var media = e.target.closest ? e.target.closest(".lumea-lp-media, .lumea-best-media") : null;
+    var media = e.target.closest ? e.target.closest(".veylique-lp-media, .veylique-best-media") : null;
     if (!media) return;
-    var img = media.querySelector(".lumea-lp-img--hover, .lumea-best-img--hover");
+    var img = media.querySelector(".veylique-lp-img--hover, .veylique-best-img--hover");
     if (img && img.getAttribute("loading") === "lazy") img.loading = "eager";
   });
 })();
@@ -1722,10 +1722,10 @@
 
   document.addEventListener("scroll", function (e) {
     var track = e.target;
-    if (!track.classList || !track.classList.contains("lumea-lp-track")) return;
-    var media = track.closest(".lumea-lp-media");
+    if (!track.classList || !track.classList.contains("veylique-lp-track")) return;
+    var media = track.closest(".veylique-lp-media");
     if (!media) return;
-    var dots = media.querySelectorAll(".lumea-lp-dot");
+    var dots = media.querySelectorAll(".veylique-lp-dot");
     if (!dots.length) return;
     var index = Math.round(track.scrollLeft / track.clientWidth);
     dots.forEach(function (dot, i) {
@@ -1741,25 +1741,25 @@
   if ( typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined' ) return;
 
   var standardHeroParts = [
-    '.lumea-page-hero-label',
-    '.lumea-page-hero-reveal-js',
-    '.lumea-page-hero-sub',
-    '.lumea-page-hero-cta',
-    '.lumea-shop-hero-eyebrow',
-    '.lumea-shop-hero-title',
-    '.lumea-shop-hero-desc',
-    '.lumea-policy-hero .lumea-cart-eyebrow',
-    '.lumea-policy-hero-title',
-    '.lumea-policy-hero-sub',
-    '.lumea-search-eyebrow',
-    '.lumea-search-title',
-    '.lumea-search-form'
+    '.veylique-page-hero-label',
+    '.veylique-page-hero-reveal-js',
+    '.veylique-page-hero-sub',
+    '.veylique-page-hero-cta',
+    '.veylique-shop-hero-eyebrow',
+    '.veylique-shop-hero-title',
+    '.veylique-shop-hero-desc',
+    '.veylique-policy-hero .veylique-cart-eyebrow',
+    '.veylique-policy-hero-title',
+    '.veylique-policy-hero-sub',
+    '.veylique-search-eyebrow',
+    '.veylique-search-title',
+    '.veylique-search-form'
   ].join( ', ' );
 
   if ( window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches ) {
     document.querySelectorAll(
-      '.lumea-header-logo, .lumea-nav-list li, .lumea-header-actions > *, ' +
-      '.hero-title, .hero-label, .subtitles span, .cta-wrap, .lumea-reveal-js, ' + standardHeroParts
+      '.veylique-header-logo, .veylique-nav-list li, .veylique-header-actions > *, ' +
+      '.hero-title, .hero-label, .subtitles span, .cta-wrap, .veylique-reveal-js, ' + standardHeroParts
     ).forEach( function ( el ) { el.style.visibility = 'visible'; el.style.opacity = '1'; } );
     return;
   }
@@ -1768,7 +1768,7 @@
   if ( typeof SplitText !== 'undefined' ) gsap.registerPlugin( SplitText );
 
   
-  var utilityRevealRoots = '.lumea-cart-page, .lumea-checkout-page, .lumea-thankyou-page, .lumea-account-page, .lumea-login-page';
+  var utilityRevealRoots = '.veylique-cart-page, .veylique-checkout-page, .veylique-thankyou-page, .veylique-account-page, .veylique-login-page';
 
   function isUtilityReveal( el ) {
     return !! el.closest( utilityRevealRoots );
@@ -1779,18 +1779,18 @@
   }
 
   if ( typeof SplitText !== 'undefined' ) {
-    document.querySelectorAll( '.lumea-split-js' ).forEach( function ( el ) {
-      if ( el.classList.contains( 'lumea-split--chars-js' ) ) {
+    document.querySelectorAll( '.veylique-split-js' ).forEach( function ( el ) {
+      if ( el.classList.contains( 'veylique-split--chars-js' ) ) {
         new SplitText( el, {
           type:       'chars,lines',
-          linesClass: 'lumea-st-line',
-          charsClass: 'lumea-st-char',
+          linesClass: 'veylique-st-line',
+          charsClass: 'veylique-st-char',
           aria:       'none',
         } );
       } else {
         new SplitText( el, {
           type:       'lines',
-          linesClass: 'lumea-st-line',
+          linesClass: 'veylique-st-line',
           aria:       'none',
         } );
       }
@@ -1799,12 +1799,12 @@
 
   
 
-  var _fade   = gsap.utils.toArray( '.lumea-reveal--fade-js' ).filter( excludeUtilityReveal );
-  var _static = gsap.utils.toArray( '.lumea-reveal--static-js' ).filter( excludeUtilityReveal );
-  var _right  = gsap.utils.toArray( '.lumea-reveal--right-js' ).filter( excludeUtilityReveal );
-  var _left   = gsap.utils.toArray( '.lumea-reveal--left-js' ).filter( excludeUtilityReveal );
-  var _lines  = gsap.utils.toArray( '.lumea-reveal--text-js.lumea-split--lines-js .lumea-st-line' ).filter( excludeUtilityReveal );
-  var _chars  = gsap.utils.toArray( '.lumea-reveal--text-js.lumea-split--chars-js .lumea-st-char' ).filter( excludeUtilityReveal );
+  var _fade   = gsap.utils.toArray( '.veylique-reveal--fade-js' ).filter( excludeUtilityReveal );
+  var _static = gsap.utils.toArray( '.veylique-reveal--static-js' ).filter( excludeUtilityReveal );
+  var _right  = gsap.utils.toArray( '.veylique-reveal--right-js' ).filter( excludeUtilityReveal );
+  var _left   = gsap.utils.toArray( '.veylique-reveal--left-js' ).filter( excludeUtilityReveal );
+  var _lines  = gsap.utils.toArray( '.veylique-reveal--text-js.veylique-split--lines-js .veylique-st-line' ).filter( excludeUtilityReveal );
+  var _chars  = gsap.utils.toArray( '.veylique-reveal--text-js.veylique-split--chars-js .veylique-st-char' ).filter( excludeUtilityReveal );
 
   if ( _fade.length   ) gsap.set( _fade,   { y: 30,     autoAlpha: 0 } );
   if ( _static.length ) gsap.set( _static, {             autoAlpha: 0 } );
@@ -1817,7 +1817,7 @@
 
   function animateDef( el, index, isStatic ) {
     var ease  = 'power1.out';
-    var delay = index * 0.1 + ( parseFloat( el.dataset.lumeaDelay ) || 0 );
+    var delay = index * 0.1 + ( parseFloat( el.dataset.veyliqueDelay ) || 0 );
     if ( ! isStatic ) {
       gsap.to( el, { x: 0, y: 0, duration: 0.7, ease: ease, delay: delay } );
     }
@@ -1830,7 +1830,7 @@
     batch.forEach( function ( el, index ) {
 
       
-      if ( el.classList.contains( 'lumea-reveal--clip-js' ) ) {
+      if ( el.classList.contains( 'veylique-reveal--clip-js' ) ) {
         gsap.fromTo( el,
           { '--mustard-clip': '100%' },
           {
@@ -1838,16 +1838,16 @@
             duration:       1.1,
             ease:           'power3.out',
             delay:          index * 0.2,
-            onComplete:     function () { el.classList.add( 'lumea-clip-done' ); },
+            onComplete:     function () { el.classList.add( 'veylique-clip-done' ); },
           }
         );
         return;
       }
 
       
-      if ( el.classList.contains( 'lumea-reveal--text-js' ) ) {
-        var chars = el.querySelectorAll( '.lumea-st-char' );
-        var lines = el.querySelectorAll( '.lumea-st-line' );
+      if ( el.classList.contains( 'veylique-reveal--text-js' ) ) {
+        var chars = el.querySelectorAll( '.veylique-st-char' );
+        var lines = el.querySelectorAll( '.veylique-st-line' );
         var delay = index * 0.1;
 
         if ( chars.length ) {
@@ -1880,7 +1880,7 @@
       }
 
       
-      if ( el.classList.contains( 'lumea-reveal--static-js' ) ) {
+      if ( el.classList.contains( 'veylique-reveal--static-js' ) ) {
         animateDef( el, index, true );
         return;
       }
@@ -1892,17 +1892,17 @@
   }
 
   function getRevealHeroGate( el ) {
-    var heroRoots = '.lumea-shop-hero, .lumea-page-hero, .lumea-policy-hero, .lumea-search-hero';
-    var page = el.closest( '#lumeaPage' );
+    var heroRoots = '.veylique-shop-hero, .veylique-page-hero, .veylique-policy-hero, .veylique-search-hero';
+    var page = el.closest( '#veyliquePage' );
     var hero = page ? page.querySelector( heroRoots ) : null;
     if ( ! hero || hero.contains( el ) ) return null;
     return hero;
   }
 
   function getHeroGateWait( hero ) {
-    var timeline = hero && hero.lumeaHeroTimeline;
+    var timeline = hero && hero.veyliqueHeroTimeline;
     var mobileRevealAt = window.matchMedia( '(max-width: 767px)' ).matches ? 0.38 : 0.72;
-    var revealAt = parseFloat( hero && hero.dataset.lumeaRevealGateAt ) || mobileRevealAt;
+    var revealAt = parseFloat( hero && hero.dataset.veyliqueRevealGateAt ) || mobileRevealAt;
     if ( ! timeline ) return 0;
     return Math.max( 0, revealAt - timeline.time() );
   }
@@ -1922,7 +1922,7 @@
 
       gated.push( el );
 
-      if ( ! hero.lumeaHeroTimeline && ! hero.dataset.lumeaStandardHeroReady ) {
+      if ( ! hero.veyliqueHeroTimeline && ! hero.dataset.veyliqueStandardHeroReady ) {
         needsRetry = true;
         return;
       }
@@ -1952,7 +1952,7 @@
 
   
 
-  var revealTargets = gsap.utils.toArray( '.lumea-reveal-js:not(.lumea-reveal--hero-js)' ).filter( excludeUtilityReveal );
+  var revealTargets = gsap.utils.toArray( '.veylique-reveal-js:not(.veylique-reveal--hero-js)' ).filter( excludeUtilityReveal );
 
   if ( revealTargets.length ) {
     ScrollTrigger.batch( revealTargets, {
@@ -1962,7 +1962,7 @@
     } );
   }
 
-  ScrollTrigger.batch( '.lumea-reveal--hero-js', {
+  ScrollTrigger.batch( '.veylique-reveal--hero-js', {
     start:   'top bottom',
     once:    true,
     onEnter: animateBatch,
@@ -1970,24 +1970,24 @@
 
   
 
-  document.querySelectorAll( '.lumea-parallax-js' ).forEach( function ( el ) {
+  document.querySelectorAll( '.veylique-parallax-js' ).forEach( function ( el ) {
     var value = parseFloat( el.dataset.parallaxValue        ) || 15;
     var scrub = parseFloat( el.dataset.parallaxScrub        ) || 1;
     var start =             el.dataset.parallaxTriggerStart   || 'top bottom';
     var end   =             el.dataset.parallaxTriggerEnd     || 'bottom top';
-    var isRev = el.classList.contains( 'lumea-parallax--reverse-js' );
+    var isRev = el.classList.contains( 'veylique-parallax--reverse-js' );
 
     var trig = { trigger: el, start: start, end: end, scrub: scrub };
 
-    if ( el.classList.contains( 'lumea-parallax--img-js' ) ) {
+    if ( el.classList.contains( 'veylique-parallax--img-js' ) ) {
       el.style.height = 'calc(100% + ' + value + '%)';
       el.style.top    = '-' + ( value / 2 ) + '%';
       gsap.to( el, { yPercent: isRev ? value : -value, ease: 'none', scrollTrigger: trig } );
 
-    } else if ( el.classList.contains( 'lumea-parallax--x-js' ) ) {
+    } else if ( el.classList.contains( 'veylique-parallax--x-js' ) ) {
       gsap.to( el, { xPercent: isRev ? -value : value, ease: 'none', scrollTrigger: trig } );
 
-    } else if ( el.classList.contains( 'lumea-parallax--scale-js' ) ) {
+    } else if ( el.classList.contains( 'veylique-parallax--scale-js' ) ) {
       gsap.to( el, { scale: 1 + value / 100, ease: 'none', scrollTrigger: trig } );
 
     } else {
@@ -1997,8 +1997,8 @@
 
   
 
-  document.querySelectorAll( '.lumea-parallax-wrap-js' ).forEach( function ( wrap ) {
-    var img = wrap.querySelector( '.lumea-parallax--hero-js' );
+  document.querySelectorAll( '.veylique-parallax-wrap-js' ).forEach( function ( wrap ) {
+    var img = wrap.querySelector( '.veylique-parallax--hero-js' );
     if ( ! img ) return;
     var value = parseFloat( img.dataset.parallaxValue ) || 20;
 
@@ -2017,12 +2017,12 @@
 
     if ( window.wp && window.wp.customize ) return;
 
-    var header    = document.querySelector( '.lumea-header' );
+    var header    = document.querySelector( '.veylique-header' );
     if ( ! header ) return;
 
-    var logo      = document.querySelector( '.lumea-header-logo' );
-    var navItems  = document.querySelectorAll( '.lumea-nav-list li' );
-    var actions   = document.querySelectorAll( '.lumea-header-actions > *' );
+    var logo      = document.querySelector( '.veylique-header-logo' );
+    var navItems  = document.querySelectorAll( '.veylique-nav-list li' );
+    var actions   = document.querySelectorAll( '.veylique-header-actions > *' );
     var hero      = document.querySelector( '.hero' );
     var heroTitle = document.querySelector( '.hero-title' );
     var heroLabel = document.querySelector( '.hero-label' );
@@ -2126,34 +2126,34 @@
 
   ( function initCuratedMosaicReveal() {
 
-    var section = document.querySelector( '.lumea-curated' );
+    var section = document.querySelector( '.veylique-curated' );
     if ( ! section ) return;
 
     var tiles_count = 24;
-    var productTiles = section.querySelectorAll( '.lumea-product-tile' );
+    var productTiles = section.querySelectorAll( '.veylique-product-tile' );
     if ( ! productTiles.length ) return;
 
     
     productTiles.forEach( function ( tile ) {
       var grid = document.createElement( 'div' );
-      grid.className = 'lumea-mosaic-grid';
+      grid.className = 'veylique-mosaic-grid';
       for ( var i = 0; i < tiles_count; i++ ) {
         var span = document.createElement( 'span' );
-        span.className = 'lumea-mosaic-tile';
+        span.className = 'veylique-mosaic-tile';
         grid.appendChild( span );
       }
       tile.appendChild( grid );
     } );
 
     
-    var productImgs = section.querySelectorAll( '.lumea-product-image' );
+    var productImgs = section.querySelectorAll( '.veylique-product-image' );
     gsap.set( productImgs, { scale: 1.18, filter: 'blur(8px)' } );
 
     
     productTiles.forEach( function ( tile, index ) {
-      var mosaic = tile.querySelector( '.lumea-mosaic-grid' );
-      var tiles  = mosaic.querySelectorAll( '.lumea-mosaic-tile' );
-      var img    = tile.querySelector( '.lumea-product-image' );
+      var mosaic = tile.querySelector( '.veylique-mosaic-grid' );
+      var tiles  = mosaic.querySelectorAll( '.veylique-mosaic-tile' );
+      var img    = tile.querySelector( '.veylique-product-image' );
       var delay  = index * 0.55;
 
       ScrollTrigger.create( {
@@ -2198,10 +2198,10 @@
 
     var hasSplit = typeof SplitText !== 'undefined';
 
-    document.querySelectorAll( '.lumea-section-intro-js' ).forEach( function ( intro ) {
-      var eyebrow = intro.querySelector( '.lumea-eyebrow' );
-      var title   = intro.querySelector( '.lumea-section-title' );
-      var desc    = intro.querySelector( '.lumea-section-desc' );
+    document.querySelectorAll( '.veylique-section-intro-js' ).forEach( function ( intro ) {
+      var eyebrow = intro.querySelector( '.veylique-eyebrow' );
+      var title   = intro.querySelector( '.veylique-section-title' );
+      var desc    = intro.querySelector( '.veylique-section-desc' );
 
       if ( ! title ) return;
 
@@ -2210,10 +2210,10 @@
 
       if ( hasSplit ) {
         // Split into lines and wrap each in its own mask
-        var split = new SplitText( title, { type: 'lines', linesClass: 'lumea-si-line' } );
+        var split = new SplitText( title, { type: 'lines', linesClass: 'veylique-si-line' } );
         split.lines.forEach( function ( line ) {
           var mask = document.createElement( 'div' );
-          mask.className = 'lumea-si-mask';
+          mask.className = 'veylique-si-mask';
           line.parentNode.insertBefore( mask, line );
           mask.appendChild( line );
         } );
@@ -2221,7 +2221,7 @@
       } else {
         // No SplitText — wrap the whole title in one mask and reveal as a single unit
         var mask = document.createElement( 'div' );
-        mask.className = 'lumea-si-mask';
+        mask.className = 'veylique-si-mask';
         title.parentNode.insertBefore( mask, title );
         mask.appendChild( title );
         titleTargets = [ title ];
@@ -2285,15 +2285,15 @@
   /* ── Manifesto quote — line-by-line slide-up reveal ── */
   ( function initManifestoLineReveal() {
 
-    var mq   = document.querySelector( '.lumea-about-manifesto-q' );
-    var cite = document.querySelector( '.lumea-about-manifesto-cite' );
+    var mq   = document.querySelector( '.veylique-about-manifesto-q' );
+    var cite = document.querySelector( '.veylique-about-manifesto-cite' );
     if ( ! mq || typeof SplitText === 'undefined' ) return;
 
-    var split = new SplitText( mq, { type: 'lines', linesClass: 'lumea-si-line' } );
+    var split = new SplitText( mq, { type: 'lines', linesClass: 'veylique-si-line' } );
 
     split.lines.forEach( function ( line ) {
       var mask = document.createElement( 'div' );
-      mask.className = 'lumea-si-mask';
+      mask.className = 'veylique-si-mask';
       line.parentNode.insertBefore( mask, line );
       mask.appendChild( line );
     } );
@@ -2328,7 +2328,7 @@
 
   ( function initStandardHeroTimelines() {
 
-    var lumeaHeroTimelineSettings = {
+    var veyliqueHeroTimelineSettings = {
       eyebrowAt:        0,
       titleAt:          0.18,
       titleAtNoEyebrow: 0,
@@ -2345,31 +2345,31 @@
 
     var standardHeroConfigs = [
       {
-        root:     '.lumea-page-hero',
-        eyebrow:  '.lumea-page-hero-label',
-        title:    '.lumea-page-hero-h1',
-        lines:    '.lumea-page-hero-line',
-        subtitle: '.lumea-page-hero-sub',
-        action:   '.lumea-page-hero-cta'
+        root:     '.veylique-page-hero',
+        eyebrow:  '.veylique-page-hero-label',
+        title:    '.veylique-page-hero-h1',
+        lines:    '.veylique-page-hero-line',
+        subtitle: '.veylique-page-hero-sub',
+        action:   '.veylique-page-hero-cta'
       },
       {
-        root:     '.lumea-shop-hero',
-        eyebrow:  '.lumea-shop-hero-eyebrow',
-        title:    '.lumea-shop-hero-title',
-        subtitle: '.lumea-shop-hero-desc',
-        action:   '.lumea-shop-hero-inner > .lumea-btn, .lumea-shop-hero-search'
+        root:     '.veylique-shop-hero',
+        eyebrow:  '.veylique-shop-hero-eyebrow',
+        title:    '.veylique-shop-hero-title',
+        subtitle: '.veylique-shop-hero-desc',
+        action:   '.veylique-shop-hero-inner > .veylique-btn, .veylique-shop-hero-search'
       },
       {
-        root:     '.lumea-policy-hero',
-        eyebrow:  '.lumea-cart-eyebrow',
-        title:    '.lumea-policy-hero-title',
-        subtitle: '.lumea-policy-hero-sub'
+        root:     '.veylique-policy-hero',
+        eyebrow:  '.veylique-cart-eyebrow',
+        title:    '.veylique-policy-hero-title',
+        subtitle: '.veylique-policy-hero-sub'
       },
       {
-        root:    '.lumea-search-hero',
-        eyebrow: '.lumea-search-eyebrow',
-        title:   '.lumea-search-title',
-        action:  '.lumea-search-form'
+        root:    '.veylique-search-hero',
+        eyebrow: '.veylique-search-eyebrow',
+        title:   '.veylique-search-title',
+        action:  '.veylique-search-form'
       }
     ];
 
@@ -2382,21 +2382,21 @@
       var lines = selector ? collectHeroItems( title, selector ) : [];
       if ( lines.length ) return lines;
 
-      if ( title.dataset.lumeaHeroTitleWrapped ) {
-        return collectHeroItems( title, '.lumea-si-line' );
+      if ( title.dataset.veyliqueHeroTitleWrapped ) {
+        return collectHeroItems( title, '.veylique-si-line' );
       }
 
       if ( typeof SplitText !== 'undefined' ) {
         var split = new SplitText( title, {
           type:       'lines',
-          linesClass: 'lumea-si-line',
+          linesClass: 'veylique-si-line',
           aria:       'none'
         } );
-        title.dataset.lumeaHeroTitleWrapped = '1';
-        return split.lines || collectHeroItems( title, '.lumea-si-line' );
+        title.dataset.veyliqueHeroTitleWrapped = '1';
+        return split.lines || collectHeroItems( title, '.veylique-si-line' );
       }
 
-      if ( ! title.dataset.lumeaHeroTitleWrapped ) {
+      if ( ! title.dataset.veyliqueHeroTitleWrapped ) {
         var text = title.textContent.replace( /\s+/g, ' ' ).trim();
         var words = text ? text.split( ' ' ) : [];
         var wordSpans = [];
@@ -2407,7 +2407,7 @@
         title.textContent = '';
         words.forEach( function ( word, index ) {
           var wordSpan = document.createElement( 'span' );
-          wordSpan.className = 'lumea-standard-hero-word';
+          wordSpan.className = 'veylique-standard-hero-word';
           wordSpan.style.display = 'inline-block';
           wordSpan.textContent = word;
           title.appendChild( wordSpan );
@@ -2432,29 +2432,29 @@
         if ( rows.length ) {
           rows.forEach( function ( lineWords ) {
             var line = document.createElement( 'span' );
-            line.className = 'lumea-si-line';
+            line.className = 'veylique-si-line';
             line.textContent = lineWords.join( ' ' );
             title.appendChild( line );
           } );
         } else {
           var line = document.createElement( 'span' );
-          line.className = 'lumea-si-line';
+          line.className = 'veylique-si-line';
           line.textContent = text;
           title.appendChild( line );
         }
 
-        title.dataset.lumeaHeroTitleWrapped = '1';
+        title.dataset.veyliqueHeroTitleWrapped = '1';
       }
 
-      return collectHeroItems( title, '.lumea-si-line' );
+      return collectHeroItems( title, '.veylique-si-line' );
     }
 
     function maskHeroLines( lines ) {
       lines.forEach( function ( line ) {
-        if ( line.parentNode.classList && line.parentNode.classList.contains( 'lumea-si-mask' ) ) return;
+        if ( line.parentNode.classList && line.parentNode.classList.contains( 'veylique-si-mask' ) ) return;
 
         var mask = document.createElement( 'div' );
-        mask.className = 'lumea-si-mask';
+        mask.className = 'veylique-si-mask';
         line.parentNode.insertBefore( mask, line );
         mask.appendChild( line );
       } );
@@ -2467,7 +2467,7 @@
     }
 
     function initHero( hero, config ) {
-      if ( hero.dataset.lumeaStandardHeroReady ) return;
+      if ( hero.dataset.veyliqueStandardHeroReady ) return;
 
       var title = hero.querySelector( config.title );
       if ( ! title ) return;
@@ -2494,40 +2494,40 @@
           autoAlpha: 1,
           y:         0,
           filter:    'blur(0px)',
-          duration:  lumeaHeroTimelineSettings.eyebrowDuration,
-          ease:      lumeaHeroTimelineSettings.fadeEase
-        }, lumeaHeroTimelineSettings.eyebrowAt );
+          duration:  veyliqueHeroTimelineSettings.eyebrowDuration,
+          ease:      veyliqueHeroTimelineSettings.fadeEase
+        }, veyliqueHeroTimelineSettings.eyebrowAt );
       }
 
-      var titleAt = eyebrows.length ? lumeaHeroTimelineSettings.titleAt : lumeaHeroTimelineSettings.titleAtNoEyebrow;
+      var titleAt = eyebrows.length ? veyliqueHeroTimelineSettings.titleAt : veyliqueHeroTimelineSettings.titleAtNoEyebrow;
 
       tl.to( lines, {
         yPercent: 0,
-        duration: lumeaHeroTimelineSettings.titleDuration,
-        ease:     lumeaHeroTimelineSettings.titleEase,
-        stagger:  lumeaHeroTimelineSettings.titleStagger
+        duration: veyliqueHeroTimelineSettings.titleDuration,
+        ease:     veyliqueHeroTimelineSettings.titleEase,
+        stagger:  veyliqueHeroTimelineSettings.titleStagger
       }, titleAt );
 
       if ( subtitles.length ) {
         tl.to( subtitles, {
           autoAlpha: 1,
           y:         0,
-          duration:  lumeaHeroTimelineSettings.subtitleDuration,
-          ease:      lumeaHeroTimelineSettings.fadeEase
-        }, lumeaHeroTimelineSettings.subtitleOverlap );
+          duration:  veyliqueHeroTimelineSettings.subtitleDuration,
+          ease:      veyliqueHeroTimelineSettings.fadeEase
+        }, veyliqueHeroTimelineSettings.subtitleOverlap );
       }
 
       if ( actions.length ) {
         tl.to( actions, {
           autoAlpha: 1,
           y:         0,
-          duration:  lumeaHeroTimelineSettings.actionDuration,
-          ease:      lumeaHeroTimelineSettings.fadeEase
-        }, lumeaHeroTimelineSettings.actionOverlap );
+          duration:  veyliqueHeroTimelineSettings.actionDuration,
+          ease:      veyliqueHeroTimelineSettings.fadeEase
+        }, veyliqueHeroTimelineSettings.actionOverlap );
       }
 
-      hero.dataset.lumeaStandardHeroReady = '1';
-      hero.lumeaHeroTimeline = tl;
+      hero.dataset.veyliqueStandardHeroReady = '1';
+      hero.veyliqueHeroTimeline = tl;
     }
 
     standardHeroConfigs.forEach( function ( config ) {
@@ -2542,14 +2542,14 @@
   /* ── About stats — staggered slide-up reveal ── */
   ( function initAboutStatsReveal() {
 
-    var cells = gsap.utils.toArray( '.lumea-about-stat-reveal-js' );
+    var cells = gsap.utils.toArray( '.veylique-about-stat-reveal-js' );
     if ( ! cells.length ) return;
 
     var inners = cells.map( function ( cell ) {
       var children = Array.prototype.slice.call( cell.childNodes );
       var mask  = document.createElement( 'div' );
       var inner = document.createElement( 'div' );
-      mask.className = 'lumea-stat-mask';
+      mask.className = 'veylique-stat-mask';
       children.forEach( function ( child ) { inner.appendChild( child ); } );
       mask.appendChild( inner );
       cell.appendChild( mask );
@@ -2559,7 +2559,7 @@
     gsap.set( inners, { yPercent: 110 } );
 
     ScrollTrigger.create( {
-      trigger: '.lumea-about-stats-row',
+      trigger: '.veylique-about-stats-row',
       start:   'top 85%',
       once:    true,
       onEnter: function () {
@@ -2578,8 +2578,8 @@
   /* ── About story image — mosaic scatter reveal (same as curated product tiles) ── */
   ( function initAboutStoryMosaicReveal() {
 
-    var col = document.querySelector( '.lumea-about-story-img-col' );
-    var pin = document.querySelector( '.lumea-about-story-img-pin' );
+    var col = document.querySelector( '.veylique-about-story-img-col' );
+    var pin = document.querySelector( '.veylique-about-story-img-pin' );
     if ( ! col || ! pin ) return;
 
     var img = pin.querySelector( 'img' );
@@ -2587,15 +2587,15 @@
 
     /* Grid lives inside pin (correct tile size), overflow opens during scatter */
     var grid = document.createElement( 'div' );
-    grid.className = 'lumea-mosaic-grid';
+    grid.className = 'veylique-mosaic-grid';
     for ( var i = 0; i < 24; i++ ) {
       var span = document.createElement( 'span' );
-      span.className = 'lumea-mosaic-tile';
+      span.className = 'veylique-mosaic-tile';
       grid.appendChild( span );
     }
     pin.appendChild( grid );
 
-    var tiles = grid.querySelectorAll( '.lumea-mosaic-tile' );
+    var tiles = grid.querySelectorAll( '.veylique-mosaic-tile' );
 
     ScrollTrigger.create( {
       trigger: pin,
@@ -2630,7 +2630,7 @@
   /* ── About story panels — staggered children reveal per panel ── */
   ( function initAboutStoryPanelReveal() {
 
-    document.querySelectorAll( '.lumea-about-story-panel-js' ).forEach( function ( panel ) {
+    document.querySelectorAll( '.veylique-about-story-panel-js' ).forEach( function ( panel ) {
       var children = Array.prototype.slice.call( panel.children );
       if ( ! children.length ) return;
 
@@ -2658,14 +2658,14 @@
   /* ── About story rail — accent seam fills as the chapters scroll past ── */
   ( function initAboutStoryRail() {
 
-    var fill = document.querySelector( '.lumea-about-story-rail-js' );
+    var fill = document.querySelector( '.veylique-about-story-rail-js' );
     if ( ! fill ) return;
 
     gsap.to( fill, {
       scaleY: 1,
       ease:   'none',
       scrollTrigger: {
-        trigger: '.lumea-about-story-text-col',
+        trigger: '.veylique-about-story-text-col',
         start:   'top 75%',
         end:     'bottom 40%',
         scrub:   0.4,
@@ -2678,13 +2678,13 @@
   /* ── About values cards — staggered fade-up on grid enter ── */
   ( function initAboutValReveal() {
 
-    var cards = gsap.utils.toArray( '.lumea-about-val-reveal-js' );
+    var cards = gsap.utils.toArray( '.veylique-about-val-reveal-js' );
     if ( ! cards.length ) return;
 
     gsap.set( cards, { autoAlpha: 0, y: 32 } );
 
     ScrollTrigger.create( {
-      trigger: '.lumea-about-values-grid',
+      trigger: '.veylique-about-values-grid',
       start:   'top 75%',
       once:    true,
       onEnter: function () {
@@ -2704,13 +2704,13 @@
   /* ── About ingredients cards — staggered fade-up ── */
   ( function initAboutIngCardReveal() {
 
-    var cards = gsap.utils.toArray( '.lumea-about-ing-card-reveal-js' );
+    var cards = gsap.utils.toArray( '.veylique-about-ing-card-reveal-js' );
     if ( ! cards.length ) return;
 
     gsap.set( cards, { autoAlpha: 0, y: 28 } );
 
     ScrollTrigger.create( {
-      trigger: '.lumea-about-ing-grid',
+      trigger: '.veylique-about-ing-grid',
       start:   'top 80%',
       once:    true,
       onEnter: function () {
@@ -2748,7 +2748,7 @@
   const canvas    = document.getElementById( 'heroCanvas' );
   const ctx       = canvas.getContext( '2d', { alpha: false } );
   const hero      = document.querySelector( '.hero' );
-  const heroLabel = document.querySelector( '[data-lumea-hero-label]' );
+  const heroLabel = document.querySelector( '[data-veylique-hero-label]' );
   const baseLayer = document.createElement( 'canvas' );
   const baseCtx   = baseLayer.getContext( '2d', { alpha: false } );
 
@@ -2835,11 +2835,11 @@
   const heroMobileMql = window.matchMedia( '(max-width: 767.98px)' );
 
   function pickHeroUrls() {
-    if ( typeof lumea_hero === 'undefined' ) return [];
-    var desktop = ( Array.isArray( lumea_hero.images ) && lumea_hero.images.length )
-      ? lumea_hero.images
-      : ( lumea_hero.imageUrl ? [ lumea_hero.imageUrl ] : [] );
-    var mobile  = Array.isArray( lumea_hero.imagesMobile ) ? lumea_hero.imagesMobile : [];
+    if ( typeof veylique_hero === 'undefined' ) return [];
+    var desktop = ( Array.isArray( veylique_hero.images ) && veylique_hero.images.length )
+      ? veylique_hero.images
+      : ( veylique_hero.imageUrl ? [ veylique_hero.imageUrl ] : [] );
+    var mobile  = Array.isArray( veylique_hero.imagesMobile ) ? veylique_hero.imagesMobile : [];
 
     return desktop
       .map( function ( url, i ) {
@@ -2856,9 +2856,9 @@
   }
 
   const rawLabels = ( function () {
-    if ( typeof lumea_hero === 'undefined' ) return [];
-    if ( Array.isArray( lumea_hero.labels ) && lumea_hero.labels.length ) {
-      return lumea_hero.labels.map( function ( label ) {
+    if ( typeof veylique_hero === 'undefined' ) return [];
+    if ( Array.isArray( veylique_hero.labels ) && veylique_hero.labels.length ) {
+      return veylique_hero.labels.map( function ( label ) {
         return String( label || '' ).trim();
       } );
     }
@@ -3243,11 +3243,11 @@
 ( function () {
   'use strict';
 
-  const slider      = document.getElementById( 'lumeaSlider' );
+  const slider      = document.getElementById( 'veyliqueSlider' );
   if ( ! slider ) return;
 
-  const slidesData  = ( typeof lumea_slider !== 'undefined' && Array.isArray( lumea_slider.slides ) )
-    ? lumea_slider.slides
+  const slidesData  = ( typeof veylique_slider !== 'undefined' && Array.isArray( veylique_slider.slides ) )
+    ? veylique_slider.slides
     : [];
 
   if ( ! slidesData.length ) {
@@ -3255,12 +3255,12 @@
     return;
   }
 
-  const slidesRoot  = document.getElementById( 'lumeaSlides' );
-  const card        = document.getElementById( 'lumeaCard' );
-  const numberEl    = document.getElementById( 'lumeaNumber' );
-  const textEl      = document.getElementById( 'lumeaText' );
-  const cardButton  = document.getElementById( 'lumeaCardButton' );
-  const cursorArrow = document.getElementById( 'lumeaCursorArrow' );
+  const slidesRoot  = document.getElementById( 'veyliqueSlides' );
+  const card        = document.getElementById( 'veyliqueCard' );
+  const numberEl    = document.getElementById( 'veyliqueNumber' );
+  const textEl      = document.getElementById( 'veyliqueText' );
+  const cardButton  = document.getElementById( 'veyliqueCardButton' );
+  const cursorArrow = document.getElementById( 'veyliqueCursorArrow' );
 
   let activeIndex      = 0;
   let cursorSide       = 'right';
@@ -3281,9 +3281,9 @@
     slidesData.forEach( function ( slide, index ) {
       const slideEl         = document.createElement( 'div' );
       const slideInner      = document.createElement( 'div' );
-      slideEl.className     = 'lumea-slide';
+      slideEl.className     = 'veylique-slide';
       slideEl.dataset.index = index;
-      slideInner.className  = 'lumea-slide-inner';
+      slideInner.className  = 'veylique-slide-inner';
 
       if ( slide.image ) {
         const image     = document.createElement( 'img' );
@@ -3295,9 +3295,9 @@
         const placeholder = document.createElement( 'div' );
         const mark        = document.createElement( 'span' );
         const label       = document.createElement( 'span' );
-        placeholder.className = 'lumea-media-placeholder lumea-media-placeholder--slider';
-        mark.className        = 'lumea-media-placeholder-mark';
-        label.className       = 'lumea-media-placeholder-label';
+        placeholder.className = 'veylique-media-placeholder veylique-media-placeholder--slider';
+        mark.className        = 'veylique-media-placeholder-mark';
+        label.className       = 'veylique-media-placeholder-label';
         label.textContent     = 'Mustard';
         placeholder.setAttribute( 'aria-hidden', 'true' );
         placeholder.appendChild( mark );
@@ -3337,7 +3337,7 @@
   }
 
   function updateSlides() {
-    document.querySelectorAll( '.lumea-slide' ).forEach( function ( slide ) {
+    document.querySelectorAll( '.veylique-slide' ).forEach( function ( slide ) {
       const index = Number( slide.dataset.index );
       const delta = getShortestDelta( index, activeIndex );
       slide.classList.remove( 'is-active', 'is-prev', 'is-next', 'is-hidden-left', 'is-hidden-right' );
@@ -3390,7 +3390,7 @@
   function animateSlideZoom( currentIndex ) {
     clearZoomAnimations();
     const currentInner = document.querySelector(
-      '.lumea-slide[data-index="' + currentIndex + '"] .lumea-slide-inner'
+      '.veylique-slide[data-index="' + currentIndex + '"] .veylique-slide-inner'
     );
     const timing = { duration: 1280, easing: 'cubic-bezier(0.19, 1, 0.22, 1)', fill: 'both' };
     if ( currentInner ) {
@@ -3440,7 +3440,7 @@
   }
 
   function moveCursor( event ) {
-    if ( isCursorBlocked || event.target.closest( '.lumea-card-button' ) ) {
+    if ( isCursorBlocked || event.target.closest( '.veylique-card-button' ) ) {
       cursorArrow.classList.remove( 'is-visible', 'is-left', 'is-right' );
       return;
     }
@@ -3503,7 +3503,7 @@
 
   slider.addEventListener( 'click', function ( event ) {
     if ( isSwiping ) return;
-    if ( event.target.closest( '.lumea-card-button, .lumea-mobile-arrows' ) ) return;
+    if ( event.target.closest( '.veylique-card-button, .veylique-mobile-arrows' ) ) return;
     goToSlide( cursorSide === 'left' ? 'prev' : 'next' );
   } );
 
@@ -3525,7 +3525,7 @@
   }, { passive: true } );
 
   slider.addEventListener( 'touchend', function ( event ) {
-    if ( event.target.closest( '.lumea-card-button, .lumea-mobile-arrows' ) ) return;
+    if ( event.target.closest( '.veylique-card-button, .veylique-mobile-arrows' ) ) return;
     if ( isSwiping && Math.abs( touchDeltaX ) > SWIPE_THRESHOLD ) {
       goToSlide( touchDeltaX < 0 ? 'next' : 'prev' );
     }
@@ -3547,13 +3547,13 @@
   preloadImages().then( function () {
     requestAnimationFrame( function () {
       slider.classList.remove( 'is-loading' );
-      lumeaSliderEntrance();
+      veyliqueSliderEntrance();
     } );
   } );
 
-  function lumeaSliderEntrance() {
+  function veyliqueSliderEntrance() {
     if ( typeof gsap === 'undefined' ) return;
-    const visible = slidesRoot.querySelectorAll( '.lumea-slide.is-prev, .lumea-slide.is-active, .lumea-slide.is-next' );
+    const visible = slidesRoot.querySelectorAll( '.veylique-slide.is-prev, .veylique-slide.is-active, .veylique-slide.is-next' );
     if ( ! visible.length ) return;
 
     gsap.set( visible, { autoAlpha: 0 } );
@@ -3611,15 +3611,15 @@
 
   if ( typeof Swiper === 'undefined' ) return;
 
-  new Swiper( '.lumea-best-swiper', {
+  new Swiper( '.veylique-best-swiper', {
     slidesPerView: 1.3,
     spaceBetween:  16,
     speed:         680,
     grabCursor:    true,
 
     navigation: {
-      nextEl: '.lumea-best-next',
-      prevEl: '.lumea-best-prev',
+      nextEl: '.veylique-best-next',
+      prevEl: '.veylique-best-prev',
     },
 
     breakpoints: {
@@ -3635,17 +3635,17 @@
   'use strict';
 
   if ( typeof Swiper === 'undefined' ) return;
-  if ( ! document.querySelector( '.lumea-cat-swiper' ) ) return;
+  if ( ! document.querySelector( '.veylique-cat-swiper' ) ) return;
 
-  new Swiper( '.lumea-cat-swiper', {
+  new Swiper( '.veylique-cat-swiper', {
     slidesPerView: 1.4,
     spaceBetween:  16,
     speed:         680,
     grabCursor:    true,
 
     navigation: {
-      nextEl: '.lumea-cat-next',
-      prevEl: '.lumea-cat-prev',
+      nextEl: '.veylique-cat-next',
+      prevEl: '.veylique-cat-prev',
     },
 
     breakpoints: {
@@ -3661,9 +3661,9 @@
   'use strict';
 
   if ( typeof Swiper === 'undefined' ) return;
-  if ( ! document.querySelector( '.lumea-eos-swiper' ) ) return;
+  if ( ! document.querySelector( '.veylique-eos-swiper' ) ) return;
 
-  new Swiper( '.lumea-eos-swiper', {
+  new Swiper( '.veylique-eos-swiper', {
     slidesPerView: 3,
     spaceBetween:  12,
     speed:         500,
@@ -3671,7 +3671,7 @@
     grabCursor:    true,
 
     pagination: {
-      el: '.lumea-eos-pagination',
+      el: '.veylique-eos-pagination',
       clickable: true,
     },
   } );
@@ -3682,12 +3682,12 @@
 ( function () {
   'use strict';
 
-  var section = document.querySelector( '[data-lumea-testi]' );
+  var section = document.querySelector( '[data-veylique-testi]' );
   if ( ! section ) return;
 
-  var persons = Array.prototype.slice.call( section.querySelectorAll( '.lumea-testi-person' ) );
-  var bubbles = Array.prototype.slice.call( section.querySelectorAll( '.lumea-testi-bubble' ) );
-  var dots = Array.prototype.slice.call( section.querySelectorAll( '.lumea-testi-dot' ) );
+  var persons = Array.prototype.slice.call( section.querySelectorAll( '.veylique-testi-person' ) );
+  var bubbles = Array.prototype.slice.call( section.querySelectorAll( '.veylique-testi-bubble' ) );
+  var dots = Array.prototype.slice.call( section.querySelectorAll( '.veylique-testi-dot' ) );
   if ( persons.length < 2 ) return;
 
   var current = 0;
@@ -3742,15 +3742,15 @@
    Used by both the desktop (scroll-driven) and mobile (swipe-driven)
    ritual decks so the exact same WebGL peel shader renders both. */
 
-function lumeaClamp( value, min, max ) {
+function veyliqueClamp( value, min, max ) {
   return Math.min( max, Math.max( min, value ) );
 }
 
-function lumeaSmooth( value ) {
+function veyliqueSmooth( value ) {
   return value * value * ( 3 - 2 * value );
 }
 
-function lumeaCoverDraw( ctx, img, dx, dy, dw, dh ) {
+function veyliqueCoverDraw( ctx, img, dx, dy, dw, dh ) {
   var iw = img.naturalWidth;
   var ih = img.naturalHeight;
   if ( ! iw || ! ih ) return;
@@ -3760,7 +3760,7 @@ function lumeaCoverDraw( ctx, img, dx, dy, dw, dh ) {
   ctx.drawImage( img, ( iw - sw ) / 2, ( ih - sh ) / 2, sw, sh, dx, dy, dw, dh );
 }
 
-function lumeaDrawTextEl( ctx, el, cardRect, options ) {
+function veyliqueDrawTextEl( ctx, el, cardRect, options ) {
   if ( ! el ) return;
   options = options || {};
 
@@ -3834,7 +3834,7 @@ function lumeaDrawTextEl( ctx, el, cardRect, options ) {
   }
 }
 
-function lumeaDrawRuleEl( ctx, el, cardRect ) {
+function veyliqueDrawRuleEl( ctx, el, cardRect ) {
   if ( ! el ) return;
   var cs = window.getComputedStyle( el );
   var rect = el.getBoundingClientRect();
@@ -3844,7 +3844,7 @@ function lumeaDrawRuleEl( ctx, el, cardRect ) {
 }
 
 // Pill/box backgrounds (rounded rect + border), e.g. the kicker chip.
-function lumeaDrawBoxEl( ctx, el, cardRect ) {
+function veyliqueDrawBoxEl( ctx, el, cardRect ) {
   if ( ! el ) return;
   var cs = window.getComputedStyle( el );
   var rect = el.getBoundingClientRect();
@@ -3876,7 +3876,7 @@ function lumeaDrawBoxEl( ctx, el, cardRect ) {
 
 /* ── WebGL peel (same shader for both desktop + mobile decks) ──── */
 
-var lumeaPeelVertexSource = [
+var veyliquePeelVertexSource = [
   'attribute vec2 aPos;',
   'uniform vec4 uFrom;',
   'uniform vec4 uTo;',
@@ -3908,7 +3908,7 @@ var lumeaPeelVertexSource = [
   '}',
 ].join( '' );
 
-var lumeaPeelFragmentSource = [
+var veyliquePeelFragmentSource = [
   'precision highp float;',
   'uniform sampler2D uTex;',
   'uniform float uImageAspect;',
@@ -3932,7 +3932,7 @@ var lumeaPeelFragmentSource = [
   '}',
 ].join( '' );
 
-function lumeaCreatePeelMedia( canvas, count ) {
+function veyliqueCreatePeelMedia( canvas, count ) {
   var gl = canvas.getContext( 'webgl', {
     alpha: true,
     antialias: true,
@@ -3952,8 +3952,8 @@ function lumeaCreatePeelMedia( canvas, count ) {
     return shader;
   }
 
-  var vertex = compile( gl.VERTEX_SHADER, lumeaPeelVertexSource );
-  var fragment = compile( gl.FRAGMENT_SHADER, lumeaPeelFragmentSource );
+  var vertex = compile( gl.VERTEX_SHADER, veyliquePeelVertexSource );
+  var fragment = compile( gl.FRAGMENT_SHADER, veyliquePeelFragmentSource );
   if ( ! vertex || ! fragment ) return null;
 
   var program = gl.createProgram();
@@ -4084,13 +4084,13 @@ function lumeaCreatePeelMedia( canvas, count ) {
 ( function () {
   'use strict';
 
-  var section = document.getElementById( 'lumeaRitual' );
+  var section = document.getElementById( 'veyliqueRitual' );
   if ( ! section ) return;
 
-  var stage = section.querySelector( '.lumea-ritual-stage' );
-  var cards = Array.from( section.querySelectorAll( '.lumea-ritual-card' ) );
-  var dots = section.querySelector( '#lumeaRitualProgressDots' );
-  var slideLabel = section.querySelector( '#lumeaRitualSlideLabel' );
+  var stage = section.querySelector( '.veylique-ritual-stage' );
+  var cards = Array.from( section.querySelectorAll( '.veylique-ritual-card' ) );
+  var dots = section.querySelector( '#veyliqueRitualProgressDots' );
+  var slideLabel = section.querySelector( '#veyliqueRitualSlideLabel' );
   var hasGsap = typeof gsap !== 'undefined';
   var hasScrollTrigger = hasGsap && typeof ScrollTrigger !== 'undefined';
 
@@ -4111,7 +4111,7 @@ function lumeaCreatePeelMedia( canvas, count ) {
     cards.forEach( function () {
       var dot = document.createElement( 'span' );
       var fill = document.createElement( 'span' );
-      dot.className = 'lumea-ritual-dot';
+      dot.className = 'veylique-ritual-dot';
       dot.appendChild( fill );
       dots.appendChild( dot );
     } );
@@ -4140,7 +4140,7 @@ function lumeaCreatePeelMedia( canvas, count ) {
     ctx.fillStyle = cardStyle.backgroundColor && cardStyle.backgroundColor !== 'rgba(0, 0, 0, 0)' ? cardStyle.backgroundColor : '#ffffff';
     ctx.fillRect( 0, 0, cardRect.width, cardRect.height );
 
-    var body = card.querySelector( '.lumea-ritual-card-body' );
+    var body = card.querySelector( '.veylique-ritual-card-body' );
     if ( body ) {
       var bodyRect = body.getBoundingClientRect();
       var bx = bodyRect.left - cardRect.left;
@@ -4153,31 +4153,31 @@ function lumeaCreatePeelMedia( canvas, count ) {
     }
 
     // Image half
-    var img = card.querySelector( '.lumea-ritual-card-media img' );
+    var img = card.querySelector( '.veylique-ritual-card-media img' );
     if ( img && img.complete && img.naturalWidth ) {
-      var mediaRect = card.querySelector( '.lumea-ritual-card-media' ).getBoundingClientRect();
-      lumeaCoverDraw( ctx, img, mediaRect.left - cardRect.left, mediaRect.top - cardRect.top, mediaRect.width, mediaRect.height );
+      var mediaRect = card.querySelector( '.veylique-ritual-card-media' ).getBoundingClientRect();
+      veyliqueCoverDraw( ctx, img, mediaRect.left - cardRect.left, mediaRect.top - cardRect.top, mediaRect.width, mediaRect.height );
     }
 
     // Content half — drawn from each element's computed style + position.
-    var kicker = card.querySelector( '.lumea-ritual-card-kicker' );
-    lumeaDrawTextEl( ctx, card.querySelector( '.lumea-ritual-card-num' ), cardRect );
-    lumeaDrawBoxEl( ctx, kicker, cardRect );
-    lumeaDrawTextEl( ctx, kicker, cardRect );
-    lumeaDrawTextEl( ctx, card.querySelector( '.lumea-ritual-card-title-main' ), cardRect );
-    lumeaDrawTextEl( ctx, card.querySelector( '.lumea-ritual-card-title-alt' ), cardRect );
-    lumeaDrawRuleEl( ctx, card.querySelector( '.lumea-ritual-card-rule' ), cardRect );
-    lumeaDrawTextEl( ctx, card.querySelector( '.lumea-ritual-card-text' ), cardRect );
+    var kicker = card.querySelector( '.veylique-ritual-card-kicker' );
+    veyliqueDrawTextEl( ctx, card.querySelector( '.veylique-ritual-card-num' ), cardRect );
+    veyliqueDrawBoxEl( ctx, kicker, cardRect );
+    veyliqueDrawTextEl( ctx, kicker, cardRect );
+    veyliqueDrawTextEl( ctx, card.querySelector( '.veylique-ritual-card-title-main' ), cardRect );
+    veyliqueDrawTextEl( ctx, card.querySelector( '.veylique-ritual-card-title-alt' ), cardRect );
+    veyliqueDrawRuleEl( ctx, card.querySelector( '.veylique-ritual-card-rule' ), cardRect );
+    veyliqueDrawTextEl( ctx, card.querySelector( '.veylique-ritual-card-text' ), cardRect );
 
     return canvas;
   }
 
   var canvas = document.createElement( 'canvas' );
-  canvas.className = 'lumea-ritual-peel-canvas';
+  canvas.className = 'veylique-ritual-peel-canvas';
   canvas.setAttribute( 'aria-hidden', 'true' );
   document.body.appendChild( canvas );
 
-  var peel = window.WebGLRenderingContext ? lumeaCreatePeelMedia( canvas, cards.length ) : null;
+  var peel = window.WebGLRenderingContext ? veyliqueCreatePeelMedia( canvas, cards.length ) : null;
 
   /* Rasterize every card once fonts + its image are ready, and again
      whenever the layout can have changed size. */
@@ -4203,7 +4203,7 @@ function lumeaCreatePeelMedia( canvas, count ) {
     fontsReady.then( queueBuildTextures );
 
     cards.forEach( function ( card ) {
-      var img = card.querySelector( '.lumea-ritual-card-media img' );
+      var img = card.querySelector( '.veylique-ritual-card-media img' );
       if ( img && ! img.complete ) {
         img.addEventListener( 'load', queueBuildTextures );
       }
@@ -4216,14 +4216,14 @@ function lumeaCreatePeelMedia( canvas, count ) {
   function initRitualEntrance() {
     if ( ! hasGsap || ! hasScrollTrigger ) return;
 
-    var desktop = section.querySelector( '.lumea-ritual-desktop' );
-    var progressRow = section.querySelector( '.lumea-ritual-progress-row' );
+    var desktop = section.querySelector( '.veylique-ritual-desktop' );
+    var progressRow = section.querySelector( '.veylique-ritual-progress-row' );
     var baseCard = cards[ 0 ];
     if ( ! desktop || ! baseCard ) return;
 
-    var media = baseCard.querySelector( '.lumea-ritual-card-media' );
-    var mediaImg = baseCard.querySelector( '.lumea-ritual-card-media img' );
-    var body = baseCard.querySelector( '.lumea-ritual-card-body' );
+    var media = baseCard.querySelector( '.veylique-ritual-card-media' );
+    var mediaImg = baseCard.querySelector( '.veylique-ritual-card-media img' );
+    var body = baseCard.querySelector( '.veylique-ritual-card-body' );
     var contentEls = body ? Array.prototype.slice.call( body.children ) : [];
     var mosaic = null;
     var tiles = [];
@@ -4238,14 +4238,14 @@ function lumeaCreatePeelMedia( canvas, count ) {
       media.style.overflow = 'hidden';
 
       mosaic = document.createElement( 'div' );
-      mosaic.className = 'lumea-mosaic-grid';
+      mosaic.className = 'veylique-mosaic-grid';
       for ( var i = 0; i < 24; i++ ) {
         var tile = document.createElement( 'span' );
-        tile.className = 'lumea-mosaic-tile';
+        tile.className = 'veylique-mosaic-tile';
         mosaic.appendChild( tile );
       }
       media.appendChild( mosaic );
-      tiles = Array.prototype.slice.call( mosaic.querySelectorAll( '.lumea-mosaic-tile' ) );
+      tiles = Array.prototype.slice.call( mosaic.querySelectorAll( '.veylique-mosaic-tile' ) );
     }
 
     if ( mediaImg ) {
@@ -4338,7 +4338,7 @@ function lumeaCreatePeelMedia( canvas, count ) {
   // Pre-decode every card image so the DOM card is paint-ready the
   // instant it becomes the base — no blank-image flash at docking.
   cards.forEach( function ( card ) {
-    var img = card.querySelector( '.lumea-ritual-card-media img' );
+    var img = card.querySelector( '.veylique-ritual-card-media img' );
     if ( img && typeof img.decode === 'function' ) {
       img.decode().catch( function () {} );
     }
@@ -4372,7 +4372,7 @@ function lumeaCreatePeelMedia( canvas, count ) {
     if ( ! dots ) return;
     Array.from( dots.children ).forEach( function ( dot, index ) {
       var fill = dot.firstElementChild;
-      var amount = lumeaClamp( raw - index + 1, 0, 1 );
+      var amount = veyliqueClamp( raw - index + 1, 0, 1 );
       dot.classList.toggle( 'is-current', index === Math.round( raw ) );
       if ( fill ) {
         fill.style.transform = 'scaleX(' + amount + ')';
@@ -4401,7 +4401,7 @@ function lumeaCreatePeelMedia( canvas, count ) {
     if ( flying !== index ) clearDomFlight();
     flying = index;
 
-    var eased = lumeaSmooth( t );
+    var eased = veyliqueSmooth( t );
     var radius = 999 - eased * 975;
 
     card.style.zIndex = '3';
@@ -4444,7 +4444,7 @@ function lumeaCreatePeelMedia( canvas, count ) {
 
   function render() {
     var last = cards.length - 1;
-    var raw = lumeaClamp( scrollProgress * last, 0, last );
+    var raw = veyliqueClamp( scrollProgress * last, 0, last );
     var current = Math.floor( raw );
 
     if ( current >= last ) {
@@ -4452,9 +4452,9 @@ function lumeaCreatePeelMedia( canvas, count ) {
     }
 
     var next = current + 1;
-    var t = lumeaClamp( raw - current, 0, 1 );
+    var t = veyliqueClamp( raw - current, 0, 1 );
 
-    setCaption( lumeaClamp( Math.round( raw ), 0, last ) );
+    setCaption( veyliqueClamp( Math.round( raw ), 0, last ) );
     updateDots( raw );
 
     if ( t < 0.006 || t > 0.994 ) {
@@ -4527,7 +4527,7 @@ function lumeaCreatePeelMedia( canvas, count ) {
   } else {
     var onScroll = function () {
       var distance = Math.max( 1, section.offsetHeight - window.innerHeight );
-      scrollProgress = lumeaClamp( ( window.scrollY - section.offsetTop ) / distance, 0, 1 );
+      scrollProgress = veyliqueClamp( ( window.scrollY - section.offsetTop ) / distance, 0, 1 );
       render();
     };
 
@@ -4552,10 +4552,10 @@ function lumeaCreatePeelMedia( canvas, count ) {
 
   if ( typeof Swiper === 'undefined' ) return;
 
-  var swiperEl = document.querySelector( '.lumea-ritual-mobile .lumea-ritual-swiper' );
+  var swiperEl = document.querySelector( '.veylique-ritual-mobile .veylique-ritual-swiper' );
   if ( ! swiperEl ) return;
 
-  var mobile = swiperEl.closest( '.lumea-ritual-mobile' );
+  var mobile = swiperEl.closest( '.veylique-ritual-mobile' );
 
   var swiper = new Swiper( swiperEl, {
     effect: 'coverflow',
@@ -4571,7 +4571,7 @@ function lumeaCreatePeelMedia( canvas, count ) {
       slideShadows: false,
     },
     pagination: {
-      el: '.lumea-ritual-swiper-pagination',
+      el: '.veylique-ritual-swiper-pagination',
       clickable: true,
     },
   } );
@@ -4583,23 +4583,23 @@ function lumeaCreatePeelMedia( canvas, count ) {
 
     gsap.registerPlugin( ScrollTrigger );
 
-    var cards = Array.from( mobile.querySelectorAll( '.lumea-ritual-mobile-card' ) );
-    var pagination = mobile.querySelector( '.lumea-ritual-swiper-pagination' );
+    var cards = Array.from( mobile.querySelectorAll( '.veylique-ritual-mobile-card' ) );
+    var pagination = mobile.querySelector( '.veylique-ritual-swiper-pagination' );
     var entranceTrigger = null;
     var entrancePlayed = false;
     if ( ! cards.length ) return;
 
     cards.forEach( function ( card ) {
-      var wrap = card.querySelector( '.lumea-ritual-mobile-img-wrap' );
-      var img = card.querySelector( '.lumea-ritual-mobile-img' );
-      var content = Array.from( card.querySelectorAll( '.lumea-ritual-mobile-title, .lumea-ritual-mobile-text' ) );
+      var wrap = card.querySelector( '.veylique-ritual-mobile-img-wrap' );
+      var img = card.querySelector( '.veylique-ritual-mobile-img' );
+      var content = Array.from( card.querySelectorAll( '.veylique-ritual-mobile-title, .veylique-ritual-mobile-text' ) );
 
-      if ( wrap && ! wrap.querySelector( '.lumea-mosaic-grid' ) ) {
+      if ( wrap && ! wrap.querySelector( '.veylique-mosaic-grid' ) ) {
         var grid = document.createElement( 'div' );
-        grid.className = 'lumea-mosaic-grid';
+        grid.className = 'veylique-mosaic-grid';
         for ( var i = 0; i < 24; i++ ) {
           var tile = document.createElement( 'span' );
-          tile.className = 'lumea-mosaic-tile';
+          tile.className = 'veylique-mosaic-tile';
           grid.appendChild( tile );
         }
         wrap.appendChild( grid );
@@ -4638,10 +4638,10 @@ function lumeaCreatePeelMedia( canvas, count ) {
 
       cards.forEach( function ( card, index ) {
         var delay = index * 0.12;
-        var mosaic = card.querySelector( '.lumea-mosaic-grid' );
-        var tiles = mosaic ? Array.from( mosaic.querySelectorAll( '.lumea-mosaic-tile' ) ) : [];
-        var img = card.querySelector( '.lumea-ritual-mobile-img' );
-        var content = Array.from( card.querySelectorAll( '.lumea-ritual-mobile-title, .lumea-ritual-mobile-text' ) );
+        var mosaic = card.querySelector( '.veylique-mosaic-grid' );
+        var tiles = mosaic ? Array.from( mosaic.querySelectorAll( '.veylique-mosaic-tile' ) ) : [];
+        var img = card.querySelector( '.veylique-ritual-mobile-img' );
+        var content = Array.from( card.querySelectorAll( '.veylique-ritual-mobile-title, .veylique-ritual-mobile-text' ) );
 
         if ( tiles.length ) {
           gsap.to( tiles, {
@@ -4727,14 +4727,14 @@ function lumeaCreatePeelMedia( canvas, count ) {
   'use strict';
 
   document.addEventListener( 'click', function ( event ) {
-    var chip = event.target.closest( '.lumea-size-chip' );
+    var chip = event.target.closest( '.veylique-size-chip' );
     if ( ! chip ) return;
 
-    var row = chip.closest( '.lumea-size-row' );
+    var row = chip.closest( '.veylique-size-row' );
     if ( ! row ) return;
 
     var wasSelected = chip.classList.contains( 'is-selected' );
-    row.querySelectorAll( '.lumea-size-chip.is-selected' ).forEach( function ( el ) {
+    row.querySelectorAll( '.veylique-size-chip.is-selected' ).forEach( function ( el ) {
       el.classList.remove( 'is-selected' );
       el.setAttribute( 'aria-pressed', 'false' );
     } );
@@ -4750,23 +4750,23 @@ function lumeaCreatePeelMedia( canvas, count ) {
 ( function () {
   'use strict';
 
-  var sections = Array.prototype.slice.call( document.querySelectorAll( '[data-lumea-home-faq]' ) );
+  var sections = Array.prototype.slice.call( document.querySelectorAll( '[data-veylique-home-faq]' ) );
   if ( ! sections.length ) return;
 
   sections.forEach( function ( section ) {
-    var items = Array.prototype.slice.call( section.querySelectorAll( '.lumea-home-faq-item' ) );
+    var items = Array.prototype.slice.call( section.querySelectorAll( '.veylique-home-faq-item' ) );
     if ( ! items.length ) return;
 
     function setItem( item, open ) {
       item.classList.toggle( 'is-open', open );
-      var button = item.querySelector( '.lumea-home-faq-question' );
+      var button = item.querySelector( '.veylique-home-faq-question' );
       if ( button ) button.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
     }
 
     items.forEach( function ( item ) {
       setItem( item, item.classList.contains( 'is-open' ) );
 
-      var button = item.querySelector( '.lumea-home-faq-question' );
+      var button = item.querySelector( '.veylique-home-faq-question' );
       if ( ! button ) return;
 
       button.addEventListener( 'click', function () {
@@ -4783,11 +4783,11 @@ function lumeaCreatePeelMedia( canvas, count ) {
 ( function () {
   'use strict';
 
-  var section = document.querySelector( '[data-lumea-blog]' );
+  var section = document.querySelector( '[data-veylique-blog]' );
   if ( ! section ) return;
 
-  var rows = Array.prototype.slice.call( section.querySelectorAll( '.lumea-blog-scroll-row' ) );
-  var panels = Array.prototype.slice.call( section.querySelectorAll( '.lumea-blog-panel' ) );
+  var rows = Array.prototype.slice.call( section.querySelectorAll( '.veylique-blog-scroll-row' ) );
+  var panels = Array.prototype.slice.call( section.querySelectorAll( '.veylique-blog-panel' ) );
   if ( rows.length < 2 || panels.length < 2 ) return;
 
   function setActive( index ) {
