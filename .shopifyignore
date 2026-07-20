@@ -25,6 +25,7 @@ LICENSE.md
 
 # Local deployment utilities
 deploy.bat
+scripts/*
 
 # Old static-demo vendor/font artifacts from the rejected shortcut conversion
 assets/bootstrap*.css
