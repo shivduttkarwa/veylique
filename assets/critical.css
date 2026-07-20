@@ -73,7 +73,9 @@ p:empty {
 
 /** Theme styles below */
 body {
-  font-family: var(--font-primary--family);
+  font-family: var(--font-body--family);
+  font-style: var(--font-body--style);
+  font-weight: var(--font-body--weight);
   background-color: var(--color-background);
   color: var(--color-foreground);
 }

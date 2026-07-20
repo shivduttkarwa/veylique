@@ -15,3 +15,18 @@ node_modules/
 ## Release files
 release
 *.zip
+
+# Old static-demo vendor/font artifacts kept locally for reference only.
+# These are not Theme Store-safe theme assets and are excluded from Shopify upload.
+assets/bootstrap*.css
+assets/bootstrap*.js
+assets/swiper*.css
+assets/swiper*.js
+assets/gsap*.js
+assets/ScrollTrigger*.js
+assets/SplitText*.js
+assets/rainyday*.js
+assets/clash-display*
+assets/inter*
+assets/demo-vid.mp4
+assets/footer-video.mp4

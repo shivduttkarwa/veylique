@@ -31,6 +31,7 @@ body {
 .veylique-kicker {
   margin: 0 0 1.1rem;
   color: currentColor;
+  font-family: var(--font-heading--family);
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.14em;
@@ -40,7 +41,8 @@ body {
 .veylique-title {
   margin: 0;
   color: currentColor;
-  font-family: var(--font-primary--family);
+  font-family: var(--font-heading--family);
+  font-style: var(--font-heading--style);
   font-size: clamp(3.5rem, 11vw, 11rem);
   font-weight: 500;
   line-height: 0.88;
@@ -50,6 +52,8 @@ body {
 .veylique-section-title {
   margin: 0;
   color: var(--veylique-ink);
+  font-family: var(--font-heading--family);
+  font-style: var(--font-heading--style);
   font-size: clamp(2.35rem, 5.8vw, 6rem);
   font-weight: 500;
   line-height: 0.95;
@@ -72,6 +76,7 @@ body {
   border: 0.0625rem solid currentColor;
   border-radius: 999rem;
   color: currentColor;
+  font-family: var(--font-heading--family);
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -189,6 +194,8 @@ body {
   right: 1.9rem;
   margin: 0;
   color: var(--veylique-gold);
+  font-family: var(--font-heading--family);
+  font-style: var(--font-heading--style);
   font-size: clamp(2rem, 3.4vw, 3.25rem);
   font-weight: 800;
   line-height: 0.9;
@@ -213,6 +220,8 @@ body {
   border-bottom: 0.0625rem dashed rgba(255, 255, 255, 0.72);
   padding-bottom: 0.95rem;
   color: #fff;
+  font-family: var(--font-heading--family);
+  font-style: var(--font-heading--style);
   font-size: clamp(0.8rem, 1vw, 1.06rem);
   font-weight: 800;
   letter-spacing: 0;
@@ -247,8 +256,10 @@ body {
   bottom: 8.125rem;
   margin: 0;
   color: #fff;
+  font-family: var(--font-heading--family);
+  font-style: var(--font-heading--style);
   font-size: clamp(4.875rem, 17vw, 20rem);
-  font-weight: 400;
+  font-weight: var(--font-heading--weight);
   line-height: 0.78;
   letter-spacing: -0.085em;
   text-align: center;
@@ -281,6 +292,7 @@ body {
   border-radius: 0.4375rem;
   background: #fff;
   color: var(--veylique-ink);
+  font-family: var(--font-heading--family);
   font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.13em;
