@@ -1,11 +1,82 @@
 {
   "sections": {
+    "hero": {
+      "type": "veylique-page-hero",
+      "settings": {
+        "kicker": "Contact",
+        "heading": "Get in touch",
+        "text": "Styling help, order questions, collaborations, and everyday customer care.",
+        "fallback": "hero-5.webp"
+      }
+    },
     "main": {
       "type": "contact-form",
-      "settings": {}
+      "blocks": {
+        "info0": {
+          "type": "info_item",
+          "settings": {
+            "icon": "mail",
+            "label": "Email",
+            "value": "hello@mustardfashion.com",
+            "link": "mailto:hello@mustardfashion.com"
+          }
+        },
+        "info1": {
+          "type": "info_item",
+          "settings": {
+            "icon": "clock",
+            "label": "Response time",
+            "value": "Within 24 hours",
+            "link": ""
+          }
+        },
+        "info2": {
+          "type": "info_item",
+          "settings": {
+            "icon": "location",
+            "label": "Hours",
+            "value": "Mon-Fri, 9am-6pm AEST",
+            "link": ""
+          }
+        },
+        "ql0": {
+          "type": "quick_link",
+          "settings": {
+            "label": "Browse FAQs",
+            "link": "/pages/faq"
+          }
+        },
+        "ql1": {
+          "type": "quick_link",
+          "settings": {
+            "label": "Track your order",
+            "link": "#"
+          }
+        },
+        "ql2": {
+          "type": "quick_link",
+          "settings": {
+            "label": "Shop the Collection",
+            "link": "/collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "info0",
+        "info1",
+        "info2",
+        "ql0",
+        "ql1",
+        "ql2"
+      ],
+      "settings": {
+        "info_title": "Get in touch",
+        "quick_title": "Quick links"
+      }
     }
   },
   "order": [
+    "hero",
     "main"
   ]
 }

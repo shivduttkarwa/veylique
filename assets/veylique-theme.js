@@ -2578,6 +2578,139 @@
     });
   }
 
+  /* ===== Contact page: native <select> enhanced to a custom listbox ===== */
+  var contactSelectControls = [];
+  var contactSelectDocBound = false;
+
+  function contactCloseAllSelects(except) {
+    contactSelectControls.forEach(function (control) {
+      if (control !== except) {
+        control.classList.remove('is-open');
+        var trigger = control.querySelector('.veylique-contact-select-button');
+        if (trigger) trigger.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  function initContactSelect(root) {
+    root.querySelectorAll('.veylique-contact-select').forEach(function (select, index) {
+      if (select.dataset.veyliqueSelect) return;
+      select.dataset.veyliqueSelect = 'enhanced';
+      select.classList.add('veylique-contact-select-native');
+      select.setAttribute('aria-hidden', 'true');
+      select.tabIndex = -1;
+
+      var id = select.id || 'veylique-contact-select-' + index;
+      var label = select.id ? document.querySelector('label[for="' + select.id + '"]') : null;
+      var ui = document.createElement('div');
+      var button = document.createElement('button');
+      var value = document.createElement('span');
+      var icon = document.createElement('span');
+      var list = document.createElement('div');
+      var items = [];
+
+      ui.className = 'veylique-contact-select-ui';
+      button.type = 'button';
+      button.className = 'veylique-contact-select-button';
+      button.setAttribute('aria-haspopup', 'listbox');
+      button.setAttribute('aria-expanded', 'false');
+      button.setAttribute('aria-controls', id + '-list');
+      button.setAttribute('aria-label', label ? label.textContent.replace('*', '').trim() : id);
+      value.className = 'veylique-contact-select-value';
+      icon.className = 'veylique-contact-select-icon';
+      list.className = 'veylique-contact-select-list';
+      list.id = id + '-list';
+      list.setAttribute('role', 'listbox');
+      list.tabIndex = -1;
+      button.appendChild(value);
+      button.appendChild(icon);
+      ui.appendChild(button);
+      ui.appendChild(list);
+      select.insertAdjacentElement('afterend', ui);
+
+      function currentOption() {
+        return select.options[select.selectedIndex] || select.options[0];
+      }
+
+      function sync() {
+        var option = currentOption();
+        value.textContent = option ? option.textContent : '';
+        items.forEach(function (item) {
+          var selected = item.dataset.value === select.value;
+          item.classList.toggle('is-selected', selected);
+          item.setAttribute('aria-selected', selected ? 'true' : 'false');
+        });
+      }
+
+      function focusItem(step) {
+        var current = items.indexOf(document.activeElement);
+        if (current < 0) {
+          current = items.findIndex(function (item) { return item.dataset.value === select.value; });
+        }
+        var next = current + step;
+        if (next < 0) next = items.length - 1;
+        if (next >= items.length) next = 0;
+        if (items[next]) items[next].focus();
+      }
+
+      function setOpen(open) {
+        contactCloseAllSelects(open ? ui : null);
+        ui.classList.toggle('is-open', open);
+        button.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (open) {
+          window.requestAnimationFrame(function () {
+            var selected = items.find(function (item) { return item.dataset.value === select.value; });
+            (selected || items[0] || button).focus();
+          });
+        }
+      }
+
+      function choose(item) {
+        select.value = item.dataset.value;
+        sync();
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+        setOpen(false);
+        button.focus();
+      }
+
+      Array.prototype.forEach.call(select.options, function (option) {
+        var item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'veylique-contact-select-option';
+        item.dataset.value = option.value;
+        item.textContent = option.textContent;
+        item.setAttribute('role', 'option');
+        item.addEventListener('click', function () { choose(item); });
+        item.addEventListener('keydown', function (event) {
+          if (event.key === 'ArrowDown') { event.preventDefault(); focusItem(1); }
+          if (event.key === 'ArrowUp') { event.preventDefault(); focusItem(-1); }
+          if (event.key === 'Escape') { event.preventDefault(); setOpen(false); button.focus(); }
+          if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); choose(item); }
+        });
+        items.push(item);
+        list.appendChild(item);
+      });
+
+      button.addEventListener('click', function () { setOpen(!ui.classList.contains('is-open')); });
+      button.addEventListener('keydown', function (event) {
+        if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setOpen(true); }
+      });
+
+      select.addEventListener('change', sync);
+      contactSelectControls.push(ui);
+      sync();
+    });
+
+    if (!contactSelectDocBound) {
+      contactSelectDocBound = true;
+      document.addEventListener('click', function (event) {
+        if (!contactSelectControls.some(function (control) { return control.contains(event.target); })) {
+          contactCloseAllSelects();
+        }
+      });
+    }
+  }
+
   function init() {
     initFaq(document);
     initHeroes(document);
@@ -2593,6 +2726,7 @@
     initRituals(document);
     initHomeFaqs(document);
     initFaqPage(document);
+    initContactSelect(document);
     initBlogs(document);
   }
 
@@ -2617,6 +2751,7 @@
     initRituals(event.target);
     initHomeFaqs(event.target);
     initFaqPage(event.target);
+    initContactSelect(event.target);
     initBlogs(event.target);
   });
 })();

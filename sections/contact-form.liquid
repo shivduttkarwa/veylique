@@ -1,47 +1,217 @@
-<section class="veylique-page veylique-section" aria-labelledby="ContactFormTitle-{{ section.id }}">
-  <div class="veylique-container veylique-editorial">
-    <div>
-      <p class="veylique-kicker">{{ section.settings.kicker | escape }}</p>
-      <h1 id="ContactFormTitle-{{ section.id }}" class="veylique-section-title">{{ page.title | default: section.settings.heading | escape }}</h1>
-      {% if page.content != blank %}
-        <div class="veylique-text">{{ page.content }}</div>
-      {% else %}
-        <p class="veylique-text">{{ section.settings.text | escape }}</p>
-      {% endif %}
+{% liquid
+  assign subject_options = section.settings.subject_options | newline_to_br | split: '<br />'
+%}
+
+<section class="veylique-contact-page" aria-labelledby="ContactFormTitle-{{ section.id }}">
+  <h2 id="ContactFormTitle-{{ section.id }}" class="visually-hidden">{{ section.settings.form_title | escape }}</h2>
+
+  <div class="veylique-contact-body">
+    <div class="veylique-contact-body-inner">
+      <div class="veylique-contact-form-col veylique-reveal-js veylique-reveal--static-js">
+        <div class="veylique-contact-card">
+          <div class="veylique-contact-form-wrap" data-veylique-contact-wrap>
+            {% form 'contact', class: 'veylique-contact-form' %}
+              {% if form.posted_successfully? %}
+                <div class="veylique-contact-success" role="status" tabindex="-1">
+                  <div class="veylique-contact-success-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <h2 class="veylique-contact-success-title">{{ section.settings.success_title | escape }}</h2>
+                  <p class="veylique-contact-success-text">{{ section.settings.success_message | escape }}</p>
+                </div>
+              {% else %}
+                <h2 class="veylique-contact-card-title">{{ section.settings.form_title | escape }}</h2>
+
+                {% if form.errors %}
+                  <div class="veylique-contact-errors" role="alert">
+                    <p>{{ form.errors | default_errors }}</p>
+                  </div>
+                {% endif %}
+
+                <div class="veylique-contact-row veylique-contact-row--2col">
+                  <div class="veylique-contact-field">
+                    <label for="contact_name-{{ section.id }}">{{ 'contact.form.name' | t }}</label>
+                    <input type="text" id="contact_name-{{ section.id }}" name="contact[name]" class="veylique-contact-input" placeholder="{{ section.settings.name_placeholder | escape }}" value="{{ form.name }}" autocomplete="name">
+                  </div>
+                  <div class="veylique-contact-field">
+                    <label for="contact_email-{{ section.id }}">{{ 'contact.form.email' | t }} <span>*</span></label>
+                    <input type="email" id="contact_email-{{ section.id }}" name="contact[email]" class="veylique-contact-input" placeholder="{{ section.settings.email_placeholder | escape }}" value="{{ form.email }}" autocomplete="email" required>
+                  </div>
+                </div>
+
+                <div class="veylique-contact-field">
+                  <label for="contact_subject-{{ section.id }}">{{ section.settings.subject_label | escape }}</label>
+                  <select id="contact_subject-{{ section.id }}" name="contact[Subject]" class="veylique-contact-input veylique-contact-select">
+                    {% for option in subject_options %}
+                      {% assign opt = option | strip %}
+                      {% if opt != blank %}
+                        <option value="{% if forloop.first %}{% else %}{{ opt | escape }}{% endif %}"{% if forloop.first %} disabled selected{% endif %}>{{ opt }}</option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="veylique-contact-field">
+                  <label for="contact_message-{{ section.id }}">{{ 'contact.form.message' | t }}</label>
+                  <textarea id="contact_message-{{ section.id }}" name="contact[body]" class="veylique-contact-input veylique-contact-textarea" rows="5" placeholder="{{ section.settings.message_placeholder | escape }}">{{ form.body }}</textarea>
+                </div>
+
+                <button type="submit" class="veylique-btn btn-black">{{ section.settings.submit_label | escape }}</button>
+              {% endif %}
+            {% endform %}
+          </div>
+        </div>
+      </div>
+
+      <div class="veylique-contact-info-col">
+        {% if section.settings.info_title != blank %}
+          <div class="veylique-contact-info-card veylique-reveal-js veylique-reveal--static-js">
+            <h3 class="veylique-contact-info-title">{{ section.settings.info_title | escape }}</h3>
+            {% for block in section.blocks %}
+              {% if block.type == 'info_item' %}
+                <div class="veylique-contact-info-item" {{ block.shopify_attributes }}>
+                  {% case block.settings.icon %}
+                    {% when 'mail' %}
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg>
+                    {% when 'clock' %}
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    {% else %}
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  {% endcase %}
+                  <div>
+                    <p class="veylique-contact-info-label">{{ block.settings.label | escape }}</p>
+                    {% if block.settings.link != blank %}
+                      <a href="{{ block.settings.link }}" class="veylique-contact-info-value">{{ block.settings.value | escape }}</a>
+                    {% else %}
+                      <p class="veylique-contact-info-value">{{ block.settings.value | escape }}</p>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% if section.settings.quick_title != blank %}
+          <div class="veylique-contact-info-card veylique-contact-info-card--dark veylique-reveal-js veylique-reveal--static-js">
+            <h3 class="veylique-contact-info-title veylique-contact-info-title--light">{{ section.settings.quick_title | escape }}</h3>
+            <div class="veylique-contact-quick-links">
+              {% for block in section.blocks %}
+                {% if block.type == 'quick_link' %}
+                  <a href="{{ block.settings.link | default: '#' }}" class="veylique-contact-quick-link" {{ block.shopify_attributes }}>
+                    {{ block.settings.label | escape }}
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                  </a>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
     </div>
-
-    {% form 'contact' %}
-      {{ form.errors | default_errors }}
-
-      {% if form.posted_successfully? %}
-        <p class="veylique-text" tabindex="-1" autofocus>{{ section.settings.success_message | escape }}</p>
-      {% endif %}
-
-      <p>
-        <label for="ContactFormName-{{ section.id }}">{{ 'contact.form.name' | t }}</label>
-        <input id="ContactFormName-{{ section.id }}" type="text" name="contact[name]" value="{{ form.name }}" autocomplete="name">
-      </p>
-      <p>
-        <label for="ContactFormEmail-{{ section.id }}">{{ 'contact.form.email' | t }}</label>
-        <input id="ContactFormEmail-{{ section.id }}" type="email" name="contact[email]" value="{{ form.email }}" autocomplete="email" required>
-      </p>
-      <p>
-        <label for="ContactFormMessage-{{ section.id }}">{{ 'contact.form.message' | t }}</label>
-        <textarea id="ContactFormMessage-{{ section.id }}" name="contact[body]" rows="6">{{ form.body }}</textarea>
-      </p>
-      <button class="veylique-button veylique-button--solid" type="submit">{{ 'contact.form.submit' | t }}</button>
-    {% endform %}
   </div>
 </section>
 
+{% stylesheet %}
+  .veylique-contact-page { background: var(--mustard-bg); min-height: 80vh; }
+  .veylique-contact-body { padding: 4rem 0 6.25rem; }
+  .veylique-contact-body-inner { width: min(100% - 3rem, var(--mustard-container)); margin-inline: auto; display: grid; grid-template-columns: 1fr 23.75rem; gap: 3rem; align-items: start; }
+  .veylique-contact-card { background: #ffffff; border: 0.0625rem solid var(--mustard-border); border-radius: var(--mustard-radius); padding: 2.5rem; }
+  .veylique-contact-card-title { margin: 0 0 2rem; font-family: var(--mustard-font-heading); font-size: 1.375rem; font-weight: 400; letter-spacing: -0.02em; color: var(--mustard-text); }
+  .veylique-contact-row--2col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .veylique-contact-field { margin-bottom: 1.25rem; }
+  .veylique-contact-field label { display: block; font-family: var(--mustard-font-body); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; color: var(--mustard-muted); margin-bottom: 0.5rem; }
+  .veylique-contact-field label span { color: var(--mustard-accent-dark); }
+  .veylique-contact-input { width: 100%; border: 0.0625rem solid var(--mustard-border); border-radius: 0.75rem; padding: 0.8125rem 1rem; font-family: var(--mustard-font-body); font-size: 0.875rem; color: var(--mustard-text); background: var(--mustard-bg); outline: 0.125rem solid transparent; transition: border-color 0.18s, box-shadow 0.18s; box-sizing: border-box; }
+  .veylique-contact-input:focus { border-color: var(--mustard-accent-dark); box-shadow: none; background: #fff; }
+  .veylique-contact-select { appearance: none; -webkit-appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.875rem center; padding-right: 2.5rem; }
+  .veylique-contact-select-native { position: absolute; width: 0.0625rem; height: 0.0625rem; opacity: 0; pointer-events: none; }
+  .veylique-contact-select-ui { position: relative; z-index: 5; }
+  .veylique-contact-select-button { width: 100%; min-height: 3.5rem; border: 0.0625rem solid var(--mustard-border); border-radius: 0.75rem; padding: 0.8125rem 1rem; font-family: var(--mustard-font-body); font-size: 0.875rem; color: var(--mustard-text); background: var(--mustard-bg); display: flex; align-items: center; justify-content: space-between; gap: 1rem; cursor: pointer; text-align: left; transition: border-color 0.18s, background-color 0.18s; }
+  .veylique-contact-select-button:focus, .veylique-contact-select-button:focus-visible { outline: none; border-color: var(--mustard-accent-dark); background: #fff; }
+  .veylique-contact-select-icon { width: 0.5rem; height: 0.5rem; border-right: 0.09375rem solid var(--mustard-muted); border-bottom: 0.09375rem solid var(--mustard-muted); transform: rotate(45deg) translateY(-0.125rem); transition: transform 0.18s, border-color 0.18s; flex: 0 0 auto; }
+  .veylique-contact-select-ui.is-open .veylique-contact-select-button { border-color: var(--mustard-accent-dark); background: #fff; }
+  .veylique-contact-select-ui.is-open .veylique-contact-select-icon { border-color: var(--mustard-accent-dark); transform: rotate(225deg) translate(-0.125rem, -0.125rem); }
+  .veylique-contact-select-list { position: absolute; left: 0; right: 0; top: calc(100% + 0.375rem); display: none; max-height: 15rem; overflow-y: auto; padding: 0.375rem; background: #fff; border: 0.0625rem solid var(--mustard-border); border-radius: 0.875rem; box-shadow: 0 1rem 2.5rem rgba(36, 24, 22, 0.12); }
+  .veylique-contact-select-ui.is-open .veylique-contact-select-list { display: block; }
+  .veylique-contact-select-option { display: block; width: 100%; border: 0; border-radius: 0.625rem; padding: 0.75rem 0.875rem; background: transparent; font-family: var(--mustard-font-body); font-size: 0.875rem; line-height: 1.3; color: var(--mustard-text); cursor: pointer; text-align: left; }
+  .veylique-contact-select-option:hover, .veylique-contact-select-option:focus, .veylique-contact-select-option:focus-visible { outline: none; background: rgba(166, 94, 85, 0.08); color: var(--mustard-accent-dark); }
+  .veylique-contact-select-option.is-selected { background: var(--mustard-text); color: #faf6ec; }
+  .veylique-contact-textarea { resize: vertical; min-height: 7.5rem; line-height: 1.6; }
+  .veylique-contact-errors { background: #fff0f0; border: 0.0625rem solid #fca5a5; border-radius: 0.75rem; padding: 0.875rem 1.125rem; margin-bottom: 1.25rem; }
+  .veylique-contact-errors p { margin: 0; font-family: var(--mustard-font-body); font-size: 0.8125rem; color: #dc2626; }
+  .veylique-contact-success { text-align: center; padding: 2.5rem 0; }
+  .veylique-contact-success-icon { width: 4rem; height: 4rem; border-radius: 50%; background: #f0fdf4; border: 0.0625rem solid #86efac; color: #16a34a; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; }
+  .veylique-contact-success-title { margin: 0 0 0.75rem; font-family: var(--mustard-font-heading); font-size: 1.5rem; font-weight: 400; color: var(--mustard-text); }
+  .veylique-contact-success-text { margin: 0; font-family: var(--mustard-font-body); font-size: 0.9375rem; color: var(--mustard-muted); }
+  .veylique-contact-info-col { display: flex; flex-direction: column; gap: 1.25rem; }
+  .veylique-contact-info-card { background: #ffffff; border: 0.0625rem solid var(--mustard-border); border-radius: var(--mustard-radius); padding: 2rem; }
+  .veylique-contact-info-card--dark { background: var(--mustard-text); border-color: var(--mustard-text); }
+  .veylique-contact-info-title { margin: 0 0 1.5rem; font-family: var(--mustard-font-heading); font-size: 1.125rem; font-weight: 400; letter-spacing: -0.02em; color: var(--mustard-text); }
+  .veylique-contact-info-title--light { color: #fff; }
+  .veylique-contact-info-item { display: flex; align-items: flex-start; gap: 0.875rem; margin-bottom: 1.25rem; }
+  .veylique-contact-info-item:last-child { margin-bottom: 0; }
+  .veylique-contact-info-item svg { color: var(--mustard-accent-dark); flex-shrink: 0; margin-top: 0.125rem; }
+  .veylique-contact-info-label { font-family: var(--mustard-font-body); font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mustard-muted); margin: 0 0 0.1875rem; }
+  .veylique-contact-info-value { font-family: var(--mustard-font-body); font-size: 0.875rem; font-weight: 500; color: var(--mustard-text); text-decoration: none; }
+  a.veylique-contact-info-value:hover { color: var(--mustard-accent-dark); }
+  .veylique-contact-quick-links { display: flex; flex-direction: column; gap: 0.25rem; }
+  .veylique-contact-quick-link { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0; border-bottom: 0.0625rem solid rgba(255,255,255,0.1); font-family: var(--mustard-font-body); font-size: 0.875rem; font-weight: 500; color: rgba(255,255,255,0.75); text-decoration: none; transition: color 0.18s; }
+  .veylique-contact-quick-link:last-child { border-bottom: none; }
+  .veylique-contact-quick-link:hover { color: #ffffff; }
+  .veylique-contact-quick-link svg { color: rgba(255,255,255,0.35); }
+
+  @media (max-width: 1024px) {
+    .veylique-contact-body-inner { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 768px) {
+    .veylique-contact-card { padding: 1.75rem 1.5rem; }
+    .veylique-contact-row--2col { grid-template-columns: 1fr; }
+  }
+{% endstylesheet %}
+
 {% schema %}
 {
-  "name": "Contact form",
+  "name": "t:sections.contact-form.name",
+  "tag": "section",
   "settings": [
-    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Contact" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Contact Veylique" },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "Send a note for styling help, order questions, collaborations, and customer care." },
-    { "type": "text", "id": "success_message", "label": "Success message", "default": "Thanks for contacting us. We will get back to you as soon as possible." }
+    { "type": "text", "id": "form_title", "label": "t:sections.contact-form.settings.form_title.label", "default": "Send us a message" },
+    { "type": "text", "id": "name_placeholder", "label": "t:sections.contact-form.settings.name_placeholder.label", "default": "Jane Doe" },
+    { "type": "text", "id": "email_placeholder", "label": "t:sections.contact-form.settings.email_placeholder.label", "default": "you@example.com" },
+    { "type": "text", "id": "subject_label", "label": "t:sections.contact-form.settings.subject_label.label", "default": "Subject" },
+    { "type": "textarea", "id": "subject_options", "label": "t:sections.contact-form.settings.subject_options.label", "info": "t:sections.contact-form.settings.subject_options.info", "default": "Select a topic...\nOrder enquiry\nSize & style recommendation\nReturns & exchanges\nPartnership\nOther" },
+    { "type": "text", "id": "message_placeholder", "label": "t:sections.contact-form.settings.message_placeholder.label", "default": "How can we help?" },
+    { "type": "text", "id": "submit_label", "label": "t:sections.contact-form.settings.submit_label.label", "default": "Send message" },
+    { "type": "text", "id": "success_title", "label": "t:sections.contact-form.settings.success_title.label", "default": "Message sent" },
+    { "type": "text", "id": "success_message", "label": "t:sections.contact-form.settings.success_message.label", "default": "Thanks for reaching out. Our team will reply within one business day." },
+    { "type": "header", "content": "t:sections.contact-form.settings.info_header.content" },
+    { "type": "text", "id": "info_title", "label": "t:sections.contact-form.settings.info_title.label", "default": "Get in touch" },
+    { "type": "text", "id": "quick_title", "label": "t:sections.contact-form.settings.quick_title.label", "default": "Quick links" }
+  ],
+  "blocks": [
+    {
+      "type": "info_item",
+      "name": "t:sections.contact-form.blocks.info_item.name",
+      "settings": [
+        { "type": "select", "id": "icon", "label": "t:sections.contact-form.blocks.info_item.settings.icon.label", "default": "mail", "options": [ { "value": "mail", "label": "Mail" }, { "value": "clock", "label": "Clock" }, { "value": "location", "label": "Location" } ] },
+        { "type": "text", "id": "label", "label": "t:sections.contact-form.blocks.info_item.settings.label.label", "default": "Email" },
+        { "type": "text", "id": "value", "label": "t:sections.contact-form.blocks.info_item.settings.value.label", "default": "hello@example.com" },
+        { "type": "url", "id": "link", "label": "t:sections.contact-form.blocks.info_item.settings.link.label" }
+      ]
+    },
+    {
+      "type": "quick_link",
+      "name": "t:sections.contact-form.blocks.quick_link.name",
+      "settings": [
+        { "type": "text", "id": "label", "label": "t:sections.contact-form.blocks.quick_link.settings.label.label", "default": "Browse FAQs" },
+        { "type": "url", "id": "link", "label": "t:sections.contact-form.blocks.quick_link.settings.link.label" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.contact-form.presets.name"
+    }
   ]
 }
 {% endschema %}

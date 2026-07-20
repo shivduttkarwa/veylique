@@ -1054,6 +1054,81 @@
       "presets": {
         "name": "Testimonials"
       }
+    },
+    "contact-form": {
+      "name": "Contact form",
+      "settings": {
+        "form_title": {
+          "label": "Form title"
+        },
+        "name_placeholder": {
+          "label": "Name placeholder"
+        },
+        "email_placeholder": {
+          "label": "Email placeholder"
+        },
+        "subject_label": {
+          "label": "Subject label"
+        },
+        "subject_options": {
+          "label": "Subject options",
+          "info": "One option per line. The first line is the disabled placeholder."
+        },
+        "message_placeholder": {
+          "label": "Message placeholder"
+        },
+        "submit_label": {
+          "label": "Submit label"
+        },
+        "success_title": {
+          "label": "Success title"
+        },
+        "success_message": {
+          "label": "Success message"
+        },
+        "info_title": {
+          "label": "Info card title"
+        },
+        "quick_title": {
+          "label": "Quick links title"
+        },
+        "info_header": {
+          "content": "Contact info"
+        }
+      },
+      "blocks": {
+        "info_item": {
+          "name": "Info item",
+          "settings": {
+            "icon": {
+              "label": "Icon"
+            },
+            "label": {
+              "label": "Label"
+            },
+            "value": {
+              "label": "Value"
+            },
+            "link": {
+              "label": "Link"
+            }
+          }
+        },
+        "quick_link": {
+          "name": "Quick link",
+          "settings": {
+            "label": {
+              "label": "Label"
+            },
+            "link": {
+              "label": "Link"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Contact form"
+      }
     }
   }
 }
