@@ -42,35 +42,108 @@
 
 {% schema %}
 {
-  "name": "Featured collections",
+  "name": "t:sections.veylique-featured-collections.name",
   "settings": [
-    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Shop by category" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Shop by category" },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "Explore the collection organised by mood, occasion, and everyday need." },
-    { "type": "text", "id": "link_label", "label": "Link label", "default": "View" },
-    { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 2, "max": 5, "step": 1, "default": 4 }
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "t:sections.veylique-featured-collections.settings.kicker.label",
+      "default": "Shop by category"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.veylique-featured-collections.settings.heading.label",
+      "default": "Shop by category"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "t:sections.veylique-featured-collections.settings.text.label",
+      "default": "Explore the collection organised by mood, occasion, and everyday need."
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "t:sections.veylique-featured-collections.settings.link_label.label",
+      "default": "View"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "t:sections.veylique-featured-collections.settings.columns_desktop.label",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    }
   ],
   "blocks": [
     {
       "type": "collection",
-      "name": "Collection",
+      "name": "t:sections.veylique-featured-collections.blocks.collection.name",
       "settings": [
-        { "type": "collection", "id": "collection", "label": "Collection" },
-        { "type": "image_picker", "id": "image", "label": "Image" },
-        { "type": "text", "id": "heading", "label": "Heading" },
-        { "type": "url", "id": "link", "label": "Link" },
-        { "type": "text", "id": "fallback", "label": "Fallback asset", "default": "hero-2.webp" }
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "t:sections.veylique-featured-collections.blocks.collection.settings.collection.label"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.veylique-featured-collections.blocks.collection.settings.image.label"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.veylique-featured-collections.blocks.collection.settings.heading.label"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.veylique-featured-collections.blocks.collection.settings.link.label"
+        },
+        {
+          "type": "text",
+          "id": "fallback",
+          "label": "t:sections.veylique-featured-collections.blocks.collection.settings.fallback.label",
+          "default": "hero-2.webp"
+        }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Featured collections",
+      "name": "t:sections.veylique-featured-collections.presets.name",
       "blocks": [
-        { "type": "collection", "settings": { "heading": "Dresses", "fallback": "hero-2.webp" } },
-        { "type": "collection", "settings": { "heading": "Ethnic wear", "fallback": "hero-3.webp" } },
-        { "type": "collection", "settings": { "heading": "Western wear", "fallback": "hero-4.webp" } },
-        { "type": "collection", "settings": { "heading": "Accessories", "fallback": "hero-5.webp" } }
+        {
+          "type": "collection",
+          "settings": {
+            "heading": "Dresses",
+            "fallback": "hero-2.webp"
+          }
+        },
+        {
+          "type": "collection",
+          "settings": {
+            "heading": "Ethnic wear",
+            "fallback": "hero-3.webp"
+          }
+        },
+        {
+          "type": "collection",
+          "settings": {
+            "heading": "Western wear",
+            "fallback": "hero-4.webp"
+          }
+        },
+        {
+          "type": "collection",
+          "settings": {
+            "heading": "Accessories",
+            "fallback": "hero-5.webp"
+          }
+        }
       ]
     }
   ]

@@ -48,40 +48,131 @@
 
 {% schema %}
 {
-  "name": "Veylique testimonials",
+  "name": "t:sections.veylique-home-testimonials.name",
   "tag": "section",
   "settings": [
-    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Customer Stories" },
-    { "type": "text", "id": "aria_label", "label": "Accessibility label", "default": "Customer stories" }
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "t:sections.veylique-home-testimonials.settings.kicker.label",
+      "default": "Customer Stories"
+    },
+    {
+      "type": "text",
+      "id": "aria_label",
+      "label": "t:sections.veylique-home-testimonials.settings.aria_label.label",
+      "default": "Customer stories"
+    }
   ],
   "blocks": [
     {
       "type": "testimonial",
-      "name": "Testimonial",
+      "name": "t:sections.veylique-home-testimonials.blocks.testimonial.name",
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "Avatar" },
-        { "type": "text", "id": "fallback", "label": "Fallback asset filename", "default": "hero-1.webp" },
-        { "type": "textarea", "id": "quote", "label": "Quote", "default": "The fit was exactly what I hoped for. It feels polished without trying too hard." },
-        { "type": "text", "id": "name", "label": "Name", "default": "Anaya R." },
-        { "type": "text", "id": "place", "label": "Place", "default": "Mumbai" },
-        { "type": "range", "id": "bubble_size", "label": "Bubble size", "min": 3, "max": 6, "step": 0.5, "unit": "rem", "default": 4 },
-        { "type": "range", "id": "top", "label": "Vertical position", "min": 0, "max": 90, "step": 1, "unit": "%", "default": 10 },
-        { "type": "range", "id": "side_offset", "label": "Side position", "min": 0, "max": 30, "step": 1, "unit": "%", "default": 6 },
-        { "type": "range", "id": "float_duration", "label": "Float duration", "min": 8, "max": 16, "step": 1, "unit": "s", "default": 10 },
-        { "type": "range", "id": "float_delay", "label": "Float delay", "min": 0, "max": 4, "step": 0.5, "unit": "s", "default": 0 }
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.veylique-home-testimonials.blocks.testimonial.settings.image.label"
+        },
+        {
+          "type": "text",
+          "id": "fallback",
+          "label": "t:sections.veylique-home-testimonials.blocks.testimonial.settings.fallback.label",
+          "default": "hero-1.webp"
+        },
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "t:sections.veylique-home-testimonials.blocks.testimonial.settings.quote.label",
+          "default": "The fit was exactly what I hoped for. It feels polished without trying too hard."
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "t:sections.veylique-home-testimonials.blocks.testimonial.settings.name.label",
+          "default": "Anaya R."
+        },
+        {
+          "type": "text",
+          "id": "place",
+          "label": "t:sections.veylique-home-testimonials.blocks.testimonial.settings.place.label",
+          "default": "Mumbai"
+        },
+        {
+          "type": "range",
+          "id": "bubble_size",
+          "label": "t:sections.veylique-home-testimonials.blocks.testimonial.settings.bubble_size.label",
+          "min": 3,
+          "max": 6,
+          "step": 0.5,
+          "unit": "rem",
+          "default": 4
+        },
+        {
+          "type": "range",
+          "id": "top",
+          "label": "t:sections.veylique-home-testimonials.blocks.testimonial.settings.top.label",
+          "min": 0,
+          "max": 90,
+          "step": 1,
+          "unit": "%",
+          "default": 10
+        },
+        {
+          "type": "range",
+          "id": "side_offset",
+          "label": "t:sections.veylique-home-testimonials.blocks.testimonial.settings.side_offset.label",
+          "min": 0,
+          "max": 30,
+          "step": 1,
+          "unit": "%",
+          "default": 6
+        },
+        {
+          "type": "range",
+          "id": "float_duration",
+          "label": "t:sections.veylique-home-testimonials.blocks.testimonial.settings.float_duration.label",
+          "min": 8,
+          "max": 16,
+          "step": 1,
+          "unit": "s",
+          "default": 10
+        },
+        {
+          "type": "range",
+          "id": "float_delay",
+          "label": "t:sections.veylique-home-testimonials.blocks.testimonial.settings.float_delay.label",
+          "min": 0,
+          "max": 4,
+          "step": 0.5,
+          "unit": "s",
+          "default": 0
+        }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Veylique testimonials",
+      "name": "t:sections.veylique-home-testimonials.presets.name",
       "blocks": [
-        { "type": "testimonial" },
-        { "type": "testimonial" },
-        { "type": "testimonial" },
-        { "type": "testimonial" },
-        { "type": "testimonial" },
-        { "type": "testimonial" }
+        {
+          "type": "testimonial"
+        },
+        {
+          "type": "testimonial"
+        },
+        {
+          "type": "testimonial"
+        },
+        {
+          "type": "testimonial"
+        },
+        {
+          "type": "testimonial"
+        },
+        {
+          "type": "testimonial"
+        }
       ]
     }
   ]

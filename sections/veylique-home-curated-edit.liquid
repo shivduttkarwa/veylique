@@ -49,82 +49,86 @@
 
 {% schema %}
 {
-  "name": "Veylique curated edit",
+  "name": "t:sections.veylique-home-curated-edit.name",
   "tag": "section",
   "settings": [
     {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
+      "label": "t:sections.veylique-home-curated-edit.settings.heading.label",
       "default": "The Everyday Edit"
     },
     {
       "type": "textarea",
       "id": "text",
-      "label": "Text",
+      "label": "t:sections.veylique-home-curated-edit.settings.text.label",
       "default": "Handpicked essentials for a versatile, easy-to-style wardrobe."
     },
     {
       "type": "text",
       "id": "button_label",
-      "label": "Button label",
+      "label": "t:sections.veylique-home-curated-edit.settings.button_label.label",
       "default": "Shop Now"
     }
   ],
   "blocks": [
     {
       "type": "tile",
-      "name": "Product tile",
+      "name": "t:sections.veylique-home-curated-edit.blocks.tile.name",
       "limit": 2,
       "settings": [
         {
           "type": "product",
           "id": "product",
-          "label": "Product"
+          "label": "t:sections.veylique-home-curated-edit.blocks.tile.settings.product.label"
         },
         {
           "type": "image_picker",
           "id": "image",
-          "label": "Image"
+          "label": "t:sections.veylique-home-curated-edit.blocks.tile.settings.image.label"
         },
         {
           "type": "text",
           "id": "fallback",
-          "label": "Fallback asset filename",
+          "label": "t:sections.veylique-home-curated-edit.blocks.tile.settings.fallback.label",
           "default": "hero-1.webp"
         },
         {
           "type": "text",
           "id": "title",
-          "label": "Fallback title",
+          "label": "t:sections.veylique-home-curated-edit.blocks.tile.settings.title.label",
           "default": "Mustard Wrap Midi Dress"
         },
         {
           "type": "text",
           "id": "price",
-          "label": "Fallback price",
+          "label": "t:sections.veylique-home-curated-edit.blocks.tile.settings.price.label",
           "default": "$68.00"
         },
         {
           "type": "textarea",
           "id": "description",
-          "label": "Description",
+          "label": "t:sections.veylique-home-curated-edit.blocks.tile.settings.description.label",
           "default": "A fluid wrap dress in breathable viscose, cut for effortless everyday movement."
         },
         {
           "type": "url",
           "id": "link",
-          "label": "Fallback link"
+          "label": "t:sections.veylique-home-curated-edit.blocks.tile.settings.link.label"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Veylique curated edit",
+      "name": "t:sections.veylique-home-curated-edit.presets.name",
       "blocks": [
-        { "type": "tile" },
-        { "type": "tile" }
+        {
+          "type": "tile"
+        },
+        {
+          "type": "tile"
+        }
       ]
     }
   ]

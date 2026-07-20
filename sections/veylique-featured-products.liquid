@@ -26,35 +26,111 @@
 
 {% schema %}
 {
-  "name": "Featured products",
+  "name": "t:sections.veylique-featured-products.name",
   "settings": [
-    { "type": "text", "id": "kicker", "label": "Kicker", "default": "New arrivals" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "New arrivals" },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "The newest pieces to land in the collection, fresh off the rack and ready to wear." },
-    { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 2, "max": 5, "step": 1, "default": 4 }
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "t:sections.veylique-featured-products.settings.kicker.label",
+      "default": "New arrivals"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.veylique-featured-products.settings.heading.label",
+      "default": "New arrivals"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "t:sections.veylique-featured-products.settings.text.label",
+      "default": "The newest pieces to land in the collection, fresh off the rack and ready to wear."
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "t:sections.veylique-featured-products.settings.columns_desktop.label",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    }
   ],
   "blocks": [
     {
       "type": "product",
-      "name": "Product",
+      "name": "t:sections.veylique-featured-products.blocks.product.name",
       "settings": [
-        { "type": "product", "id": "product", "label": "Product" },
-        { "type": "image_picker", "id": "image", "label": "Fallback image" },
-        { "type": "text", "id": "heading", "label": "Fallback title", "default": "Printed wrap midi dress" },
-        { "type": "text", "id": "price", "label": "Fallback price", "default": "Rs. 3,200" },
-        { "type": "text", "id": "fallback", "label": "Fallback asset", "default": "hero-2.webp" }
+        {
+          "type": "product",
+          "id": "product",
+          "label": "t:sections.veylique-featured-products.blocks.product.settings.product.label"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.veylique-featured-products.blocks.product.settings.image.label"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.veylique-featured-products.blocks.product.settings.heading.label",
+          "default": "Printed wrap midi dress"
+        },
+        {
+          "type": "text",
+          "id": "price",
+          "label": "t:sections.veylique-featured-products.blocks.product.settings.price.label",
+          "default": "Rs. 3,200"
+        },
+        {
+          "type": "text",
+          "id": "fallback",
+          "label": "t:sections.veylique-featured-products.blocks.product.settings.fallback.label",
+          "default": "hero-2.webp"
+        }
       ]
     },
-    { "type": "@app" }
+    {
+      "type": "@app"
+    }
   ],
   "presets": [
     {
-      "name": "Featured products",
+      "name": "t:sections.veylique-featured-products.presets.name",
       "blocks": [
-        { "type": "product", "settings": { "heading": "Printed wrap midi dress", "price": "Rs. 3,200", "fallback": "hero-2.webp" } },
-        { "type": "product", "settings": { "heading": "Everyday kurta set", "price": "Rs. 2,850", "fallback": "hero-3.webp" } },
-        { "type": "product", "settings": { "heading": "Relaxed co-ord", "price": "Rs. 3,650", "fallback": "hero-4.webp" } },
-        { "type": "product", "settings": { "heading": "Soft occasion layer", "price": "Rs. 4,100", "fallback": "hero-5.webp" } }
+        {
+          "type": "product",
+          "settings": {
+            "heading": "Printed wrap midi dress",
+            "price": "Rs. 3,200",
+            "fallback": "hero-2.webp"
+          }
+        },
+        {
+          "type": "product",
+          "settings": {
+            "heading": "Everyday kurta set",
+            "price": "Rs. 2,850",
+            "fallback": "hero-3.webp"
+          }
+        },
+        {
+          "type": "product",
+          "settings": {
+            "heading": "Relaxed co-ord",
+            "price": "Rs. 3,650",
+            "fallback": "hero-4.webp"
+          }
+        },
+        {
+          "type": "product",
+          "settings": {
+            "heading": "Soft occasion layer",
+            "price": "Rs. 4,100",
+            "fallback": "hero-5.webp"
+          }
+        }
       ]
     }
   ]

@@ -34,32 +34,92 @@
 
 {% schema %}
 {
-  "name": "Services",
+  "name": "t:sections.veylique-services-list.name",
   "settings": [
-    { "type": "text", "id": "kicker", "label": "Kicker", "default": "What we offer" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Our services" },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "Personal styling, fit guidance, wardrobe edits, and occasion dressing." },
-    { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 2, "max": 4, "step": 1, "default": 3 }
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "t:sections.veylique-services-list.settings.kicker.label",
+      "default": "What we offer"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.veylique-services-list.settings.heading.label",
+      "default": "Our services"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "t:sections.veylique-services-list.settings.text.label",
+      "default": "Personal styling, fit guidance, wardrobe edits, and occasion dressing."
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "t:sections.veylique-services-list.settings.columns_desktop.label",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    }
   ],
   "blocks": [
     {
       "type": "service",
-      "name": "Service",
+      "name": "t:sections.veylique-services-list.blocks.service.name",
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "Image" },
-        { "type": "text", "id": "fallback", "label": "Fallback asset", "default": "service-1-consult-1.jpg" },
-        { "type": "text", "id": "heading", "label": "Heading", "default": "Personal styling" },
-        { "type": "textarea", "id": "text", "label": "Text", "default": "A guided session to refine silhouettes, palette, and outfit formulas." }
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.veylique-services-list.blocks.service.settings.image.label"
+        },
+        {
+          "type": "text",
+          "id": "fallback",
+          "label": "t:sections.veylique-services-list.blocks.service.settings.fallback.label",
+          "default": "service-1-consult-1.jpg"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.veylique-services-list.blocks.service.settings.heading.label",
+          "default": "Personal styling"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:sections.veylique-services-list.blocks.service.settings.text.label",
+          "default": "A guided session to refine silhouettes, palette, and outfit formulas."
+        }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Services",
+      "name": "t:sections.veylique-services-list.presets.name",
       "blocks": [
-        { "type": "service", "settings": { "heading": "Personal styling", "fallback": "service-1-consult-1.jpg" } },
-        { "type": "service", "settings": { "heading": "Wardrobe edit", "fallback": "service-2-consult-1.jpg" } },
-        { "type": "service", "settings": { "heading": "Occasion dressing", "fallback": "service-3-consult-1.jpg" } }
+        {
+          "type": "service",
+          "settings": {
+            "heading": "Personal styling",
+            "fallback": "service-1-consult-1.jpg"
+          }
+        },
+        {
+          "type": "service",
+          "settings": {
+            "heading": "Wardrobe edit",
+            "fallback": "service-2-consult-1.jpg"
+          }
+        },
+        {
+          "type": "service",
+          "settings": {
+            "heading": "Occasion dressing",
+            "fallback": "service-3-consult-1.jpg"
+          }
+        }
       ]
     }
   ]

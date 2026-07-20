@@ -37,30 +37,77 @@
 
 {% schema %}
 {
-  "name": "FAQ",
+  "name": "t:sections.veylique-faq.name",
   "settings": [
-    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Help desk" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Questions, answered" },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "Everything shoppers need before checkout, from fit to delivery and easy exchanges." },
-    { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 1, "max": 3, "step": 1, "default": 3 }
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "t:sections.veylique-faq.settings.kicker.label",
+      "default": "Help desk"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.veylique-faq.settings.heading.label",
+      "default": "Questions, answered"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "t:sections.veylique-faq.settings.text.label",
+      "default": "Everything shoppers need before checkout, from fit to delivery and easy exchanges."
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "t:sections.veylique-faq.settings.columns_desktop.label",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 3
+    }
   ],
   "blocks": [
     {
       "type": "question",
-      "name": "Question",
+      "name": "t:sections.veylique-faq.blocks.question.name",
       "settings": [
-        { "type": "text", "id": "question", "label": "Question", "default": "How long does delivery take?" },
-        { "type": "richtext", "id": "answer", "label": "Answer", "default": "<p>Most orders ship within 24-48 hours. Standard delivery usually arrives in 3-6 business days.</p>" }
+        {
+          "type": "text",
+          "id": "question",
+          "label": "t:sections.veylique-faq.blocks.question.settings.question.label",
+          "default": "How long does delivery take?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "t:sections.veylique-faq.blocks.question.settings.answer.label",
+          "default": "<p>Most orders ship within 24-48 hours. Standard delivery usually arrives in 3-6 business days.</p>"
+        }
       ]
     }
   ],
   "presets": [
     {
-      "name": "FAQ",
+      "name": "t:sections.veylique-faq.presets.name",
       "blocks": [
-        { "type": "question" },
-        { "type": "question", "settings": { "question": "Can I exchange or return an item?", "answer": "<p>Yes. You can request an exchange or return within 7 days of delivery when the item is unused and has original tags.</p>" } },
-        { "type": "question", "settings": { "question": "How do I choose the right size?", "answer": "<p>Compare the product size guide with a garment you already love. If you are between sizes, choose the larger size for a relaxed fit.</p>" } }
+        {
+          "type": "question"
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "Can I exchange or return an item?",
+            "answer": "<p>Yes. You can request an exchange or return within 7 days of delivery when the item is unused and has original tags.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "How do I choose the right size?",
+            "answer": "<p>Compare the product size guide with a garment you already love. If you are between sizes, choose the larger size for a relaxed fit.</p>"
+          }
+        }
       ]
     }
   ]

@@ -73,5 +73,1053 @@
       "subtitle": "Subtitle",
       "normal": "Normal text"
     }
+  },
+  "sections": {
+    "veylique-blog-posts": {
+      "name": "Blog posts",
+      "settings": {
+        "kicker": {
+          "label": "Kicker"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "blog": {
+          "label": "Blog"
+        },
+        "post_limit": {
+          "label": "Posts"
+        },
+        "columns_desktop": {
+          "label": "Columns on desktop"
+        }
+      },
+      "blocks": {
+        "article": {
+          "name": "Fallback article",
+          "settings": {
+            "image": {
+              "label": "Image"
+            },
+            "fallback": {
+              "label": "Fallback asset"
+            },
+            "heading": {
+              "label": "Heading"
+            },
+            "meta": {
+              "label": "Meta text"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Blog posts"
+      }
+    },
+    "veylique-category-carousel": {
+      "name": "Category carousel",
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "show_navigation": {
+          "label": "Show carousel arrows"
+        },
+        "previous_label": {
+          "label": "Previous button label"
+        },
+        "next_label": {
+          "label": "Next button label"
+        }
+      },
+      "blocks": {
+        "category": {
+          "name": "Category",
+          "settings": {
+            "collection": {
+              "label": "Collection"
+            },
+            "heading": {
+              "label": "Heading"
+            },
+            "link": {
+              "label": "Link"
+            },
+            "image": {
+              "label": "Image"
+            },
+            "hover_image": {
+              "label": "Hover image"
+            },
+            "fallback": {
+              "label": "Fallback asset"
+            },
+            "hover_fallback": {
+              "label": "Hover fallback asset"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Category carousel"
+      }
+    },
+    "veylique-faq": {
+      "name": "FAQ",
+      "settings": {
+        "kicker": {
+          "label": "Kicker"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "columns_desktop": {
+          "label": "Columns on desktop"
+        }
+      },
+      "blocks": {
+        "question": {
+          "name": "Question",
+          "settings": {
+            "question": {
+              "label": "Question"
+            },
+            "answer": {
+              "label": "Answer"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "FAQ"
+      }
+    },
+    "veylique-featured-collections": {
+      "name": "Featured collections",
+      "settings": {
+        "kicker": {
+          "label": "Kicker"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "link_label": {
+          "label": "Link label"
+        },
+        "columns_desktop": {
+          "label": "Columns on desktop"
+        }
+      },
+      "blocks": {
+        "collection": {
+          "name": "Collection",
+          "settings": {
+            "collection": {
+              "label": "Collection"
+            },
+            "image": {
+              "label": "Image"
+            },
+            "heading": {
+              "label": "Heading"
+            },
+            "link": {
+              "label": "Link"
+            },
+            "fallback": {
+              "label": "Fallback asset"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Featured collections"
+      }
+    },
+    "veylique-featured-products": {
+      "name": "Featured products",
+      "settings": {
+        "kicker": {
+          "label": "Kicker"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "columns_desktop": {
+          "label": "Columns on desktop"
+        }
+      },
+      "blocks": {
+        "product": {
+          "name": "Product",
+          "settings": {
+            "product": {
+              "label": "Product"
+            },
+            "image": {
+              "label": "Fallback image"
+            },
+            "heading": {
+              "label": "Fallback title"
+            },
+            "price": {
+              "label": "Fallback price"
+            },
+            "fallback": {
+              "label": "Fallback asset"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Featured products"
+      }
+    },
+    "veylique-hero": {
+      "name": "Hero slideshow",
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "category_label": {
+          "label": "Category navigation label"
+        },
+        "button_label": {
+          "label": "Button label"
+        },
+        "button_link": {
+          "label": "Button link"
+        },
+        "scroll_label": {
+          "label": "Scroll button label"
+        },
+        "slide_duration": {
+          "label": "Seconds per slide"
+        },
+        "transition_duration": {
+          "label": "Transition seconds"
+        },
+        "content__0": "Content",
+        "content__1": "Animation"
+      },
+      "blocks": {
+        "slide": {
+          "name": "Slide",
+          "settings": {
+            "image": {
+              "label": "Image"
+            },
+            "label": {
+              "label": "Animated label"
+            }
+          }
+        },
+        "link": {
+          "name": "Category link",
+          "settings": {
+            "label": {
+              "label": "Label"
+            },
+            "link": {
+              "label": "Link"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Hero slideshow"
+      }
+    },
+    "veylique-home-bestsellers": {
+      "name": "Veylique bestsellers",
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "show_navigation": {
+          "label": "Show navigation"
+        },
+        "controls_label": {
+          "label": "Controls label"
+        },
+        "previous_label": {
+          "label": "Previous label"
+        },
+        "next_label": {
+          "label": "Next label"
+        }
+      },
+      "blocks": {
+        "product": {
+          "name": "Product",
+          "settings": {
+            "product": {
+              "label": "Product"
+            },
+            "image": {
+              "label": "Image"
+            },
+            "hover_image": {
+              "label": "Hover image"
+            },
+            "fallback": {
+              "label": "Fallback asset filename"
+            },
+            "hover_fallback": {
+              "label": "Hover fallback asset filename"
+            },
+            "badge": {
+              "label": "Badge"
+            },
+            "title": {
+              "label": "Fallback title"
+            },
+            "price": {
+              "label": "Fallback price"
+            },
+            "link": {
+              "label": "Fallback link"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Veylique bestsellers"
+      }
+    },
+    "veylique-home-blog": {
+      "name": "Veylique stories",
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "read_label": {
+          "label": "Read link label"
+        },
+        "button_label": {
+          "label": "Button label"
+        },
+        "button_link": {
+          "label": "Button link"
+        }
+      },
+      "blocks": {
+        "story": {
+          "name": "Story",
+          "settings": {
+            "image": {
+              "label": "Image"
+            },
+            "fallback": {
+              "label": "Fallback asset filename"
+            },
+            "badge": {
+              "label": "Badge"
+            },
+            "meta": {
+              "label": "Meta"
+            },
+            "title": {
+              "label": "Title"
+            },
+            "excerpt": {
+              "label": "Excerpt"
+            },
+            "link": {
+              "label": "Link"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Veylique stories"
+      }
+    },
+    "veylique-home-curated-edit": {
+      "name": "Veylique curated edit",
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "button_label": {
+          "label": "Button label"
+        }
+      },
+      "blocks": {
+        "tile": {
+          "name": "Product tile",
+          "settings": {
+            "product": {
+              "label": "Product"
+            },
+            "image": {
+              "label": "Image"
+            },
+            "fallback": {
+              "label": "Fallback asset filename"
+            },
+            "title": {
+              "label": "Fallback title"
+            },
+            "price": {
+              "label": "Fallback price"
+            },
+            "description": {
+              "label": "Description"
+            },
+            "link": {
+              "label": "Fallback link"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Veylique curated edit"
+      }
+    },
+    "veylique-home-faq": {
+      "name": "Veylique home FAQ",
+      "settings": {
+        "kicker": {
+          "label": "Kicker"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "link_label": {
+          "label": "Link label"
+        },
+        "link": {
+          "label": "Link"
+        }
+      },
+      "blocks": {
+        "question": {
+          "name": "Question",
+          "settings": {
+            "question": {
+              "label": "Question"
+            },
+            "answer": {
+              "label": "Answer"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Veylique home FAQ"
+      }
+    },
+    "veylique-home-full-cta": {
+      "name": "Veylique full CTA",
+      "settings": {
+        "aria_label": {
+          "label": "Accessibility label"
+        },
+        "image": {
+          "label": "Desktop image"
+        },
+        "mobile_image": {
+          "label": "Mobile image"
+        },
+        "fallback": {
+          "label": "Desktop fallback asset filename"
+        },
+        "mobile_fallback": {
+          "label": "Mobile fallback asset filename"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "button_label": {
+          "label": "Button label"
+        },
+        "button_link": {
+          "label": "Button link"
+        }
+      },
+      "presets": {
+        "name": "Veylique full CTA"
+      }
+    },
+    "veylique-home-latest-products": {
+      "name": "Veylique latest products",
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "show_navigation": {
+          "label": "Show navigation"
+        },
+        "controls_label": {
+          "label": "Controls label"
+        },
+        "previous_label": {
+          "label": "Previous label"
+        },
+        "next_label": {
+          "label": "Next label"
+        },
+        "button_label": {
+          "label": "Button label"
+        },
+        "button_link": {
+          "label": "Button link"
+        }
+      },
+      "blocks": {
+        "product": {
+          "name": "Product",
+          "settings": {
+            "product": {
+              "label": "Product"
+            },
+            "image": {
+              "label": "Image"
+            },
+            "hover_image": {
+              "label": "Hover image"
+            },
+            "fallback": {
+              "label": "Fallback asset filename"
+            },
+            "hover_fallback": {
+              "label": "Hover fallback asset filename"
+            },
+            "category": {
+              "label": "Category"
+            },
+            "badge": {
+              "label": "Badge"
+            },
+            "title": {
+              "label": "Fallback title"
+            },
+            "price": {
+              "label": "Fallback price"
+            },
+            "compare_price": {
+              "label": "Fallback compare price"
+            },
+            "link": {
+              "label": "Fallback link"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Veylique latest products"
+      }
+    },
+    "veylique-home-new-arrivals": {
+      "name": "Veylique new arrivals",
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "button_label": {
+          "label": "Button label"
+        },
+        "aria_label": {
+          "label": "Section accessibility label"
+        },
+        "controls_label": {
+          "label": "Controls accessibility label"
+        },
+        "previous_label": {
+          "label": "Previous button label"
+        },
+        "next_label": {
+          "label": "Next button label"
+        }
+      },
+      "blocks": {
+        "slide": {
+          "name": "Slide",
+          "settings": {
+            "image": {
+              "label": "Image"
+            },
+            "fallback": {
+              "label": "Fallback asset filename"
+            },
+            "alt": {
+              "label": "Alt text"
+            },
+            "text": {
+              "label": "Card text"
+            },
+            "link": {
+              "label": "Link"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Veylique new arrivals"
+      }
+    },
+    "veylique-home-occasion": {
+      "name": "Veylique occasion",
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "tabs_label": {
+          "label": "Tabs accessibility label"
+        }
+      },
+      "blocks": {
+        "occasion": {
+          "name": "Occasion",
+          "settings": {
+            "heading": {
+              "label": "Heading"
+            },
+            "text": {
+              "label": "Text"
+            },
+            "image": {
+              "label": "Image"
+            },
+            "fallback": {
+              "label": "Fallback asset filename"
+            },
+            "alt": {
+              "label": "Alt text"
+            },
+            "tag_1_name": {
+              "label": "Tag 1 name"
+            },
+            "tag_1_price": {
+              "label": "Tag 1 price"
+            },
+            "tag_2_name": {
+              "label": "Tag 2 name"
+            },
+            "tag_2_price": {
+              "label": "Tag 2 price"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Veylique occasion"
+      }
+    },
+    "veylique-home-sale": {
+      "name": "Veylique sale",
+      "settings": {
+        "aria_label": {
+          "label": "Accessibility label"
+        },
+        "marquee_text": {
+          "label": "Marquee text"
+        },
+        "kicker": {
+          "label": "Kicker"
+        },
+        "heading_line_1": {
+          "label": "Heading line 1"
+        },
+        "heading_line_2": {
+          "label": "Heading line 2"
+        },
+        "offer": {
+          "label": "Offer"
+        },
+        "chip": {
+          "label": "Offer chip"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "tiers_label": {
+          "label": "Tiers accessibility label"
+        },
+        "tier_1_percent": {
+          "label": "Tier 1 percentage"
+        },
+        "tier_1_label": {
+          "label": "Tier 1 label"
+        },
+        "tier_2_percent": {
+          "label": "Tier 2 percentage"
+        },
+        "tier_2_label": {
+          "label": "Tier 2 label"
+        },
+        "tier_3_tag": {
+          "label": "Tier 3 tag"
+        },
+        "tier_3_percent": {
+          "label": "Tier 3 percentage"
+        },
+        "tier_3_label": {
+          "label": "Tier 3 label"
+        },
+        "button_label": {
+          "label": "Button label"
+        },
+        "button_link": {
+          "label": "Button link"
+        },
+        "note": {
+          "label": "Note"
+        },
+        "video": {
+          "label": "Video"
+        },
+        "poster": {
+          "label": "Video fallback image",
+          "info": "Shown when no video is set. Recommended for performance."
+        },
+        "sticker_text": {
+          "label": "Sticker text"
+        },
+        "sticker_core": {
+          "label": "Sticker center"
+        }
+      },
+      "presets": {
+        "name": "Veylique sale"
+      }
+    },
+    "veylique-home-style-ritual": {
+      "name": "Veylique style ritual",
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "aria_label": {
+          "label": "Accessibility label"
+        },
+        "scroll_height": {
+          "label": "Desktop scroll height"
+        }
+      },
+      "blocks": {
+        "step": {
+          "name": "Step",
+          "settings": {
+            "title_main": {
+              "label": "Main title"
+            },
+            "title_alt": {
+              "label": "Secondary title"
+            },
+            "text": {
+              "label": "Text"
+            },
+            "image": {
+              "label": "Image"
+            },
+            "fallback": {
+              "label": "Fallback asset filename"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Veylique style ritual"
+      }
+    },
+    "veylique-home-testimonials": {
+      "name": "Veylique testimonials",
+      "settings": {
+        "kicker": {
+          "label": "Kicker"
+        },
+        "aria_label": {
+          "label": "Accessibility label"
+        }
+      },
+      "blocks": {
+        "testimonial": {
+          "name": "Testimonial",
+          "settings": {
+            "image": {
+              "label": "Avatar"
+            },
+            "fallback": {
+              "label": "Fallback asset filename"
+            },
+            "quote": {
+              "label": "Quote"
+            },
+            "name": {
+              "label": "Name"
+            },
+            "place": {
+              "label": "Place"
+            },
+            "bubble_size": {
+              "label": "Bubble size"
+            },
+            "top": {
+              "label": "Vertical position"
+            },
+            "side_offset": {
+              "label": "Side position"
+            },
+            "float_duration": {
+              "label": "Float duration"
+            },
+            "float_delay": {
+              "label": "Float delay"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Veylique testimonials"
+      }
+    },
+    "veylique-image-banner": {
+      "name": "Image banner",
+      "settings": {
+        "image": {
+          "label": "Image"
+        },
+        "fallback": {
+          "label": "Fallback asset"
+        },
+        "kicker": {
+          "label": "Kicker"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "button_label": {
+          "label": "Button label"
+        },
+        "button_link": {
+          "label": "Button link"
+        }
+      },
+      "presets": {
+        "name": "Image banner"
+      }
+    },
+    "veylique-image-with-text": {
+      "name": "Image with text",
+      "settings": {
+        "image": {
+          "label": "Image"
+        },
+        "fallback": {
+          "label": "Fallback asset"
+        },
+        "kicker": {
+          "label": "Kicker"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "button_label": {
+          "label": "Button label"
+        },
+        "button_link": {
+          "label": "Button link"
+        }
+      },
+      "presets": {
+        "name": "Image with text"
+      }
+    },
+    "veylique-page-hero": {
+      "name": "Page hero",
+      "settings": {
+        "image": {
+          "label": "Image"
+        },
+        "fallback": {
+          "label": "Fallback asset"
+        },
+        "kicker": {
+          "label": "Kicker"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        }
+      },
+      "presets": {
+        "name": "Page hero"
+      }
+    },
+    "veylique-process": {
+      "name": "Columns",
+      "settings": {
+        "kicker": {
+          "label": "Kicker"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "columns_desktop": {
+          "label": "Columns on desktop"
+        }
+      },
+      "blocks": {
+        "column": {
+          "name": "Column",
+          "settings": {
+            "heading": {
+              "label": "Heading"
+            },
+            "text": {
+              "label": "Text"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Columns"
+      }
+    },
+    "veylique-rich-text": {
+      "name": "Rich text",
+      "settings": {
+        "kicker": {
+          "label": "Kicker"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        }
+      },
+      "presets": {
+        "name": "Rich text"
+      }
+    },
+    "veylique-services-list": {
+      "name": "Services",
+      "settings": {
+        "kicker": {
+          "label": "Kicker"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "columns_desktop": {
+          "label": "Columns on desktop"
+        }
+      },
+      "blocks": {
+        "service": {
+          "name": "Service",
+          "settings": {
+            "image": {
+              "label": "Image"
+            },
+            "fallback": {
+              "label": "Fallback asset"
+            },
+            "heading": {
+              "label": "Heading"
+            },
+            "text": {
+              "label": "Text"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Services"
+      }
+    },
+    "veylique-testimonials": {
+      "name": "Testimonials",
+      "settings": {
+        "kicker": {
+          "label": "Kicker"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "columns_desktop": {
+          "label": "Columns on desktop"
+        }
+      },
+      "blocks": {
+        "testimonial": {
+          "name": "Testimonial",
+          "settings": {
+            "quote": {
+              "label": "Quote"
+            },
+            "name": {
+              "label": "Name"
+            },
+            "location": {
+              "label": "Location"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Testimonials"
+      }
+    }
   }
 }

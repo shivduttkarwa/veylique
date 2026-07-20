@@ -204,9 +204,15 @@ Dynamic block title in the editor comes from setting `id` precedence: `heading` 
 - Only **one** `{% javascript %}` and one `{% stylesheet %}` per file.
 - Instance-specific styling ⇒ inline `<style>` or a CSS var on the element
   (`style="--gap: {{ x }}px"`); instance-specific JS ⇒ `data-*` attribute read by the bundle.
-- **Performance budget (Theme Store):** Lighthouse ≥ 60 (weighted home/product/collection); minified
-  JS ≤ 16 KB; no React/Vue/Angular/jQuery; wrap all injected JS in an IIFE; `defer`/`async` every
-  script; preload ≤ 2 critical resources per template.
+- **Two valid JS delivery methods (both doc-sanctioned):** (a) per-section `{% javascript %}` →
+  bundled + subset per page; (b) a shared file in `/assets` loaded once in the layout via
+  `asset_url | script_tag` / `<script defer>` — explicitly fine "when assets already load in parent
+  layouts." A single theme-wide behavior file is method (b), not a violation.
+- **Performance budget applies to *Theme Store submissions*:** Lighthouse ≥ 60 (weighted
+  home/product/collection) and **minified JS ≤ 16 KB** are Theme-Store gates — not hard rules for a
+  custom/one-merchant theme. Regardless of method: no React/Vue/Angular/jQuery; wrap injected JS in
+  an IIFE; `defer`/`async` every script; re-init on `shopify:section:load`; preload ≤ 2 critical
+  resources per template.
 - Images: use the `image_tag` filter (auto `srcset` + focal-point `object-position`); `loading:
   'lazy'` for below-the-fold; do all heavy Liquid work outside loops.
 

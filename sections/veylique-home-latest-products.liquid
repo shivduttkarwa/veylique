@@ -55,46 +55,145 @@
 
 {% schema %}
 {
-  "name": "Veylique latest products",
+  "name": "t:sections.veylique-home-latest-products.name",
   "tag": "section",
   "settings": [
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Latest Products" },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "Freshly launched styles and seasonal essentials selected for your next outfit." },
-    { "type": "checkbox", "id": "show_navigation", "label": "Show navigation", "default": true },
-    { "type": "text", "id": "controls_label", "label": "Controls label", "default": "Latest products carousel controls" },
-    { "type": "text", "id": "previous_label", "label": "Previous label", "default": "Previous products" },
-    { "type": "text", "id": "next_label", "label": "Next label", "default": "Next products" },
-    { "type": "text", "id": "button_label", "label": "Button label", "default": "View All Products" },
-    { "type": "url", "id": "button_link", "label": "Button link" }
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.veylique-home-latest-products.settings.heading.label",
+      "default": "Latest Products"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "t:sections.veylique-home-latest-products.settings.text.label",
+      "default": "Freshly launched styles and seasonal essentials selected for your next outfit."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "t:sections.veylique-home-latest-products.settings.show_navigation.label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "controls_label",
+      "label": "t:sections.veylique-home-latest-products.settings.controls_label.label",
+      "default": "Latest products carousel controls"
+    },
+    {
+      "type": "text",
+      "id": "previous_label",
+      "label": "t:sections.veylique-home-latest-products.settings.previous_label.label",
+      "default": "Previous products"
+    },
+    {
+      "type": "text",
+      "id": "next_label",
+      "label": "t:sections.veylique-home-latest-products.settings.next_label.label",
+      "default": "Next products"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.veylique-home-latest-products.settings.button_label.label",
+      "default": "View All Products"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.veylique-home-latest-products.settings.button_link.label"
+    }
   ],
   "blocks": [
     {
       "type": "product",
-      "name": "Product",
+      "name": "t:sections.veylique-home-latest-products.blocks.product.name",
       "settings": [
-        { "type": "product", "id": "product", "label": "Product" },
-        { "type": "image_picker", "id": "image", "label": "Image" },
-        { "type": "image_picker", "id": "hover_image", "label": "Hover image" },
-        { "type": "text", "id": "fallback", "label": "Fallback asset filename", "default": "hero-1.webp" },
-        { "type": "text", "id": "hover_fallback", "label": "Hover fallback asset filename", "default": "hero-2.webp" },
-        { "type": "text", "id": "category", "label": "Category", "default": "Dresses" },
-        { "type": "text", "id": "badge", "label": "Badge", "default": "New" },
-        { "type": "text", "id": "title", "label": "Fallback title", "default": "Linen Wrap Dress" },
-        { "type": "text", "id": "price", "label": "Fallback price", "default": "$72.00" },
-        { "type": "text", "id": "compare_price", "label": "Fallback compare price" },
-        { "type": "url", "id": "link", "label": "Fallback link" }
+        {
+          "type": "product",
+          "id": "product",
+          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.product.label"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.image.label"
+        },
+        {
+          "type": "image_picker",
+          "id": "hover_image",
+          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.hover_image.label"
+        },
+        {
+          "type": "text",
+          "id": "fallback",
+          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.fallback.label",
+          "default": "hero-1.webp"
+        },
+        {
+          "type": "text",
+          "id": "hover_fallback",
+          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.hover_fallback.label",
+          "default": "hero-2.webp"
+        },
+        {
+          "type": "text",
+          "id": "category",
+          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.category.label",
+          "default": "Dresses"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.badge.label",
+          "default": "New"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.title.label",
+          "default": "Linen Wrap Dress"
+        },
+        {
+          "type": "text",
+          "id": "price",
+          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.price.label",
+          "default": "$72.00"
+        },
+        {
+          "type": "text",
+          "id": "compare_price",
+          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.compare_price.label"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.veylique-home-latest-products.blocks.product.settings.link.label"
+        }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Veylique latest products",
+      "name": "t:sections.veylique-home-latest-products.presets.name",
       "blocks": [
-        { "type": "product" },
-        { "type": "product" },
-        { "type": "product" },
-        { "type": "product" },
-        { "type": "product" }
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        }
       ]
     }
   ]

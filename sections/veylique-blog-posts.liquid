@@ -46,34 +46,107 @@
 
 {% schema %}
 {
-  "name": "Blog posts",
+  "name": "t:sections.veylique-blog-posts.name",
   "settings": [
-    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Recent stories" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Recent stories" },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "Style guides, sizing notes, and a look behind the collections." },
-    { "type": "blog", "id": "blog", "label": "Blog" },
-    { "type": "range", "id": "post_limit", "label": "Posts", "min": 2, "max": 4, "step": 1, "default": 4 },
-    { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 2, "max": 4, "step": 1, "default": 4 }
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "t:sections.veylique-blog-posts.settings.kicker.label",
+      "default": "Recent stories"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.veylique-blog-posts.settings.heading.label",
+      "default": "Recent stories"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "t:sections.veylique-blog-posts.settings.text.label",
+      "default": "Style guides, sizing notes, and a look behind the collections."
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "t:sections.veylique-blog-posts.settings.blog.label"
+    },
+    {
+      "type": "range",
+      "id": "post_limit",
+      "label": "t:sections.veylique-blog-posts.settings.post_limit.label",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "t:sections.veylique-blog-posts.settings.columns_desktop.label",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 4
+    }
   ],
   "blocks": [
     {
       "type": "article",
-      "name": "Fallback article",
+      "name": "t:sections.veylique-blog-posts.blocks.article.name",
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "Image" },
-        { "type": "text", "id": "fallback", "label": "Fallback asset", "default": "hero-2.webp" },
-        { "type": "text", "id": "heading", "label": "Heading", "default": "The ultimate guide to layering this winter" },
-        { "type": "text", "id": "meta", "label": "Meta text", "default": "Style guide" }
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.veylique-blog-posts.blocks.article.settings.image.label"
+        },
+        {
+          "type": "text",
+          "id": "fallback",
+          "label": "t:sections.veylique-blog-posts.blocks.article.settings.fallback.label",
+          "default": "hero-2.webp"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.veylique-blog-posts.blocks.article.settings.heading.label",
+          "default": "The ultimate guide to layering this winter"
+        },
+        {
+          "type": "text",
+          "id": "meta",
+          "label": "t:sections.veylique-blog-posts.blocks.article.settings.meta.label",
+          "default": "Style guide"
+        }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Blog posts",
+      "name": "t:sections.veylique-blog-posts.presets.name",
       "blocks": [
-        { "type": "article", "settings": { "fallback": "hero-2.webp" } },
-        { "type": "article", "settings": { "heading": "Five ways to style your kurta set", "meta": "Style tips", "fallback": "hero-3.webp" } },
-        { "type": "article", "settings": { "heading": "How to find your perfect fit", "meta": "Guides", "fallback": "hero-4.webp" } }
+        {
+          "type": "article",
+          "settings": {
+            "fallback": "hero-2.webp"
+          }
+        },
+        {
+          "type": "article",
+          "settings": {
+            "heading": "Five ways to style your kurta set",
+            "meta": "Style tips",
+            "fallback": "hero-3.webp"
+          }
+        },
+        {
+          "type": "article",
+          "settings": {
+            "heading": "How to find your perfect fit",
+            "meta": "Guides",
+            "fallback": "hero-4.webp"
+          }
+        }
       ]
     }
   ]

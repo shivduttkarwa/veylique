@@ -51,37 +51,102 @@
 
 {% schema %}
 {
-  "name": "Veylique occasion",
+  "name": "t:sections.veylique-home-occasion.name",
   "tag": "section",
   "settings": [
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Shop by Occasion" },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "One wardrobe, every plan - pick the moment and we'll style it." },
-    { "type": "text", "id": "tabs_label", "label": "Tabs accessibility label", "default": "Occasions" }
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.veylique-home-occasion.settings.heading.label",
+      "default": "Shop by Occasion"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "t:sections.veylique-home-occasion.settings.text.label",
+      "default": "One wardrobe, every plan - pick the moment and we'll style it."
+    },
+    {
+      "type": "text",
+      "id": "tabs_label",
+      "label": "t:sections.veylique-home-occasion.settings.tabs_label.label",
+      "default": "Occasions"
+    }
   ],
   "blocks": [
     {
       "type": "occasion",
-      "name": "Occasion",
+      "name": "t:sections.veylique-home-occasion.blocks.occasion.name",
       "settings": [
-        { "type": "text", "id": "heading", "label": "Heading", "default": "Office day" },
-        { "type": "textarea", "id": "text", "label": "Text", "default": "Clean silhouettes and structured fabrics that move from the desk to after-work plans without missing a beat." },
-        { "type": "image_picker", "id": "image", "label": "Image" },
-        { "type": "text", "id": "fallback", "label": "Fallback asset filename", "default": "hero-4.webp" },
-        { "type": "text", "id": "alt", "label": "Alt text", "default": "Veylique occasion outfit" },
-        { "type": "text", "id": "tag_1_name", "label": "Tag 1 name", "default": "Cecilia Blazer" },
-        { "type": "text", "id": "tag_1_price", "label": "Tag 1 price", "default": "$128.00" },
-        { "type": "text", "id": "tag_2_name", "label": "Tag 2 name", "default": "Sathorn Pants" },
-        { "type": "text", "id": "tag_2_price", "label": "Tag 2 price", "default": "$86.00" }
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.heading.label",
+          "default": "Office day"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.text.label",
+          "default": "Clean silhouettes and structured fabrics that move from the desk to after-work plans without missing a beat."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.image.label"
+        },
+        {
+          "type": "text",
+          "id": "fallback",
+          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.fallback.label",
+          "default": "hero-4.webp"
+        },
+        {
+          "type": "text",
+          "id": "alt",
+          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.alt.label",
+          "default": "Veylique occasion outfit"
+        },
+        {
+          "type": "text",
+          "id": "tag_1_name",
+          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_1_name.label",
+          "default": "Cecilia Blazer"
+        },
+        {
+          "type": "text",
+          "id": "tag_1_price",
+          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_1_price.label",
+          "default": "$128.00"
+        },
+        {
+          "type": "text",
+          "id": "tag_2_name",
+          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_2_name.label",
+          "default": "Sathorn Pants"
+        },
+        {
+          "type": "text",
+          "id": "tag_2_price",
+          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_2_price.label",
+          "default": "$86.00"
+        }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Veylique occasion",
+      "name": "t:sections.veylique-home-occasion.presets.name",
       "blocks": [
-        { "type": "occasion" },
-        { "type": "occasion" },
-        { "type": "occasion" }
+        {
+          "type": "occasion"
+        },
+        {
+          "type": "occasion"
+        },
+        {
+          "type": "occasion"
+        }
       ]
     }
   ]

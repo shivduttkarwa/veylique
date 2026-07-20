@@ -12,14 +12,31 @@
 
 {% schema %}
 {
-  "name": "Rich text",
+  "name": "t:sections.veylique-rich-text.name",
   "settings": [
-    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Manifesto" },
-    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Everyday clothes should feel polished without asking you to compromise." },
-    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Use this section for brand story, page introductions, policies, or editorial copy. It is fully editable in the theme editor.</p>" }
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "t:sections.veylique-rich-text.settings.kicker.label",
+      "default": "Manifesto"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "t:sections.veylique-rich-text.settings.heading.label",
+      "default": "Everyday clothes should feel polished without asking you to compromise."
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:sections.veylique-rich-text.settings.text.label",
+      "default": "<p>Use this section for brand story, page introductions, policies, or editorial copy. It is fully editable in the theme editor.</p>"
+    }
   ],
   "presets": [
-    { "name": "Rich text" }
+    {
+      "name": "t:sections.veylique-rich-text.presets.name"
+    }
   ]
 }
 {% endschema %}

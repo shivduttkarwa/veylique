@@ -21,31 +21,87 @@
 
 {% schema %}
 {
-  "name": "Columns",
+  "name": "t:sections.veylique-process.name",
   "settings": [
-    { "type": "text", "id": "kicker", "label": "Kicker", "default": "The style ritual" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Your everyday edit" },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "Four considered steps, one confident look. A complete approach to getting dressed, built around real bodies." },
-    { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 2, "max": 4, "step": 1, "default": 4 }
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "t:sections.veylique-process.settings.kicker.label",
+      "default": "The style ritual"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.veylique-process.settings.heading.label",
+      "default": "Your everyday edit"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "t:sections.veylique-process.settings.text.label",
+      "default": "Four considered steps, one confident look. A complete approach to getting dressed, built around real bodies."
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "t:sections.veylique-process.settings.columns_desktop.label",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 4
+    }
   ],
   "blocks": [
     {
       "type": "column",
-      "name": "Column",
+      "name": "t:sections.veylique-process.blocks.column.name",
       "settings": [
-        { "type": "text", "id": "heading", "label": "Heading", "default": "Discover" },
-        { "type": "textarea", "id": "text", "label": "Text", "default": "Start with mood, size, routine, and the moments you are dressing for." }
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.veylique-process.blocks.column.settings.heading.label",
+          "default": "Discover"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:sections.veylique-process.blocks.column.settings.text.label",
+          "default": "Start with mood, size, routine, and the moments you are dressing for."
+        }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Columns",
+      "name": "t:sections.veylique-process.presets.name",
       "blocks": [
-        { "type": "column", "settings": { "heading": "Discover" } },
-        { "type": "column", "settings": { "heading": "Fit", "text": "Choose silhouettes and fabrics that feel natural through the day." } },
-        { "type": "column", "settings": { "heading": "Style", "text": "Build outfits with pieces that repeat, layer, and travel well." } },
-        { "type": "column", "settings": { "heading": "Wear", "text": "Keep the final look polished without sacrificing movement." } }
+        {
+          "type": "column",
+          "settings": {
+            "heading": "Discover"
+          }
+        },
+        {
+          "type": "column",
+          "settings": {
+            "heading": "Fit",
+            "text": "Choose silhouettes and fabrics that feel natural through the day."
+          }
+        },
+        {
+          "type": "column",
+          "settings": {
+            "heading": "Style",
+            "text": "Build outfits with pieces that repeat, layer, and travel well."
+          }
+        },
+        {
+          "type": "column",
+          "settings": {
+            "heading": "Wear",
+            "text": "Keep the final look polished without sacrificing movement."
+          }
+        }
       ]
     }
   ]

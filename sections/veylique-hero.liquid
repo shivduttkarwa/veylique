@@ -128,52 +128,156 @@
 
 {% schema %}
 {
-  "name": "Hero slideshow",
+  "name": "t:sections.veylique-hero.name",
   "tag": "section",
   "class": "shopify-section--veylique-hero",
   "settings": [
-    { "type": "header", "content": "Content" },
-    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Veylique" },
-    { "type": "text", "id": "category_label", "label": "Category navigation label", "default": "Featured categories" },
-    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop collection" },
-    { "type": "url", "id": "button_link", "label": "Button link" },
-    { "type": "text", "id": "scroll_label", "label": "Scroll button label", "default": "Scroll down" },
-    { "type": "header", "content": "Animation" },
-    { "type": "range", "id": "slide_duration", "label": "Seconds per slide", "min": 2, "max": 8, "step": 1, "default": 3 },
-    { "type": "range", "id": "transition_duration", "label": "Transition seconds", "min": 1, "max": 4, "step": 1, "default": 2 }
+    {
+      "type": "header",
+      "content": "t:sections.veylique-hero.settings.content__0"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "t:sections.veylique-hero.settings.heading.label",
+      "default": "Veylique"
+    },
+    {
+      "type": "text",
+      "id": "category_label",
+      "label": "t:sections.veylique-hero.settings.category_label.label",
+      "default": "Featured categories"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.veylique-hero.settings.button_label.label",
+      "default": "Shop collection"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.veylique-hero.settings.button_link.label"
+    },
+    {
+      "type": "text",
+      "id": "scroll_label",
+      "label": "t:sections.veylique-hero.settings.scroll_label.label",
+      "default": "Scroll down"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.veylique-hero.settings.content__1"
+    },
+    {
+      "type": "range",
+      "id": "slide_duration",
+      "label": "t:sections.veylique-hero.settings.slide_duration.label",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "transition_duration",
+      "label": "t:sections.veylique-hero.settings.transition_duration.label",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 2
+    }
   ],
   "blocks": [
     {
       "type": "slide",
-      "name": "Slide",
+      "name": "t:sections.veylique-hero.blocks.slide.name",
       "limit": 5,
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "Image" },
-        { "type": "text", "id": "label", "label": "Animated label", "default": "New" }
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.veylique-hero.blocks.slide.settings.image.label"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.veylique-hero.blocks.slide.settings.label.label",
+          "default": "New"
+        }
       ]
     },
     {
       "type": "link",
-      "name": "Category link",
+      "name": "t:sections.veylique-hero.blocks.link.name",
       "limit": 3,
       "settings": [
-        { "type": "text", "id": "label", "label": "Label", "default": "Dresses" },
-        { "type": "url", "id": "link", "label": "Link" }
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.veylique-hero.blocks.link.settings.label.label",
+          "default": "Dresses"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.veylique-hero.blocks.link.settings.link.label"
+        }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Hero slideshow",
+      "name": "t:sections.veylique-hero.presets.name",
       "blocks": [
-        { "type": "slide", "settings": { "label": "New" } },
-        { "type": "slide", "settings": { "label": "Bold" } },
-        { "type": "slide", "settings": { "label": "Chic" } },
-        { "type": "slide", "settings": { "label": "Effortless" } },
-        { "type": "slide", "settings": { "label": "Fresh" } },
-        { "type": "link", "settings": { "label": "Dresses" } },
-        { "type": "link", "settings": { "label": "Ethnic wear" } },
-        { "type": "link", "settings": { "label": "Western wear" } }
+        {
+          "type": "slide",
+          "settings": {
+            "label": "New"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "label": "Bold"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "label": "Chic"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "label": "Effortless"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "label": "Fresh"
+          }
+        },
+        {
+          "type": "link",
+          "settings": {
+            "label": "Dresses"
+          }
+        },
+        {
+          "type": "link",
+          "settings": {
+            "label": "Ethnic wear"
+          }
+        },
+        {
+          "type": "link",
+          "settings": {
+            "label": "Western wear"
+          }
+        }
       ]
     }
   ]

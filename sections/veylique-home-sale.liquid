@@ -71,35 +71,150 @@
 
 {% schema %}
 {
-  "name": "Veylique sale",
+  "name": "t:sections.veylique-home-sale.name",
   "tag": "section",
   "settings": [
-    { "type": "text", "id": "aria_label", "label": "Accessibility label", "default": "End of Season Sale" },
-    { "type": "text", "id": "marquee_text", "label": "Marquee text", "default": "End of the Season Sale - Get up to 40% Off - More Items, More Savings" },
-    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Limited Time - End of Season Sale" },
-    { "type": "text", "id": "heading_line_1", "label": "Heading line 1", "default": "End of the" },
-    { "type": "text", "id": "heading_line_2", "label": "Heading line 2", "default": "Season Sale!" },
-    { "type": "text", "id": "offer", "label": "Offer", "default": "Get up to 40% Off" },
-    { "type": "text", "id": "chip", "label": "Offer chip", "default": "sale items" },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "The more you add, the more you save - your discount steps up automatically at checkout." },
-    { "type": "text", "id": "tiers_label", "label": "Tiers accessibility label", "default": "Sale offers" },
-    { "type": "text", "id": "tier_1_percent", "label": "Tier 1 percentage", "default": "20%" },
-    { "type": "text", "id": "tier_1_label", "label": "Tier 1 label", "default": "1-2 items" },
-    { "type": "text", "id": "tier_2_percent", "label": "Tier 2 percentage", "default": "30%" },
-    { "type": "text", "id": "tier_2_label", "label": "Tier 2 label", "default": "3 items" },
-    { "type": "text", "id": "tier_3_tag", "label": "Tier 3 tag", "default": "Best value" },
-    { "type": "text", "id": "tier_3_percent", "label": "Tier 3 percentage", "default": "40%" },
-    { "type": "text", "id": "tier_3_label", "label": "Tier 3 label", "default": "4+ items" },
-    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop the Sale" },
-    { "type": "url", "id": "button_link", "label": "Button link" },
-    { "type": "text", "id": "note", "label": "Note", "default": "On sale items - while sizes last" },
-    { "type": "video", "id": "video", "label": "Video" },
-    { "type": "image_picker", "id": "poster", "label": "Video fallback image", "info": "Shown when no video is set. Recommended for performance." },
-    { "type": "text", "id": "sticker_text", "label": "Sticker text", "default": "More Items * More Savings * Up to 40% Off * More Items * More Savings *" },
-    { "type": "text", "id": "sticker_core", "label": "Sticker center", "default": "-40%" }
+    {
+      "type": "text",
+      "id": "aria_label",
+      "label": "t:sections.veylique-home-sale.settings.aria_label.label",
+      "default": "End of Season Sale"
+    },
+    {
+      "type": "text",
+      "id": "marquee_text",
+      "label": "t:sections.veylique-home-sale.settings.marquee_text.label",
+      "default": "End of the Season Sale - Get up to 40% Off - More Items, More Savings"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "t:sections.veylique-home-sale.settings.kicker.label",
+      "default": "Limited Time - End of Season Sale"
+    },
+    {
+      "type": "text",
+      "id": "heading_line_1",
+      "label": "t:sections.veylique-home-sale.settings.heading_line_1.label",
+      "default": "End of the"
+    },
+    {
+      "type": "text",
+      "id": "heading_line_2",
+      "label": "t:sections.veylique-home-sale.settings.heading_line_2.label",
+      "default": "Season Sale!"
+    },
+    {
+      "type": "text",
+      "id": "offer",
+      "label": "t:sections.veylique-home-sale.settings.offer.label",
+      "default": "Get up to 40% Off"
+    },
+    {
+      "type": "text",
+      "id": "chip",
+      "label": "t:sections.veylique-home-sale.settings.chip.label",
+      "default": "sale items"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "t:sections.veylique-home-sale.settings.text.label",
+      "default": "The more you add, the more you save - your discount steps up automatically at checkout."
+    },
+    {
+      "type": "text",
+      "id": "tiers_label",
+      "label": "t:sections.veylique-home-sale.settings.tiers_label.label",
+      "default": "Sale offers"
+    },
+    {
+      "type": "text",
+      "id": "tier_1_percent",
+      "label": "t:sections.veylique-home-sale.settings.tier_1_percent.label",
+      "default": "20%"
+    },
+    {
+      "type": "text",
+      "id": "tier_1_label",
+      "label": "t:sections.veylique-home-sale.settings.tier_1_label.label",
+      "default": "1-2 items"
+    },
+    {
+      "type": "text",
+      "id": "tier_2_percent",
+      "label": "t:sections.veylique-home-sale.settings.tier_2_percent.label",
+      "default": "30%"
+    },
+    {
+      "type": "text",
+      "id": "tier_2_label",
+      "label": "t:sections.veylique-home-sale.settings.tier_2_label.label",
+      "default": "3 items"
+    },
+    {
+      "type": "text",
+      "id": "tier_3_tag",
+      "label": "t:sections.veylique-home-sale.settings.tier_3_tag.label",
+      "default": "Best value"
+    },
+    {
+      "type": "text",
+      "id": "tier_3_percent",
+      "label": "t:sections.veylique-home-sale.settings.tier_3_percent.label",
+      "default": "40%"
+    },
+    {
+      "type": "text",
+      "id": "tier_3_label",
+      "label": "t:sections.veylique-home-sale.settings.tier_3_label.label",
+      "default": "4+ items"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.veylique-home-sale.settings.button_label.label",
+      "default": "Shop the Sale"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.veylique-home-sale.settings.button_link.label"
+    },
+    {
+      "type": "text",
+      "id": "note",
+      "label": "t:sections.veylique-home-sale.settings.note.label",
+      "default": "On sale items - while sizes last"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "t:sections.veylique-home-sale.settings.video.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "poster",
+      "label": "t:sections.veylique-home-sale.settings.poster.label",
+      "info": "t:sections.veylique-home-sale.settings.poster.info"
+    },
+    {
+      "type": "text",
+      "id": "sticker_text",
+      "label": "t:sections.veylique-home-sale.settings.sticker_text.label",
+      "default": "More Items * More Savings * Up to 40% Off * More Items * More Savings *"
+    },
+    {
+      "type": "text",
+      "id": "sticker_core",
+      "label": "t:sections.veylique-home-sale.settings.sticker_core.label",
+      "default": "-40%"
+    }
   ],
   "presets": [
-    { "name": "Veylique sale" }
+    {
+      "name": "t:sections.veylique-home-sale.presets.name"
+    }
   ]
 }
 {% endschema %}

@@ -25,18 +25,53 @@
 
 {% schema %}
 {
-  "name": "Image banner",
+  "name": "t:sections.veylique-image-banner.name",
   "settings": [
-    { "type": "image_picker", "id": "image", "label": "Image" },
-    { "type": "text", "id": "fallback", "label": "Fallback asset", "default": "hero-1.webp" },
-    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Ready when you are" },
-    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "For every size, mood, and plan" },
-    { "type": "inline_richtext", "id": "text", "label": "Text", "default": "Bring shoppers into a focused collection, sale, or seasonal story." },
-    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop all products" },
-    { "type": "url", "id": "button_link", "label": "Button link" }
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.veylique-image-banner.settings.image.label"
+    },
+    {
+      "type": "text",
+      "id": "fallback",
+      "label": "t:sections.veylique-image-banner.settings.fallback.label",
+      "default": "hero-1.webp"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "t:sections.veylique-image-banner.settings.kicker.label",
+      "default": "Ready when you are"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "t:sections.veylique-image-banner.settings.heading.label",
+      "default": "For every size, mood, and plan"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "text",
+      "label": "t:sections.veylique-image-banner.settings.text.label",
+      "default": "Bring shoppers into a focused collection, sale, or seasonal story."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.veylique-image-banner.settings.button_label.label",
+      "default": "Shop all products"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.veylique-image-banner.settings.button_link.label"
+    }
   ],
   "presets": [
-    { "name": "Image banner" }
+    {
+      "name": "t:sections.veylique-image-banner.presets.name"
+    }
   ]
 }
 {% endschema %}

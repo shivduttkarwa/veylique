@@ -38,33 +38,75 @@
 
 {% schema %}
 {
-  "name": "Veylique home FAQ",
+  "name": "t:sections.veylique-home-faq.name",
   "tag": "section",
   "settings": [
-    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Help Desk" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Questions, answered" },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "Everything you need before checkout, from fit to delivery and easy exchanges." },
-    { "type": "text", "id": "link_label", "label": "Link label", "default": "Talk to support" },
-    { "type": "url", "id": "link", "label": "Link" }
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "t:sections.veylique-home-faq.settings.kicker.label",
+      "default": "Help Desk"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.veylique-home-faq.settings.heading.label",
+      "default": "Questions, answered"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "t:sections.veylique-home-faq.settings.text.label",
+      "default": "Everything you need before checkout, from fit to delivery and easy exchanges."
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "t:sections.veylique-home-faq.settings.link_label.label",
+      "default": "Talk to support"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:sections.veylique-home-faq.settings.link.label"
+    }
   ],
   "blocks": [
     {
       "type": "question",
-      "name": "Question",
+      "name": "t:sections.veylique-home-faq.blocks.question.name",
       "settings": [
-        { "type": "text", "id": "question", "label": "Question", "default": "How long does delivery take?" },
-        { "type": "textarea", "id": "answer", "label": "Answer", "default": "Most orders ship within 24-48 hours. Standard delivery usually arrives in 3-6 business days, depending on your location." }
+        {
+          "type": "text",
+          "id": "question",
+          "label": "t:sections.veylique-home-faq.blocks.question.settings.question.label",
+          "default": "How long does delivery take?"
+        },
+        {
+          "type": "textarea",
+          "id": "answer",
+          "label": "t:sections.veylique-home-faq.blocks.question.settings.answer.label",
+          "default": "Most orders ship within 24-48 hours. Standard delivery usually arrives in 3-6 business days, depending on your location."
+        }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Veylique home FAQ",
+      "name": "t:sections.veylique-home-faq.presets.name",
       "blocks": [
-        { "type": "question" },
-        { "type": "question" },
-        { "type": "question" },
-        { "type": "question" }
+        {
+          "type": "question"
+        },
+        {
+          "type": "question"
+        },
+        {
+          "type": "question"
+        },
+        {
+          "type": "question"
+        }
       ]
     }
   ]

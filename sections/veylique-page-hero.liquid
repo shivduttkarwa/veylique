@@ -21,16 +21,42 @@
 
 {% schema %}
 {
-  "name": "Page hero",
+  "name": "t:sections.veylique-page-hero.name",
   "settings": [
-    { "type": "image_picker", "id": "image", "label": "Image" },
-    { "type": "text", "id": "fallback", "label": "Fallback asset", "default": "hero-2.webp" },
-    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Veylique" },
-    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Designed for real life" },
-    { "type": "inline_richtext", "id": "text", "label": "Text", "default": "Modern clothing designed around comfort, confident silhouettes, and everyday polish." }
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.veylique-page-hero.settings.image.label"
+    },
+    {
+      "type": "text",
+      "id": "fallback",
+      "label": "t:sections.veylique-page-hero.settings.fallback.label",
+      "default": "hero-2.webp"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "t:sections.veylique-page-hero.settings.kicker.label",
+      "default": "Veylique"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "t:sections.veylique-page-hero.settings.heading.label",
+      "default": "Designed for real life"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "text",
+      "label": "t:sections.veylique-page-hero.settings.text.label",
+      "default": "Modern clothing designed around comfort, confident silhouettes, and everyday polish."
+    }
   ],
   "presets": [
-    { "name": "Page hero" }
+    {
+      "name": "t:sections.veylique-page-hero.presets.name"
+    }
   ]
 }
 {% endschema %}
