@@ -65,6 +65,32 @@
     "view_cart": "View cart",
     "select_size": "Select size",
     "add_to_wishlist": "Add {{ title }} to wishlist",
-    "badge_sale": "Sale"
+    "badge_sale": "Sale",
+    "sold_out": "Sold out",
+    "unavailable": "Unavailable",
+    "choose_options": "Choose options",
+    "adding": "Adding…",
+    "added": "Added to cart",
+    "quantity": "Quantity",
+    "decrease_quantity": "Decrease quantity",
+    "increase_quantity": "Increase quantity",
+    "save_amount_html": "Save {{ amount }}",
+    "save_percent_html": "-{{ percent }}%",
+    "sku": "SKU",
+    "in_stock": "In stock",
+    "low_stock": "Low stock",
+    "size_guide": "Size guide",
+    "description": "Description",
+    "details": "Details & care",
+    "shipping_returns": "Shipping & returns",
+    "share": "Share",
+    "buy_it_now": "Buy it now",
+    "view_full_details": "View full details",
+    "quantity_error": "Sorry, we couldn't add that. Please try again."
+  },
+  "general": {
+    "breadcrumb": {
+      "home": "Home"
+    }
   }
 }

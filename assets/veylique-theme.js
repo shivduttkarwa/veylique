@@ -839,7 +839,7 @@
   }
 
   function initProductCards(root) {
-    root.querySelectorAll('.veylique-best-img--hover, .veylique-lp-img--hover').forEach(function (image) {
+    root.querySelectorAll('.veylique-best-img--hover, .veylique-lp-img--hover, .veylique-pcard__img--hover').forEach(function (image) {
       if (image.dataset.veyliqueHoverReady === 'true') return;
       image.dataset.veyliqueHoverReady = 'true';
 

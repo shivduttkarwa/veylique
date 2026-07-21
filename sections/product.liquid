@@ -1,50 +1,903 @@
 {% comment %}
-  This section is used in the product template to render product page with
-  media, content, and add-to-cart form.
-
+  Product detail page — gallery, variant-aware buy box (size/colour selectors,
+  quantity, AJAX add-to-cart), and details accordions.
   https://shopify.dev/docs/storefronts/themes/architecture/templates/product
 {% endcomment %}
 
-<div class="product-images">
-  {% for image in product.images %}
-    {% render 'image', class: 'product-image', image: image %}
-  {% endfor %}
-</div>
+{% liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign on_sale = false
+  if current_variant.compare_at_price > current_variant.price
+    assign on_sale = true
+  endif
+  assign has_media = false
+  if product.media.size > 0
+    assign has_media = true
+  endif
+%}
 
-<div class="product-info">
-  <h1>{{ product.title }}</h1>
-  <p>{{ product.price | money }}</p>
-  <p>{{ product.description }}</p>
-</div>
+<section class="veylique-pdp full-width" data-veylique-product>
+  <div class="veylique-pdp-inner">
+    <nav class="veylique-pdp-crumbs" aria-label="Breadcrumb">
+      <a href="{{ routes.root_url }}">{{ 'general.breadcrumb.home' | t }}</a>
+      <span aria-hidden="true">/</span>
+      {% if collection %}
+        <a href="{{ collection.url }}">{{ collection.title }}</a>
+        <span aria-hidden="true">/</span>
+      {% endif %}
+      <span aria-current="page">{{ product.title }}</span>
+    </nav>
 
-<div class="product-form">
-  {% form 'product', product %}
-    {% assign current_variant = product.selected_or_first_available_variant %}
-
-    <select name="id">
-      {% for variant in product.variants %}
-        <option
-          value="{{ variant.id }}"
-          {% if variant == current_variant %}
-            selected="selected"
+    <div class="veylique-pdp-grid">
+      {% comment %} ---------- Gallery ---------- {% endcomment %}
+      <div class="veylique-pdp-gallery">
+        <div class="veylique-pdp-stage">
+          {% if on_sale %}
+            <span class="veylique-pdp-badge">{{ 'products.badge_sale' | t }}</span>
           {% endif %}
-        >
-          {{ variant.title }} - {{ variant.price | money }}
-        </option>
-      {% endfor %}
-    </select>
+          <div class="veylique-pdp-main" data-pdp-main>
+            {% if has_media %}
+              {% assign main_media = current_variant.featured_media | default: product.featured_media %}
+              {{
+                main_media
+                | image_url: width: 1400
+                | image_tag:
+                  loading: 'eager',
+                  fetchpriority: 'high',
+                  sizes: '(min-width: 1000px) 46vw, 100vw',
+                  widths: '540, 720, 900, 1200, 1400, 1800',
+                  class: 'veylique-pdp-main-img',
+                  alt: main_media.alt | default: product.title
+              }}
+            {% else %}
+              {{ 'product-apparel-1' | placeholder_svg_tag: 'veylique-pdp-main-img' }}
+            {% endif %}
+          </div>
+        </div>
 
-    <input type="text" name="quantity" min="1" value="1">
+        {% if product.media.size > 1 %}
+          <div class="veylique-pdp-thumbs" role="list" data-pdp-thumbs>
+            {% for media in product.media %}
+              <button
+                type="button"
+                class="veylique-pdp-thumb{% if forloop.first %} is-active{% endif %}"
+                role="listitem"
+                data-pdp-thumb
+                data-media-id="{{ media.id }}"
+                data-full="{{ media | image_url: width: 1400 }}"
+                data-alt="{{ media.alt | default: product.title | escape }}"
+                aria-label="{{ product.title | escape }} — {{ forloop.index }}"
+              >
+                {{ media | image_url: width: 200 | image_tag: loading: 'lazy', alt: media.alt | default: product.title, widths: '100, 200, 300' }}
+              </button>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
 
-    <input type="submit" value="Add to cart">
-    {{ form | payment_button }}
-  {% endform %}
-</div>
+      {% comment %} ---------- Buy box ---------- {% endcomment %}
+      <div class="veylique-pdp-info">
+        {% if product.vendor != blank %}
+          <p class="veylique-pdp-vendor">{{ product.vendor }}</p>
+        {% endif %}
+
+        <h1 class="veylique-pdp-title">{{ product.title }}</h1>
+
+        <div class="veylique-pdp-price" data-pdp-price>
+          <span class="veylique-pdp-price-current{% if on_sale %} is-sale{% endif %}" data-pdp-price-current>{{ current_variant.price | money }}</span>
+          {% if on_sale %}
+            <span class="veylique-pdp-price-compare" data-pdp-price-compare>{{ current_variant.compare_at_price | money }}</span>
+            {% assign savings = current_variant.compare_at_price | minus: current_variant.price | times: 100.0 | divided_by: current_variant.compare_at_price | round %}
+            <span class="veylique-pdp-price-save" data-pdp-price-save>{{ 'products.save_percent_html' | t: percent: savings }}</span>
+          {% else %}
+            <span class="veylique-pdp-price-compare" data-pdp-price-compare hidden></span>
+            <span class="veylique-pdp-price-save" data-pdp-price-save hidden></span>
+          {% endif %}
+        </div>
+
+        {% form 'product', product, class: 'veylique-pdp-form' %}
+          {% unless product.has_only_default_variant %}
+            <div class="veylique-pdp-options">
+              {% for option in product.options_with_values %}
+                {% liquid
+                  assign option_name = option.name | downcase
+                  assign is_color = false
+                  if option_name contains 'color' or option_name contains 'colour'
+                    assign is_color = true
+                  endif
+                %}
+                <fieldset class="veylique-pdp-option" data-pdp-option data-option-position="{{ option.position }}">
+                  <legend class="veylique-pdp-option-head">
+                    <span class="veylique-pdp-option-name">{{ option.name }}</span>
+                    <span class="veylique-pdp-option-value" data-pdp-option-selected="{{ option.position }}">{{ option.selected_value }}</span>
+                  </legend>
+                  <div class="veylique-pdp-swatches{% if is_color %} is-color{% endif %}">
+                    {% for value in option.values %}
+                      {% liquid
+                        assign input_id = section.id | append: '-opt' | append: option.position | append: '-' | append: forloop.index
+                        assign is_checked = false
+                        if option.selected_value == value
+                          assign is_checked = true
+                        endif
+                      %}
+                      <input
+                        type="radio"
+                        class="veylique-pdp-swatch-input"
+                        name="option{{ option.position }}"
+                        id="{{ input_id }}"
+                        value="{{ value | escape }}"
+                        data-pdp-swatch
+                        data-option-position="{{ option.position }}"
+                        {% if is_checked %}checked{% endif %}
+                      >
+                      <label class="veylique-pdp-swatch" for="{{ input_id }}">{{ value }}</label>
+                    {% endfor %}
+                  </div>
+                </fieldset>
+              {% endfor %}
+            </div>
+          {% endunless %}
+
+          <div class="veylique-pdp-actions">
+            <div class="veylique-pdp-qty" data-pdp-qty>
+              <button type="button" class="veylique-pdp-qty-btn" data-pdp-qty-down aria-label="{{ 'products.decrease_quantity' | t }}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+              <input type="number" class="veylique-pdp-qty-input" name="quantity" value="1" min="1" inputmode="numeric" aria-label="{{ 'products.quantity' | t }}" data-pdp-qty-input>
+              <button type="button" class="veylique-pdp-qty-btn" data-pdp-qty-up aria-label="{{ 'products.increase_quantity' | t }}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+            </div>
+
+            <input type="hidden" name="id" value="{{ current_variant.id }}" data-pdp-variant-id>
+
+            <button
+              type="submit"
+              name="add"
+              class="veylique-pdp-atc veylique-btn btn-black"
+              data-pdp-atc
+              {% unless current_variant.available %}disabled{% endunless %}
+            >
+              <span data-pdp-atc-text>
+                {% if current_variant.available %}{{ 'products.add_to_cart' | t }}{% else %}{{ 'products.sold_out' | t }}{% endif %}
+              </span>
+            </button>
+          </div>
+
+          {{ form | payment_button }}
+        {% endform %}
+
+        <div class="veylique-pdp-meta">
+          <button type="button" class="veylique-pdp-wish" data-veylique-wish aria-label="{{ 'products.add_to_wishlist' | t: title: product.title }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span>{{ 'products.add_to_wishlist' | t: title: '' | strip }}</span>
+          </button>
+          {% if current_variant.sku != blank %}
+            <span class="veylique-pdp-sku" data-pdp-sku>{{ 'products.sku' | t }}: {{ current_variant.sku }}</span>
+          {% else %}
+            <span class="veylique-pdp-sku" data-pdp-sku hidden></span>
+          {% endif %}
+        </div>
+
+        <div class="veylique-pdp-accordions">
+          {% if product.description != blank %}
+            <details class="veylique-pdp-acc" open>
+              <summary class="veylique-pdp-acc-head">{{ 'products.description' | t }}<span class="veylique-pdp-acc-icon" aria-hidden="true"></span></summary>
+              <div class="veylique-pdp-acc-body rte">{{ product.description }}</div>
+            </details>
+          {% endif %}
+
+          {% if section.settings.details_text != blank %}
+            <details class="veylique-pdp-acc">
+              <summary class="veylique-pdp-acc-head">{{ 'products.details' | t }}<span class="veylique-pdp-acc-icon" aria-hidden="true"></span></summary>
+              <div class="veylique-pdp-acc-body rte">{{ section.settings.details_text }}</div>
+            </details>
+          {% endif %}
+
+          {% if section.settings.shipping_text != blank %}
+            <details class="veylique-pdp-acc">
+              <summary class="veylique-pdp-acc-head">{{ 'products.shipping_returns' | t }}<span class="veylique-pdp-acc-icon" aria-hidden="true"></span></summary>
+              <div class="veylique-pdp-acc-body rte">{{ section.settings.shipping_text }}</div>
+            </details>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="application/json" data-pdp-variants>
+    [
+      {%- for v in product.variants -%}
+        {
+          "id": {{ v.id }},
+          "available": {{ v.available }},
+          "options": {{ v.options | json }},
+          "price": {{ v.price | money | json }},
+          "compare_at_price": {% if v.compare_at_price > v.price %}{{ v.compare_at_price | money | json }}{% else %}null{% endif %},
+          "price_num": {{ v.price }},
+          "compare_num": {{ v.compare_at_price | default: 0 }},
+          "featured_media_id": {% if v.featured_media %}{{ v.featured_media.id }}{% else %}null{% endif %},
+          "sku": {{ v.sku | json }}
+        }{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ]
+  </script>
+
+  <script type="application/json" data-pdp-config>
+    {
+      "cartUrl": {{ routes.cart_url | json }},
+      "strings": {
+        "soldOut": {{ 'products.sold_out' | t | json }},
+        "unavailable": {{ 'products.unavailable' | t | json }},
+        "adding": {{ 'products.adding' | t | json }},
+        "added": {{ 'products.added' | t | json }},
+        "viewCart": {{ 'products.view_cart' | t | json }},
+        "error": {{ 'products.quantity_error' | t | json }}
+      }
+    }
+  </script>
+
+  <div class="veylique-pdp-toast" data-pdp-toast role="status" aria-live="polite"></div>
+</section>
+
+{% stylesheet %}
+  .veylique-pdp {
+    background: var(--veylique-color-surface, #fff);
+    color: var(--veylique-color-foreground, #241f1a);
+    padding: clamp(1.25rem, 4vw, 2.5rem) 0 clamp(3.5rem, 8vw, 6rem);
+  }
+
+  .veylique-pdp-inner {
+    width: 100%;
+    max-width: var(--veylique-container, 92rem);
+    margin: 0 auto;
+    padding-inline: var(--veylique-container-gutter, clamp(1rem, 3vw, 2.5rem));
+  }
+
+  .veylique-pdp-crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: clamp(1.25rem, 3vw, 2rem);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: var(--veylique-color-muted, #756b60);
+  }
+  .veylique-pdp-crumbs a { color: inherit; text-decoration: none; }
+  .veylique-pdp-crumbs a:hover { color: var(--veylique-color-foreground, #241f1a); }
+  .veylique-pdp-crumbs [aria-current] { color: var(--veylique-color-foreground, #241f1a); }
+
+  .veylique-pdp-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+  }
+
+  /* Gallery */
+  .veylique-pdp-stage {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--veylique-radius-md, 0.75rem);
+    background: var(--veylique-color-surface-alt, #faf6ec);
+  }
+
+  .veylique-pdp-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 2;
+    padding: 0.375rem 0.75rem;
+    border-radius: 999px;
+    background: var(--veylique-color-rose, #c58d80);
+    color: #fff;
+    font-family: var(--veylique-font-body);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .veylique-pdp-main {
+    aspect-ratio: 3 / 4;
+  }
+  .veylique-pdp-main-img,
+  .veylique-pdp-main > svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .veylique-pdp-thumbs {
+    display: flex;
+    gap: 0.625rem;
+    margin-top: 0.75rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+  }
+  .veylique-pdp-thumbs::-webkit-scrollbar { display: none; }
+
+  .veylique-pdp-thumb {
+    flex: 0 0 auto;
+    width: 4.5rem;
+    aspect-ratio: 3 / 4;
+    padding: 0;
+    border: 0.0625rem solid var(--veylique-color-border, rgba(36, 31, 26, 0.14));
+    border-radius: var(--veylique-radius-sm, 0.5rem);
+    overflow: hidden;
+    background: var(--veylique-color-surface-alt, #faf6ec);
+    cursor: pointer;
+    scroll-snap-align: start;
+    transition: border-color 0.2s ease, opacity 0.2s ease;
+    opacity: 0.72;
+  }
+  .veylique-pdp-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .veylique-pdp-thumb.is-active { border-color: var(--veylique-color-foreground, #241f1a); opacity: 1; }
+  @media (hover: hover) { .veylique-pdp-thumb:hover { opacity: 1; } }
+
+  /* Buy box */
+  .veylique-pdp-vendor {
+    margin: 0 0 0.5rem;
+    font-family: var(--veylique-font-body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--veylique-color-muted, #756b60);
+  }
+
+  .veylique-pdp-title {
+    margin: 0 0 1rem;
+    font-family: var(--veylique-font-heading, serif);
+    font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .veylique-pdp-price {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.75rem;
+  }
+  .veylique-pdp-price-current {
+    font-size: 1.375rem;
+    font-weight: 500;
+  }
+  .veylique-pdp-price-current.is-sale { color: var(--veylique-color-rose, #c58d80); }
+  .veylique-pdp-price-compare {
+    font-size: 1rem;
+    color: var(--veylique-color-muted, #756b60);
+    text-decoration: line-through;
+  }
+  .veylique-pdp-price-save {
+    padding: 0.1875rem 0.5rem;
+    border-radius: 999px;
+    background: rgba(197, 141, 128, 0.16);
+    color: var(--veylique-color-rose, #c58d80);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+  }
+
+  .veylique-pdp-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 1.75rem;
+  }
+  .veylique-pdp-option { margin: 0; padding: 0; border: 0; }
+  .veylique-pdp-option-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    padding: 0;
+    margin-bottom: 0.75rem;
+  }
+  .veylique-pdp-option-name {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .veylique-pdp-option-value {
+    font-size: 0.8125rem;
+    color: var(--veylique-color-muted, #756b60);
+  }
+
+  .veylique-pdp-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .veylique-pdp-swatch-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .veylique-pdp-swatch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3rem;
+    height: 3rem;
+    padding: 0 1rem;
+    border: 0.0625rem solid var(--veylique-color-border, rgba(36, 31, 26, 0.14));
+    border-radius: var(--veylique-radius-sm, 0.5rem);
+    background: var(--veylique-color-surface, #fff);
+    font-size: 0.875rem;
+    line-height: 1;
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  }
+  .veylique-pdp-swatches.is-color .veylique-pdp-swatch {
+    min-width: 0;
+    border-radius: 999px;
+  }
+  @media (hover: hover) {
+    .veylique-pdp-swatch:hover { border-color: var(--veylique-color-foreground, #241f1a); }
+  }
+  .veylique-pdp-swatch-input:checked + .veylique-pdp-swatch {
+    border-color: var(--veylique-color-foreground, #241f1a);
+    background: var(--veylique-color-foreground, #241f1a);
+    color: var(--veylique-color-surface, #fff);
+  }
+  .veylique-pdp-swatch-input:focus-visible + .veylique-pdp-swatch {
+    outline: var(--veylique-focus-ring-width, 0.125rem) solid var(--veylique-focus-ring-color, currentColor);
+    outline-offset: var(--veylique-focus-ring-offset, 0.1875rem);
+  }
+  /* Unavailable-for-current-selection value */
+  .veylique-pdp-swatch-input[data-unavailable] + .veylique-pdp-swatch {
+    color: var(--veylique-color-muted, #756b60);
+    opacity: 0.55;
+    text-decoration: line-through;
+  }
+
+  .veylique-pdp-actions {
+    display: flex;
+    align-items: stretch;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .veylique-pdp-qty {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    border: 0.0625rem solid var(--veylique-color-border, rgba(36, 31, 26, 0.14));
+    border-radius: var(--veylique-radius-sm, 0.5rem);
+    overflow: hidden;
+  }
+  .veylique-pdp-qty-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 3.25rem;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+  @media (hover: hover) { .veylique-pdp-qty-btn:hover { background: var(--veylique-color-surface-alt, #faf6ec); } }
+  .veylique-pdp-qty-input {
+    width: 2.75rem;
+    height: 3.25rem;
+    border: 0;
+    background: transparent;
+    text-align: center;
+    font: inherit;
+    font-size: 0.9375rem;
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+  .veylique-pdp-qty-input::-webkit-outer-spin-button,
+  .veylique-pdp-qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+  .veylique-pdp-atc {
+    flex: 1 1 auto;
+    height: 3.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 0;
+    border-radius: var(--veylique-radius-sm, 0.5rem);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+  }
+  .veylique-pdp-atc[disabled] { opacity: 0.45; cursor: not-allowed; }
+  .veylique-pdp-atc.is-loading { opacity: 0.7; pointer-events: none; }
+
+  /* Shopify dynamic checkout button */
+  .veylique-pdp-form .shopify-payment-button { margin-top: 0.25rem; }
+  .veylique-pdp-form .shopify-payment-button__button {
+    border-radius: var(--veylique-radius-sm, 0.5rem) !important;
+    min-height: 3.25rem;
+  }
+
+  .veylique-pdp-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin: 1.5rem 0;
+    padding-bottom: 1.5rem;
+    border-bottom: 0.0625rem solid var(--veylique-color-border, rgba(36, 31, 26, 0.14));
+    font-size: 0.8125rem;
+    color: var(--veylique-color-muted, #756b60);
+  }
+  .veylique-pdp-wish {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.8125rem;
+    cursor: pointer;
+  }
+  @media (hover: hover) { .veylique-pdp-wish:hover { color: var(--veylique-color-foreground, #241f1a); } }
+  .veylique-pdp-wish.is-wished { color: var(--veylique-color-rose, #c58d80); }
+  .veylique-pdp-wish.is-wished svg { fill: currentColor; }
+
+  .veylique-pdp-acc {
+    border-bottom: 0.0625rem solid var(--veylique-color-border, rgba(36, 31, 26, 0.14));
+  }
+  .veylique-pdp-acc-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.125rem 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    list-style: none;
+  }
+  .veylique-pdp-acc-head::-webkit-details-marker { display: none; }
+  .veylique-pdp-acc-icon {
+    position: relative;
+    width: 0.75rem;
+    height: 0.75rem;
+    flex: 0 0 auto;
+  }
+  .veylique-pdp-acc-icon::before,
+  .veylique-pdp-acc-icon::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 0.0625rem;
+    background: currentColor;
+    transition: transform 0.25s ease;
+  }
+  .veylique-pdp-acc-icon::after { transform: rotate(90deg); }
+  .veylique-pdp-acc[open] .veylique-pdp-acc-icon::after { transform: rotate(0); }
+  .veylique-pdp-acc-body {
+    padding: 0 0 1.25rem;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: var(--veylique-color-muted, #756b60);
+  }
+  .veylique-pdp-acc-body :first-child { margin-top: 0; }
+  .veylique-pdp-acc-body :last-child { margin-bottom: 0; }
+
+  /* Toast */
+  .veylique-pdp-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 1.5rem;
+    z-index: var(--veylique-z-overlay, 80);
+    transform: translate(-50%, 1.5rem);
+    max-width: min(24rem, calc(100vw - 2rem));
+    padding: 0.875rem 1.25rem;
+    border-radius: var(--veylique-radius-sm, 0.5rem);
+    background: var(--veylique-color-foreground, #241f1a);
+    color: var(--veylique-color-surface, #fff);
+    font-size: 0.875rem;
+    box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.18);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s var(--veylique-ease-standard, ease);
+  }
+  .veylique-pdp-toast.is-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+    pointer-events: auto;
+  }
+  .veylique-pdp-toast a { color: inherit; text-decoration: underline; }
+
+  @media (min-width: 1000px) {
+    .veylique-pdp-grid {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      align-items: start;
+    }
+    .veylique-pdp-info {
+      position: sticky;
+      top: 6rem;
+      padding-top: 0.5rem;
+    }
+    .veylique-pdp-thumbs {
+      flex-wrap: wrap;
+      overflow: visible;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    function initProduct(section) {
+      if (section.dataset.veyliqueProductReady === 'true') return;
+      section.dataset.veyliqueProductReady = 'true';
+
+      var dataEl = section.querySelector('[data-pdp-variants]');
+      var configEl = section.querySelector('[data-pdp-config]');
+      var form = section.querySelector('.veylique-pdp-form');
+      if (!dataEl || !form) return;
+
+      var variants, config;
+      try {
+        variants = JSON.parse(dataEl.textContent);
+        config = configEl ? JSON.parse(configEl.textContent) : { strings: {}, cartUrl: '/cart' };
+      } catch (e) { return; }
+
+      var idInput = form.querySelector('[data-pdp-variant-id]');
+      var atc = form.querySelector('[data-pdp-atc]');
+      var atcText = form.querySelector('[data-pdp-atc-text]');
+      var priceCurrent = section.querySelector('[data-pdp-price-current]');
+      var priceCompare = section.querySelector('[data-pdp-price-compare]');
+      var priceSave = section.querySelector('[data-pdp-price-save]');
+      var skuEl = section.querySelector('[data-pdp-sku]');
+      var mainImg = section.querySelector('.veylique-pdp-main-img');
+      var thumbs = Array.prototype.slice.call(section.querySelectorAll('[data-pdp-thumb]'));
+      var swatches = Array.prototype.slice.call(section.querySelectorAll('[data-pdp-swatch]'));
+      var toast = section.querySelector('[data-pdp-toast]');
+
+      var s = config.strings || {};
+      var strings = {
+        add: (atcText && atcText.textContent.trim()) || 'Add to cart',
+        soldOut: s.soldOut || 'Sold out',
+        unavailable: s.unavailable || 'Unavailable',
+        adding: s.adding || 'Adding…',
+        added: s.added || 'Added to cart',
+        viewCart: s.viewCart || 'View cart',
+        error: s.error || 'Please try again.'
+      };
+      var cartUrl = config.cartUrl || '/cart';
+
+      function selectedOptions() {
+        var checked = section.querySelectorAll('[data-pdp-swatch]:checked');
+        var opts = [];
+        Array.prototype.slice.call(checked).forEach(function (input) {
+          opts[parseInt(input.dataset.optionPosition, 10) - 1] = input.value;
+        });
+        return opts;
+      }
+
+      function matchVariant(opts) {
+        if (!opts.length) return variants[0]; /* single / default-variant product */
+        return variants.find(function (v) {
+          return v.options.every(function (opt, i) { return opts[i] === opt; });
+        });
+      }
+
+      function money(cents) { return cents; }
+
+      function updateSelectedLabels() {
+        section.querySelectorAll('[data-pdp-option-selected]').forEach(function (el) {
+          var pos = el.getAttribute('data-pdp-option-selected');
+          var checked = section.querySelector('[data-pdp-swatch][data-option-position="' + pos + '"]:checked');
+          if (checked) el.textContent = checked.value;
+        });
+      }
+
+      /* Grey out option values that produce no available variant given the
+         other current selections. */
+      function updateAvailability() {
+        var current = selectedOptions();
+        swatches.forEach(function (input) {
+          var pos = parseInt(input.dataset.optionPosition, 10) - 1;
+          var probe = current.slice();
+          probe[pos] = input.value;
+          var match = variants.find(function (v) {
+            return v.options.every(function (opt, i) {
+              if (i === pos) return opt === input.value;
+              return probe[i] == null || probe[i] === opt;
+            });
+          });
+          var anyAvailable = variants.some(function (v) {
+            return v.options[pos] === input.value && v.available;
+          });
+          if (match && anyAvailable) input.removeAttribute('data-unavailable');
+          else input.setAttribute('data-unavailable', '');
+        });
+      }
+
+      function setMainImage(variant) {
+        if (!variant || variant.featured_media_id == null) return;
+        var thumb = thumbs.filter(function (t) {
+          return t.dataset.mediaId === String(variant.featured_media_id);
+        })[0];
+        if (thumb) activateThumb(thumb);
+      }
+
+      function activateThumb(thumb) {
+        thumbs.forEach(function (t) { t.classList.toggle('is-active', t === thumb); });
+        if (mainImg && thumb.dataset.full) {
+          mainImg.removeAttribute('srcset');
+          mainImg.src = thumb.dataset.full;
+          if (thumb.dataset.alt) mainImg.alt = thumb.dataset.alt;
+        }
+      }
+
+      function render() {
+        var variant = matchVariant(selectedOptions());
+        updateSelectedLabels();
+        updateAvailability();
+
+        if (!variant) {
+          if (idInput) idInput.value = '';
+          if (atc) { atc.disabled = true; }
+          if (atcText) atcText.textContent = strings.unavailable;
+          return;
+        }
+
+        if (idInput) idInput.value = variant.id;
+
+        if (priceCurrent) {
+          priceCurrent.textContent = variant.price;
+          priceCurrent.classList.toggle('is-sale', !!variant.compare_at_price);
+        }
+        if (priceCompare) {
+          if (variant.compare_at_price) { priceCompare.textContent = variant.compare_at_price; priceCompare.hidden = false; }
+          else { priceCompare.hidden = true; }
+        }
+        if (priceSave) {
+          if (variant.compare_at_price && variant.compare_num > variant.price_num) {
+            var pct = Math.round((variant.compare_num - variant.price_num) * 100 / variant.compare_num);
+            priceSave.textContent = '-' + pct + '%';
+            priceSave.hidden = false;
+          } else { priceSave.hidden = true; }
+        }
+        if (skuEl) {
+          if (variant.sku) { skuEl.textContent = 'SKU: ' + variant.sku; skuEl.hidden = false; }
+          else { skuEl.hidden = true; }
+        }
+
+        if (atc) {
+          atc.disabled = !variant.available;
+          if (atcText) atcText.textContent = variant.available ? strings.add : strings.soldOut;
+        }
+
+        setMainImage(variant);
+
+        if (window.history && window.history.replaceState) {
+          var url = new URL(window.location.href);
+          url.searchParams.set('variant', variant.id);
+          window.history.replaceState({}, '', url.toString());
+        }
+      }
+
+      swatches.forEach(function (input) {
+        input.addEventListener('change', render);
+      });
+
+      thumbs.forEach(function (thumb) {
+        thumb.addEventListener('click', function () { activateThumb(thumb); });
+      });
+
+      /* Quantity stepper */
+      var qtyInput = section.querySelector('[data-pdp-qty-input]');
+      var qtyDown = section.querySelector('[data-pdp-qty-down]');
+      var qtyUp = section.querySelector('[data-pdp-qty-up]');
+      function clampQty() {
+        var n = parseInt(qtyInput.value, 10);
+        if (isNaN(n) || n < 1) n = 1;
+        qtyInput.value = n;
+        return n;
+      }
+      if (qtyDown) qtyDown.addEventListener('click', function () { qtyInput.value = Math.max(1, clampQty() - 1); });
+      if (qtyUp) qtyUp.addEventListener('click', function () { qtyInput.value = clampQty() + 1; });
+      if (qtyInput) qtyInput.addEventListener('change', clampQty);
+
+      /* Toast */
+      var toastTimer;
+      function showToast(html) {
+        if (!toast) return;
+        toast.innerHTML = html;
+        toast.classList.add('is-visible');
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(function () { toast.classList.remove('is-visible'); }, 4000);
+      }
+
+      function updateCartCount(count) {
+        var el = document.querySelector('.veylique-cart-count');
+        if (el) { el.textContent = count; return; }
+        var trigger = document.querySelector('.veylique-cart-trigger');
+        if (trigger && count > 0) {
+          var span = document.createElement('span');
+          span.className = 'veylique-cart-count';
+          span.textContent = count;
+          trigger.appendChild(span);
+        }
+      }
+
+      /* AJAX add-to-cart */
+      form.addEventListener('submit', function (event) {
+        if (!window.fetch) return; /* let it POST normally */
+        event.preventDefault();
+        if (!idInput || !idInput.value || (atc && atc.disabled)) return;
+
+        atc.classList.add('is-loading');
+        if (atcText) atcText.textContent = strings.adding;
+
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+          body: new FormData(form)
+        })
+          .then(function (r) { if (!r.ok) throw new Error('add'); return r.json(); })
+          .then(function () { return fetch('/cart.js', { headers: { 'Accept': 'application/json' } }).then(function (r) { return r.json(); }); })
+          .then(function (cart) {
+            updateCartCount(cart.item_count);
+            showToast(strings.added + ' &middot; <a href="' + cartUrl + '">' + strings.viewCart + '</a>');
+          })
+          .catch(function () { showToast(strings.error); })
+          .finally(function () {
+            atc.classList.remove('is-loading');
+            if (atcText) atcText.textContent = strings.add;
+          });
+      });
+
+      render();
+    }
+
+    function boot() {
+      document.querySelectorAll('[data-veylique-product]').forEach(initProduct);
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
+
+    document.addEventListener('shopify:section:load', function (e) {
+      if (e.target && e.target.querySelector) {
+        var s = e.target.querySelector('[data-veylique-product]');
+        if (s) initProduct(s);
+      }
+    });
+  })();
+{% endjavascript %}
 
 {% schema %}
 {
   "name": "t:general.product",
-  "settings": [],
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "details_text",
+      "label": "Details & care content"
+    },
+    {
+      "type": "richtext",
+      "id": "shipping_text",
+      "label": "Shipping & returns content"
+    }
+  ],
   "disabled_on": {
     "groups": ["header", "footer"]
   }
