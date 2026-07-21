@@ -46,10 +46,11 @@
     </main>
 
     {% sections 'footer-group' %}
-    {% comment %} GSAP powers the scroll-driven ritual/hero/reveal animations; deferred scripts run in order, so these are ready before veylique-theme.js initializes. {% endcomment %}
+    {% comment %} GSAP powers the scroll-driven ritual/hero/reveal animations; Swiper powers the carousels. Deferred scripts run in order, so all libraries are ready before veylique-theme.js initializes. {% endcomment %}
     <script src="{{ 'gsap.min.js' | asset_url }}" defer></script>
     <script src="{{ 'ScrollTrigger.min.js' | asset_url }}" defer></script>
     <script src="{{ 'SplitText.min.js' | asset_url }}" defer></script>
+    <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
     <script src="{{ 'veylique-theme.js' | asset_url }}" defer></script>
   </body>
 </html>

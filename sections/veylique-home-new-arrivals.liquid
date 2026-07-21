@@ -5,117 +5,338 @@
   if product_collection != blank and product_collection.products.size > 0
     assign has_products = true
   endif
-
-  if has_products
-    assign first_product = product_collection.products.first
-    assign first_text = first_product.title
-    assign first_link = first_product.url
-  else
-    assign first_text = section.settings.text
-    assign first_link = routes.all_products_collection_url
-  endif
 %}
 
-<div class="veylique-arrivals-band full-width" data-veylique-arrivals>
+<div class="veylique-na full-width" data-veylique-arrivals>
   <div class="veylique-section-intro veylique-section-intro-js">
     <div class="veylique-container-wide">
-      <div class="row">
-        <div class="col-12 col-xl-10">
+      <div class="veylique-na-head">
+        <div class="veylique-na-head-text">
           <h2 class="veylique-section-title">{{ section.settings.heading }}</h2>
-          <p class="veylique-section-desc">{{ section.settings.text }}</p>
+          {% if section.settings.text != blank %}
+            <p class="veylique-section-desc">{{ section.settings.text }}</p>
+          {% endif %}
+        </div>
+
+        <div class="veylique-na-nav" data-veylique-na-nav>
+          <button type="button" class="veylique-na-arrow" data-veylique-na-prev aria-label="{{ section.settings.previous_label | escape }}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          </button>
+          <button type="button" class="veylique-na-arrow" data-veylique-na-next aria-label="{{ section.settings.next_label | escape }}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
         </div>
       </div>
     </div>
   </div>
 
-  <section class="veylique-slider-section container-fluid px-0" aria-label="{{ section.settings.aria_label | escape }}">
-    <div class="veylique-slider-stage is-loading" id="veyliqueSlider-{{ section.id }}">
-      <div class="veylique-slides" id="veyliqueSlides-{{ section.id }}">
+  <div class="veylique-container-wide">
+    <div class="swiper veylique-na-swiper" data-veylique-na-swiper aria-label="{{ section.settings.aria_label | escape }}">
+      <div class="swiper-wrapper">
         {% if has_products %}
           {% for product in product_collection.products limit: products_to_show %}
             {% liquid
-              assign slide_number = forloop.index | prepend: '0' | slice: -2, 2
               assign slide_loading = 'lazy'
-              if forloop.first
+              if forloop.index <= 3
                 assign slide_loading = 'eager'
               endif
+              assign on_sale = false
+              if product.compare_at_price > product.price
+                assign on_sale = true
+              endif
             %}
-            <div
-              class="veylique-slide{% if forloop.first %} is-active{% elsif forloop.index == 2 %} is-next{% else %} is-hidden-right{% endif %}"
-              data-veylique-arrivals-slide
-              data-index="{{ forloop.index0 }}"
-              data-number="{{ slide_number }}"
-              data-text="{{ product.title | escape }}"
-              data-url="{{ product.url }}"
-            >
-              <div class="veylique-slide-inner">
-                {% render 'veylique-responsive-image',
-                  image: product.featured_image,
-                  class: '',
-                  alt: product.title,
-                  width: 1200,
-                  height: 1500,
-                  loading: slide_loading,
-                  placeholder: true
-                %}
-              </div>
+            <div class="swiper-slide veylique-na-slide">
+              <a class="veylique-na-card" href="{{ product.url }}">
+                <div class="veylique-na-media">
+                  {% if on_sale %}
+                    <span class="veylique-na-badge">{{ 'products.badge_sale' | t }}</span>
+                  {% endif %}
+                  {% render 'veylique-responsive-image',
+                    image: product.featured_image,
+                    class: 'veylique-na-img',
+                    alt: product.title,
+                    width: 900,
+                    height: 1200,
+                    loading: slide_loading
+                  %}
+                </div>
+                <div class="veylique-na-info">
+                  <h3 class="veylique-na-name">{{ product.title }}</h3>
+                  <div class="veylique-na-pricing">
+                    {% if on_sale %}
+                      <span class="veylique-na-price veylique-na-price--sale">{{ product.price | money }}</span>
+                      <span class="veylique-na-compare">{{ product.compare_at_price | money }}</span>
+                    {% else %}
+                      <span class="veylique-na-price">{{ product.price | money }}</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </a>
             </div>
           {% endfor %}
         {% else %}
           {% for i in (1..products_to_show) %}
             {% liquid
-              assign slide_number = forloop.index | prepend: '0' | slice: -2, 2
               assign slide_loading = 'lazy'
-              if forloop.first
+              if forloop.index <= 3
                 assign slide_loading = 'eager'
               endif
             %}
-            <div
-              class="veylique-slide{% if forloop.first %} is-active{% elsif forloop.index == 2 %} is-next{% else %} is-hidden-right{% endif %}"
-              data-veylique-arrivals-slide
-              data-index="{{ forloop.index0 }}"
-              data-number="{{ slide_number }}"
-              data-text="{{ section.settings.text | escape }}"
-              data-url="{{ routes.all_products_collection_url }}"
-            >
-              <div class="veylique-slide-inner">
-                {% render 'veylique-responsive-image',
-                  class: '',
-                  alt: section.settings.heading,
-                  width: 1200,
-                  height: 1500,
-                  loading: slide_loading,
-                  placeholder: true,
-                  placeholder_name: 'product-apparel-1'
-                %}
-              </div>
+            <div class="swiper-slide veylique-na-slide">
+              <a class="veylique-na-card" href="{{ routes.all_products_collection_url }}">
+                <div class="veylique-na-media">
+                  {% render 'veylique-responsive-image',
+                    class: 'veylique-na-img',
+                    alt: section.settings.heading,
+                    width: 900,
+                    height: 1200,
+                    loading: slide_loading,
+                    placeholder: true,
+                    placeholder_name: 'product-apparel-1'
+                  %}
+                </div>
+                <div class="veylique-na-info">
+                  <h3 class="veylique-na-name">{{ section.settings.heading }}</h3>
+                  <div class="veylique-na-pricing">
+                    <span class="veylique-na-price">{{ 1990 | money }}</span>
+                  </div>
+                </div>
+              </a>
             </div>
           {% endfor %}
         {% endif %}
       </div>
-
-      <div class="veylique-hit-area" aria-hidden="true">
-        <button type="button" data-direction="prev" data-veylique-arrivals-dir="prev" aria-label="{{ section.settings.previous_label | escape }}"></button>
-        <button type="button" data-direction="next" data-veylique-arrivals-dir="next" aria-label="{{ section.settings.next_label | escape }}"></button>
-      </div>
-
-      <article class="veylique-content-card" id="veyliqueCard-{{ section.id }}">
-        <div class="veylique-card-body">
-          <span class="veylique-slide-number veylique-reveal-js veylique-reveal--static-js" id="veyliqueNumber-{{ section.id }}" data-veylique-arrivals-number>01</span>
-          <p class="veylique-card-text veylique-reveal-js veylique-reveal--static-js" id="veyliqueText-{{ section.id }}" data-veylique-arrivals-text>{{ first_text }}</p>
-        </div>
-        <a href="{{ first_link }}" id="veyliqueCardButton-{{ section.id }}" class="veylique-card-button veylique-reveal-js veylique-reveal--static-js" data-veylique-arrivals-link>{{ section.settings.button_label }}</a>
-      </article>
-
-      <div class="veylique-mobile-arrows" aria-label="{{ section.settings.controls_label | escape }}">
-        <button type="button" class="veylique-mobile-arrow veylique-mobile-arrow--prev" data-direction="prev" data-veylique-arrivals-dir="prev" aria-label="{{ section.settings.previous_label | escape }}"></button>
-        <button type="button" class="veylique-mobile-arrow veylique-mobile-arrow--next" data-direction="next" data-veylique-arrivals-dir="next" aria-label="{{ section.settings.next_label | escape }}"></button>
-      </div>
-
-      <div class="veylique-cursor-arrow" id="veyliqueCursorArrow-{{ section.id }}" aria-hidden="true"></div>
     </div>
-  </section>
+
+    <div class="veylique-na-pagination" data-veylique-na-pagination></div>
+  </div>
 </div>
+
+{% stylesheet %}
+  .veylique-na {
+    background: var(--mustard-bg, #faf6ec);
+    padding: 0 0 5rem;
+  }
+
+  .veylique-na-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .veylique-na-head-text {
+    min-width: 0;
+  }
+
+  /* Header arrows — desktop navigation. Hidden on touch/coarse pointers where
+     swiping and the pagination bullets are the primary controls. */
+  .veylique-na-nav {
+    display: none;
+    flex: 0 0 auto;
+    gap: 0.625rem;
+  }
+
+  .veylique-na-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+    border: 0.0625rem solid var(--mustard-border, rgba(36, 24, 22, 0.16));
+    border-radius: 50%;
+    background: transparent;
+    color: var(--mustard-text, #241816);
+    cursor: pointer;
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, opacity 0.25s ease;
+  }
+
+  .veylique-na-arrow svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  .veylique-na-arrow.swiper-button-disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .veylique-na-arrow:not(.swiper-button-disabled):hover {
+      background: var(--mustard-text, #241816);
+      color: var(--mustard-bg, #faf6ec);
+      border-color: var(--mustard-text, #241816);
+    }
+  }
+
+  /* Swiper viewport. Kept clipped (Swiper's default) so the fractional
+     slidesPerView peek stays inside the container and never triggers a
+     horizontal page scrollbar. */
+  .veylique-na-swiper {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  /* Minimal Swiper structural styles, scoped to this section so Swiper's
+     library CSS does not need to load globally and collide with the theme's
+     other custom `.swiper` carousels. */
+  .veylique-na-swiper .swiper-wrapper {
+    display: flex;
+    box-sizing: content-box;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    transition-property: transform;
+    transform: translateZ(0);
+  }
+
+  .veylique-na-slide {
+    flex-shrink: 0;
+    position: relative;
+    height: auto;
+    transition-property: transform;
+  }
+
+  .veylique-na-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .veylique-na-media {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--mustard-radius, 0.5rem);
+    background: var(--mustard-surface, #fffdf7);
+    aspect-ratio: 3 / 4;
+  }
+
+  .veylique-na-img,
+  .veylique-na-media > svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Hover zoom is desktop-only. On touch/coarse-pointer devices there is no
+     transition and no transform at all — the card shows a single static image
+     that never changes on tap. */
+  @media (hover: hover) and (pointer: fine) {
+    .veylique-na-img {
+      transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .veylique-na-card:hover .veylique-na-img {
+      transform: scale(1.04);
+    }
+  }
+
+  .veylique-na-badge {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 2;
+    padding: 0.3125rem 0.625rem;
+    border-radius: 999px;
+    background: var(--mustard-accent-dark, #a65e55);
+    color: #faf6ec;
+    font-family: var(--mustard-font-mono, monospace);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .veylique-na-info {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .veylique-na-name {
+    margin: 0;
+    font-family: var(--mustard-font-heading, serif);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: var(--mustard-text, #241816);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .veylique-na-pricing {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    white-space: nowrap;
+  }
+
+  .veylique-na-price {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--mustard-text, #241816);
+  }
+
+  .veylique-na-price--sale {
+    color: var(--mustard-accent-dark, #a65e55);
+  }
+
+  .veylique-na-compare {
+    font-size: 0.8125rem;
+    color: var(--mustard-muted, #8a7d76);
+    text-decoration: line-through;
+  }
+
+  .veylique-na-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.75rem;
+  }
+
+  .veylique-na-pagination .swiper-pagination-bullet {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin: 0 !important;
+    border-radius: 50%;
+    background: var(--mustard-text, #241816);
+    opacity: 0.22;
+    cursor: pointer;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .veylique-na-pagination .swiper-pagination-bullet-active {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+
+  @media (min-width: 1000px) {
+    .veylique-na {
+      padding-bottom: 6rem;
+    }
+
+    .veylique-na-nav {
+      display: flex;
+    }
+
+    /* Arrows drive navigation on desktop; hide bullets to keep the UI clean. */
+    .veylique-na-pagination {
+      display: none;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -145,7 +366,7 @@
       "min": 3,
       "max": 12,
       "step": 1,
-      "default": 4,
+      "default": 8,
       "label": "t:sections.veylique-home-new-arrivals.settings.products_to_show.label"
     },
     {
