@@ -1030,22 +1030,66 @@ body {
   text-transform: uppercase;
 }
 
-.veylique-section-intro-js,
+/* Reveal system — GSAP-driven, ported from the static demo. Targets are
+   pre-hidden here so there's no flash before the reveal engine runs. Section
+   titles are line-split + masked in JS; the eyebrow and description are hidden
+   until initSectionIntroReveal plays. */
 .veylique-reveal-js {
-  opacity: 0;
-  transform: translateY(1.5rem);
-  transition:
-    opacity 0.8s var(--mustard-ease),
-    transform 0.8s var(--mustard-ease);
-  transition-delay: var(--veylique-delay, 0s);
+  visibility: hidden;
 }
 
-.veylique-section-intro-js.is-visible,
-.veylique-reveal-js.is-visible,
-.no-js .veylique-section-intro-js,
-.no-js .veylique-reveal-js {
-  opacity: 1;
-  transform: translateY(0);
+.veylique-section-intro-js .veylique-eyebrow {
+  visibility: hidden;
+  will-change: transform, opacity, filter;
+}
+
+.veylique-section-intro-js .veylique-section-desc {
+  visibility: hidden;
+  will-change: opacity;
+}
+
+/* Overflow mask each split title line slides up out of. */
+.veylique-si-mask {
+  display: block;
+  overflow: hidden;
+  padding-right: 0.08em;
+  padding-bottom: 0.12em;
+  margin-right: -0.08em;
+  margin-bottom: -0.12em;
+}
+
+.veylique-si-mask .veylique-si-line {
+  display: block;
+  will-change: transform;
+}
+
+/* Clip-path wipe reveal. */
+.veylique-reveal--clip-js {
+  --mustard-clip: 100%;
+  -webkit-clip-path: inset(var(--mustard-clip) 0 0 0);
+  clip-path: inset(var(--mustard-clip) 0 0 0);
+  will-change: clip-path;
+}
+
+.veylique-clip-done {
+  -webkit-clip-path: none;
+  clip-path: none;
+  will-change: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .veylique-reveal-js,
+  .veylique-section-intro-js .veylique-eyebrow,
+  .veylique-section-intro-js .veylique-section-desc {
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .veylique-reveal--clip-js {
+    -webkit-clip-path: none !important;
+    clip-path: none !important;
+  }
 }
 
 .veylique-media-placeholder {

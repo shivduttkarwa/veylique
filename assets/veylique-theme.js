@@ -619,20 +619,9 @@
       if (carousel.dataset.veyliqueCategoryReady === 'true') return;
       carousel.dataset.veyliqueCategoryReady = 'true';
 
-      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var intro = carousel.querySelector('[data-veylique-category-intro]');
       var scroller = carousel.querySelector('[data-veylique-cat-track]');
       var prev = carousel.querySelector('[data-veylique-cat-prev]');
       var next = carousel.querySelector('[data-veylique-cat-next]');
-      var dragState = {
-        active: false,
-        pointerId: null,
-        startX: 0,
-        startY: 0,
-        startScrollLeft: 0,
-        didDrag: false,
-        suppressClickUntil: 0
-      };
 
       carousel.querySelectorAll('[data-veylique-hover-image]').forEach(function (image) {
         function markLoaded() {
@@ -642,39 +631,6 @@
         if (image.complete && image.naturalWidth) markLoaded();
         else image.addEventListener('load', markLoaded, { once: true });
       });
-
-      function reveal(element) {
-        if (element) element.classList.add('is-visible');
-      }
-
-      if (!('IntersectionObserver' in window)) {
-        reveal(intro);
-        carousel.querySelectorAll('.veylique-reveal-js').forEach(reveal);
-      } else {
-        if (intro) {
-          var introObserver = new IntersectionObserver(function (entries) {
-            entries.forEach(function (entry) {
-              if (!entry.isIntersecting) return;
-              reveal(entry.target);
-              introObserver.unobserve(entry.target);
-            });
-          }, { threshold: 0.15, rootMargin: '0px 0px -12% 0px' });
-
-          introObserver.observe(intro);
-        }
-
-        var revealObserver = new IntersectionObserver(function (entries) {
-          entries.forEach(function (entry) {
-            if (!entry.isIntersecting) return;
-            reveal(entry.target);
-            revealObserver.unobserve(entry.target);
-          });
-        }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
-
-        carousel.querySelectorAll('.veylique-reveal-js').forEach(function (card) {
-          revealObserver.observe(card);
-        });
-      }
 
       if (!scroller || typeof Swiper === 'undefined') return;
 
@@ -701,30 +657,184 @@
     });
   }
 
+  /* Section-intro reveal (ported from the static demo). Splits the section
+     title into lines with SplitText, masks each line, and slides them up on
+     scroll while the eyebrow blur-fades in and the description fades. Intros
+     that already ship a pre-wrapped .veylique-si-mask (e.g. the category
+     carousel) drive their own reveal and are skipped here. */
+  function initSectionIntroReveal(root) {
+    var hasGsap = typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined';
+    var hasSplit = typeof SplitText !== 'undefined';
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    root.querySelectorAll('.veylique-section-intro-js').forEach(function (intro) {
+      if (intro.dataset.veyliqueIntroReady === 'true') return;
+      intro.dataset.veyliqueIntroReady = 'true';
+
+      if (intro.querySelector('.veylique-si-mask')) return;
+
+      var eyebrow = intro.querySelector('.veylique-eyebrow');
+      var title = intro.querySelector('.veylique-section-title');
+      var desc = intro.querySelector('.veylique-section-desc');
+      if (!title) return;
+
+      if (!hasGsap || reduce) {
+        if (eyebrow) { eyebrow.style.visibility = 'visible'; eyebrow.style.opacity = '1'; }
+        if (desc) { desc.style.visibility = 'visible'; desc.style.opacity = '1'; }
+        return;
+      }
+
+      gsap.registerPlugin(ScrollTrigger);
+      if (hasSplit) gsap.registerPlugin(SplitText);
+
+      var titleTargets;
+      if (hasSplit) {
+        var split = new SplitText(title, { type: 'lines', linesClass: 'veylique-si-line' });
+        split.lines.forEach(function (line) {
+          var mask = document.createElement('div');
+          mask.className = 'veylique-si-mask';
+          line.parentNode.insertBefore(mask, line);
+          mask.appendChild(line);
+        });
+        titleTargets = split.lines;
+      } else {
+        var singleMask = document.createElement('div');
+        singleMask.className = 'veylique-si-mask';
+        title.parentNode.insertBefore(singleMask, title);
+        singleMask.appendChild(title);
+        titleTargets = [title];
+      }
+
+      gsap.set(titleTargets, { yPercent: 110 });
+      if (eyebrow) gsap.set(eyebrow, { autoAlpha: 0, y: 8, filter: 'blur(5px)' });
+      if (desc) gsap.set(desc, { autoAlpha: 0 });
+
+      var tl = gsap.timeline({
+        scrollTrigger: { trigger: intro, start: 'top 65%', once: true },
+        defaults: { ease: 'power4.out' }
+      });
+
+      if (eyebrow) {
+        tl.to(eyebrow, { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: 0.85, ease: 'power3.out' }, 0);
+      }
+
+      var titlePos = eyebrow ? 0.18 : 0;
+      tl.to(titleTargets, { yPercent: 0, duration: 1.05, stagger: hasSplit ? 0.12 : 0 }, titlePos);
+
+      if (desc) {
+        tl.to(desc, { autoAlpha: 1, duration: 0.7, ease: 'power2.out' }, '-=0.55');
+      }
+    });
+  }
+
+  /* Batch reveal engine (ported from the static demo). Reveals .veylique-reveal-js
+     elements on scroll with per-type animation — static (fade), fade (rise+fade),
+     right/left (slide), text (SplitText line/char stagger), clip (clip-path wipe)
+     — staggered across each scroll batch. */
   function initReveals(root) {
-    var elements = Array.prototype.slice.call(root.querySelectorAll('.veylique-section-intro-js, .veylique-reveal-js'));
-    if (!elements.length) return;
+    var hasGsap = typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined';
+    var hasSplit = typeof SplitText !== 'undefined';
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    function reveal(element) {
-      element.classList.add('is-visible');
-    }
+    var targets = Array.prototype.slice.call(root.querySelectorAll('.veylique-reveal-js'))
+      .filter(function (el) {
+        return el.dataset.veyliqueRevealReady !== 'true' && !el.classList.contains('veylique-reveal--hero-js');
+      });
+    if (!targets.length) return;
+    targets.forEach(function (el) { el.dataset.veyliqueRevealReady = 'true'; });
 
-    if (!('IntersectionObserver' in window)) {
-      elements.forEach(reveal);
+    if (!hasGsap || reduce) {
+      targets.forEach(function (el) {
+        el.style.visibility = 'visible';
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+        el.classList.add('veylique-clip-done');
+      });
       return;
     }
 
-    var observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        reveal(entry.target);
-        observer.unobserve(entry.target);
-      });
-    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    gsap.registerPlugin(ScrollTrigger);
+    if (hasSplit) gsap.registerPlugin(SplitText);
 
-    elements.forEach(function (element) {
-      if (element.classList.contains('is-visible')) return;
-      observer.observe(element);
+    if (hasSplit) {
+      targets.forEach(function (el) {
+        if (!el.classList.contains('veylique-split-js') || el.dataset.veyliqueSplitDone === 'true') return;
+        el.dataset.veyliqueSplitDone = 'true';
+        if (el.classList.contains('veylique-split--chars-js')) {
+          new SplitText(el, { type: 'chars,lines', linesClass: 'veylique-st-line', charsClass: 'veylique-st-char', aria: 'none' });
+        } else {
+          new SplitText(el, { type: 'lines', linesClass: 'veylique-st-line', aria: 'none' });
+        }
+      });
+    }
+
+    var _fade = [], _static = [], _right = [], _left = [], _lines = [], _chars = [];
+    targets.forEach(function (el) {
+      if (el.classList.contains('veylique-reveal--fade-js')) _fade.push(el);
+      if (el.classList.contains('veylique-reveal--static-js')) _static.push(el);
+      if (el.classList.contains('veylique-reveal--right-js')) _right.push(el);
+      if (el.classList.contains('veylique-reveal--left-js')) _left.push(el);
+      if (el.classList.contains('veylique-reveal--text-js')) {
+        if (el.classList.contains('veylique-split--chars-js')) {
+          _chars = _chars.concat(Array.prototype.slice.call(el.querySelectorAll('.veylique-st-char')));
+        } else {
+          _lines = _lines.concat(Array.prototype.slice.call(el.querySelectorAll('.veylique-st-line')));
+        }
+      }
+    });
+
+    if (_fade.length) gsap.set(_fade, { y: 30, autoAlpha: 0 });
+    if (_static.length) gsap.set(_static, { autoAlpha: 0 });
+    if (_right.length) gsap.set(_right, { x: '15%', autoAlpha: 0 });
+    if (_left.length) gsap.set(_left, { x: '-15%', autoAlpha: 0 });
+    if (_lines.length) gsap.set(_lines, { y: 30, autoAlpha: 0 });
+    if (_chars.length) gsap.set(_chars, { autoAlpha: 0 });
+
+    function animateDef(el, index, isStatic) {
+      var ease = 'power1.out';
+      var delay = index * 0.1 + (parseFloat(el.dataset.veyliqueDelay) || 0);
+      if (!isStatic) gsap.to(el, { x: 0, y: 0, duration: 0.7, ease: ease, delay: delay });
+      gsap.to(el, { autoAlpha: 1, duration: 0.5, ease: ease, delay: delay + 0.1 });
+    }
+
+    function animateBatch(batch) {
+      batch.forEach(function (el, index) {
+        if (el.classList.contains('veylique-reveal--clip-js')) {
+          gsap.fromTo(el, { '--mustard-clip': '100%' }, {
+            '--mustard-clip': '0%', duration: 1.1, ease: 'power3.out', delay: index * 0.2,
+            onComplete: function () { el.classList.add('veylique-clip-done'); }
+          });
+          return;
+        }
+
+        if (el.classList.contains('veylique-reveal--text-js')) {
+          var chars = el.querySelectorAll('.veylique-st-char');
+          var lines = el.querySelectorAll('.veylique-st-line');
+          var d = index * 0.1;
+          if (chars.length) {
+            gsap.to(chars, { autoAlpha: 1, duration: 0.4, ease: 'power3.inOut', stagger: 0.05, delay: d });
+          } else if (lines.length) {
+            gsap.to(lines, { y: 0, duration: 0.6, ease: 'power1.out', stagger: 0.15, delay: d });
+            gsap.to(lines, { autoAlpha: 1, duration: 0.5, ease: 'power1.out', stagger: 0.15, delay: d + 0.1 });
+          } else {
+            animateDef(el, index, false);
+          }
+          return;
+        }
+
+        if (el.classList.contains('veylique-reveal--static-js')) {
+          animateDef(el, index, true);
+          return;
+        }
+
+        animateDef(el, index, false);
+      });
+    }
+
+    ScrollTrigger.batch(targets, {
+      start: 'top bottom-=50',
+      once: true,
+      onEnter: animateBatch
     });
   }
 
@@ -2385,6 +2495,7 @@
     initHeader(document);
     initFooter(document);
     initCategoryCarousels(document);
+    initSectionIntroReveal(document);
     initReveals(document);
     initProductCards(document);
     initArrivals(document);
@@ -2412,6 +2523,7 @@
     initHeader(event.target);
     initFooter(event.target);
     initCategoryCarousels(event.target);
+    initSectionIntroReveal(event.target);
     initReveals(event.target);
     initProductCards(event.target);
     initArrivals(event.target);

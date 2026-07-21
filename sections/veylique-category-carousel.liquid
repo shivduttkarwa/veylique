@@ -7,11 +7,7 @@
   <div class="veylique-section-intro veylique-section-intro-js" data-veylique-category-intro>
     <div class="veylique-container-wide">
       <div class="veylique-category-carousel__intro-column">
-        <h2 id="VeyliqueCategoryCarouselTitle-{{ section.id }}" class="veylique-section-title">
-          <span class="veylique-si-mask">
-            <span class="veylique-si-line">{{ section_title | escape }}</span>
-          </span>
-        </h2>
+        <h2 id="VeyliqueCategoryCarouselTitle-{{ section.id }}" class="veylique-section-title">{{ section_title | escape }}</h2>
         {% if section_text != blank %}
           <p class="veylique-section-desc">{{ section_text | escape }}</p>
         {% endif %}
@@ -195,37 +191,9 @@
     line-height: 1.7;
   }
 
-  .veylique-category-carousel .veylique-si-mask {
-    display: block;
-    overflow: hidden;
-    padding-right: 0.08em;
-    padding-bottom: 0.12em;
-    margin-right: -0.08em;
-    margin-bottom: -0.12em;
-  }
-
-  .veylique-category-carousel .veylique-si-line {
-    display: block;
-    transform: translateY(110%);
-    will-change: transform;
-  }
-
-  .veylique-category-carousel .veylique-section-desc {
-    opacity: 0;
-    visibility: hidden;
-    will-change: opacity;
-  }
-
-  .veylique-category-carousel .veylique-section-intro.is-visible .veylique-si-line {
-    transform: translateY(0);
-    transition: transform 1.05s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .veylique-category-carousel .veylique-section-intro.is-visible .veylique-section-desc {
-    opacity: 1;
-    visibility: visible;
-    transition: opacity 0.7s ease 0.5s, visibility 0s linear 0.5s;
-  }
+  /* Section-intro reveal (title line-split + desc fade) is handled by the
+     shared reveal engine — see initSectionIntroReveal + the global .veylique-si-mask
+     rules. No section-local intro animation here. */
 
   .veylique-cat-section {
     overflow: hidden;
@@ -275,6 +243,8 @@
     transition-property: transform;
   }
 
+  /* Card reveal (fade + stagger) is handled by the shared .veylique-reveal-js
+     batch engine; no section-local hide/reveal here. */
   .veylique-cat-card {
     position: relative;
     display: block;
@@ -285,15 +255,6 @@
     background: #ffffff;
     color: inherit;
     text-decoration: none;
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.5s ease var(--veylique-reveal-delay, 0ms);
-  }
-
-  .veylique-cat-card.is-visible,
-  .no-js .veylique-cat-card {
-    visibility: visible;
-    opacity: 1;
   }
 
   .veylique-cat-media {
@@ -502,7 +463,6 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .veylique-category-carousel .veylique-si-line,
     .veylique-cat-img--main,
     .veylique-cat-img--hover {
       -webkit-clip-path: none;
@@ -510,13 +470,6 @@
       transform: none;
       transition: opacity 0.3s ease;
       will-change: auto;
-    }
-
-    .veylique-category-carousel .veylique-section-desc,
-    .veylique-cat-card {
-      visibility: visible;
-      opacity: 1;
-      transition: none;
     }
 
     .veylique-cat-img--hover {
