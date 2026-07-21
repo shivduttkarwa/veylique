@@ -767,47 +767,286 @@
     });
   }
 
-  /* New Arrivals: a clean, swipe-first Swiper carousel. Header arrows drive
-     desktop navigation; pagination bullets and touch swipe drive mobile. The
-     goal here is a smooth, predictable slider — no custom pointer handling. */
-  function initNewArrivals(root) {
-    if (typeof Swiper === 'undefined') return;
-
+  function initArrivals(root) {
     root.querySelectorAll('[data-veylique-arrivals]').forEach(function (section) {
       if (section.dataset.veyliqueArrivalsReady === 'true') return;
-
-      var el = section.querySelector('[data-veylique-na-swiper]');
-      if (!el) return;
       section.dataset.veyliqueArrivalsReady = 'true';
 
-      var prev = section.querySelector('[data-veylique-na-prev]');
-      var next = section.querySelector('[data-veylique-na-next]');
-      var pagination = section.querySelector('[data-veylique-na-pagination]');
+      var stage = section.querySelector('.veylique-slider-stage');
+      var slidesRoot = section.querySelector('.veylique-slides');
+      var slides = Array.prototype.slice.call(section.querySelectorAll('[data-veylique-arrivals-slide]'));
+      var card = section.querySelector('.veylique-content-card');
+      var numberEl = section.querySelector('[data-veylique-arrivals-number]');
+      var textEl = section.querySelector('[data-veylique-arrivals-text]');
+      var cardButton = section.querySelector('[data-veylique-arrivals-link]');
+      var cursorArrow = section.querySelector('.veylique-cursor-arrow');
+      var controls = Array.prototype.slice.call(section.querySelectorAll('[data-direction]'));
 
-      new Swiper(el, {
-        slidesPerView: 1.2,
-        spaceBetween: 14,
-        speed: 600,
-        grabCursor: true,
-        watchOverflow: true,
-        threshold: 4,
-        resistanceRatio: 0.72,
-        a11y: { enabled: true },
-        keyboard: { enabled: true, onlyInViewport: true },
-        navigation: {
-          prevEl: prev,
-          nextEl: next,
-          disabledClass: 'swiper-button-disabled'
-        },
-        pagination: {
-          el: pagination,
-          clickable: true
-        },
-        breakpoints: {
-          560: { slidesPerView: 2.2, spaceBetween: 16 },
-          1000: { slidesPerView: 3, spaceBetween: 22 },
-          1400: { slidesPerView: 4, spaceBetween: 24 }
+      if (!stage || !slidesRoot || !slides.length) {
+        if (stage) stage.style.display = 'none';
+        return;
+      }
+
+      var activeIndex = 0;
+      var cursorSide = 'right';
+      var isCursorBlocked = false;
+      var activeAnimations = [];
+      var lastMouseX = -1;
+      var lastMouseY = -1;
+      var touchStartX = 0;
+      var touchStartY = 0;
+      var touchDeltaX = 0;
+      var isSwiping = false;
+      var cardSwapHandler = null;
+      var cardSwapTimer = null;
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var SWIPE_THRESHOLD = 40;
+      var CARD_FADE_MS = 560;
+
+      function preloadImages() {
+        return Promise.all(slides.map(function (slide) {
+          return new Promise(function (resolve) {
+            var slideImage = slide.querySelector('img');
+            if (!slideImage) {
+              resolve();
+              return;
+            }
+
+            var source = slideImage.currentSrc || slideImage.getAttribute('src') || slideImage.src;
+            if (!source) {
+              resolve();
+              return;
+            }
+
+            if (slideImage.complete && slideImage.naturalWidth) {
+              resolve();
+              return;
+            }
+
+            var preload = new Image();
+            preload.onload = resolve;
+            preload.onerror = resolve;
+            preload.src = source;
+          });
+        }));
+      }
+
+      function updateSlides() {
+        slides.forEach(function (slide, index) {
+          var delta = index - activeIndex;
+          slide.classList.remove('is-active', 'is-prev', 'is-next', 'is-hidden-left', 'is-hidden-right');
+          if (delta === 0) slide.classList.add('is-active');
+          else if (delta === -1) slide.classList.add('is-prev');
+          else if (delta === 1) slide.classList.add('is-next');
+          else if (delta < 0) slide.classList.add('is-hidden-left');
+          else slide.classList.add('is-hidden-right');
+        });
+      }
+
+      function updateCard() {
+        var slide = slides[activeIndex];
+        if (!slide || !card) return;
+
+        if (cardSwapHandler) {
+          card.removeEventListener('transitionend', cardSwapHandler);
         }
+
+        window.clearTimeout(cardSwapTimer);
+        card.classList.add('is-changing');
+
+        function swap(event) {
+          if (event && (event.target !== card || event.propertyName !== 'opacity')) return;
+          card.removeEventListener('transitionend', cardSwapHandler);
+          window.clearTimeout(cardSwapTimer);
+          cardSwapHandler = null;
+
+          if (numberEl) numberEl.textContent = slide.dataset.number || '01';
+          if (textEl) textEl.textContent = slide.dataset.text || '';
+          if (cardButton && slide.dataset.url) cardButton.setAttribute('href', slide.dataset.url);
+
+          window.requestAnimationFrame(function () {
+            card.classList.remove('is-changing');
+          });
+        }
+
+        cardSwapHandler = swap;
+        card.addEventListener('transitionend', cardSwapHandler);
+        cardSwapTimer = window.setTimeout(swap, CARD_FADE_MS);
+      }
+
+      function clearZoomAnimations() {
+        activeAnimations.forEach(function (animation) {
+          try {
+            animation.cancel();
+          } catch (error) {}
+        });
+        activeAnimations = [];
+      }
+
+      function animateSlideZoom(currentIndex) {
+        clearZoomAnimations();
+        if (reduceMotion || !Element.prototype.animate) return;
+
+        var currentInner = section.querySelector(
+          '[data-veylique-arrivals-slide][data-index="' + currentIndex + '"] .veylique-slide-inner'
+        );
+
+        if (!currentInner) return;
+
+        var animation = currentInner.animate(
+          [
+            { transform: 'translate3d(0, 0, 0) scale(1.16)' },
+            { transform: 'translate3d(0, 0, 0) scale(1)' }
+          ],
+          { duration: 1280, easing: 'cubic-bezier(0.19, 1, 0.22, 1)', fill: 'both' }
+        );
+        activeAnimations.push(animation);
+      }
+
+      function updateButtons() {
+        var atStart = activeIndex <= 0;
+        var atEnd = activeIndex >= slides.length - 1;
+
+        controls.forEach(function (control) {
+          var direction = control.dataset.direction;
+          var disabled = direction === 'prev' ? atStart : atEnd;
+          control.disabled = disabled;
+          control.classList.toggle('is-disabled', disabled);
+        });
+      }
+
+      function goToSlide(direction) {
+        if (direction === 'prev' && activeIndex <= 0) return;
+        if (direction === 'next' && activeIndex >= slides.length - 1) return;
+        activeIndex += direction === 'next' ? 1 : -1;
+        updateSlides();
+
+        window.requestAnimationFrame(function () {
+          animateSlideZoom(activeIndex);
+          updateCard();
+          updateButtons();
+
+          if (lastMouseX >= 0) {
+            var rect = stage.getBoundingClientRect();
+            if (
+              lastMouseX >= rect.left && lastMouseX <= rect.right &&
+              lastMouseY >= rect.top && lastMouseY <= rect.bottom
+            ) {
+              moveCursor({ clientX: lastMouseX, clientY: lastMouseY, target: stage });
+            }
+          }
+        });
+      }
+
+      function moveCursor(event) {
+        if (!cursorArrow) return;
+        if (isCursorBlocked || (event.target && event.target.closest('.veylique-card-button'))) {
+          cursorArrow.classList.remove('is-visible', 'is-left', 'is-right');
+          return;
+        }
+
+        var rect = stage.getBoundingClientRect();
+        var isLeft = (event.clientX - rect.left) < rect.width / 2;
+        var atStart = activeIndex <= 0;
+        var atEnd = activeIndex >= slides.length - 1;
+
+        if ((isLeft && atStart) || (!isLeft && atEnd)) {
+          cursorArrow.classList.remove('is-visible', 'is-left', 'is-right');
+          stage.classList.add('is-cursor-default');
+          return;
+        }
+
+        cursorSide = isLeft ? 'left' : 'right';
+        stage.classList.remove('is-cursor-default');
+        cursorArrow.style.left = (event.clientX - rect.left) + 'px';
+        cursorArrow.style.top = (event.clientY - rect.top) + 'px';
+        cursorArrow.classList.add('is-visible');
+        cursorArrow.classList.toggle('is-left', isLeft);
+        cursorArrow.classList.toggle('is-right', !isLeft);
+      }
+
+      document.addEventListener('mousemove', function (event) {
+        lastMouseX = event.clientX;
+        lastMouseY = event.clientY;
+      });
+
+      window.addEventListener('scroll', function () {
+        if (!cursorArrow || lastMouseX < 0) return;
+        var rect = stage.getBoundingClientRect();
+
+        if (
+          lastMouseX >= rect.left && lastMouseX <= rect.right &&
+          lastMouseY >= rect.top && lastMouseY <= rect.bottom
+        ) {
+          moveCursor({ clientX: lastMouseX, clientY: lastMouseY, target: stage });
+        } else {
+          cursorArrow.classList.remove('is-visible', 'is-left', 'is-right');
+        }
+      }, { passive: true });
+
+      controls.forEach(function (control) {
+        control.addEventListener('click', function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          goToSlide(control.dataset.direction);
+        });
+      });
+
+      stage.addEventListener('mousemove', moveCursor);
+      stage.addEventListener('mouseleave', function () {
+        if (cursorArrow) cursorArrow.classList.remove('is-visible', 'is-left', 'is-right');
+        stage.classList.remove('is-cursor-default');
+      });
+
+      if (cardButton) {
+        cardButton.addEventListener('mouseenter', function () {
+          isCursorBlocked = true;
+          if (cursorArrow) cursorArrow.classList.remove('is-visible', 'is-left', 'is-right');
+        });
+        cardButton.addEventListener('mouseleave', function () {
+          isCursorBlocked = false;
+        });
+      }
+
+      stage.addEventListener('click', function (event) {
+        if (isSwiping) return;
+        if (event.target.closest('.veylique-card-button, .veylique-mobile-arrows')) return;
+        goToSlide(cursorSide === 'left' ? 'prev' : 'next');
+      });
+
+      stage.addEventListener('touchstart', function (event) {
+        if (event.touches.length !== 1) return;
+        touchStartX = event.touches[0].clientX;
+        touchStartY = event.touches[0].clientY;
+        touchDeltaX = 0;
+        isSwiping = false;
+      }, { passive: true });
+
+      stage.addEventListener('touchmove', function (event) {
+        if (event.touches.length !== 1) return;
+        touchDeltaX = event.touches[0].clientX - touchStartX;
+        var deltaY = event.touches[0].clientY - touchStartY;
+        if (!isSwiping && Math.abs(touchDeltaX) > 10 && Math.abs(touchDeltaX) > Math.abs(deltaY)) {
+          isSwiping = true;
+        }
+      }, { passive: true });
+
+      stage.addEventListener('touchend', function (event) {
+        if (event.target.closest('.veylique-card-button, .veylique-mobile-arrows')) return;
+        if (isSwiping && Math.abs(touchDeltaX) > SWIPE_THRESHOLD) {
+          goToSlide(touchDeltaX < 0 ? 'next' : 'prev');
+        }
+        window.setTimeout(function () { isSwiping = false; }, 300);
+      });
+
+      updateSlides();
+      updateCard();
+      updateButtons();
+
+      preloadImages().then(function () {
+        window.requestAnimationFrame(function () {
+          stage.classList.remove('is-loading');
+        });
       });
     });
   }
@@ -2148,7 +2387,7 @@
     initCategoryCarousels(document);
     initReveals(document);
     initProductCards(document);
-    initNewArrivals(document);
+    initArrivals(document);
     initCardSliders(document);
     initOccasions(document);
     initTestimonials(document);
@@ -2175,7 +2414,7 @@
     initCategoryCarousels(event.target);
     initReveals(event.target);
     initProductCards(event.target);
-    initNewArrivals(event.target);
+    initArrivals(event.target);
     initCardSliders(event.target);
     initOccasions(event.target);
     initTestimonials(event.target);
