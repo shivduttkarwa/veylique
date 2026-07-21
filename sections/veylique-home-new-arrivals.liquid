@@ -141,8 +141,8 @@
 
 @media (min-width: 992px) {
   .veylique-arrivals-band {
-    height: min(92vh, 58rem);
-    min-height: 42rem;
+    height: min(96vh, 66rem);
+    min-height: 44rem;
   }
 
   .veylique-arrivals-band .veylique-section-intro {
@@ -155,15 +155,29 @@
     min-height: 0;
   }
 
+  .veylique-arrivals-band .veylique-slide {
+    width: 40vw;
+  }
+
+  /* Image sized by the stage height at its own natural aspect — the whole
+     photo shows, never cropped top/bottom or stretched wide. */
   .veylique-arrivals-band .veylique-slide img,
   .veylique-arrivals-band .veylique-slide .veylique-media-placeholder {
-    height: 117%;
+    width: auto;
+    height: 100%;
+    max-width: none;
+    aspect-ratio: auto;
+    object-fit: contain;
     max-height: none;
   }
 
+  /* Smaller card straddling the image's bottom-right corner. */
   .veylique-arrivals-band .veylique-content-card {
     top: auto;
-    bottom: 1.75rem;
+    bottom: 2rem;
+    left: 58%;
+    width: min(16rem, 30vw);
+    min-height: 0;
   }
 }
 
@@ -318,7 +332,6 @@
   background: var(--mustard-glass);
   backdrop-filter: blur(1.125rem);
   -webkit-backdrop-filter: blur(1.125rem);
-  box-shadow: 0 1.125rem 3.5rem rgba(0, 0, 0, 0.08);
   pointer-events: none;
   transition: opacity 520ms ease, transform 520ms var(--mustard-ease);
   will-change: opacity, transform;
