@@ -7,6 +7,24 @@ html {
   text-size-adjust: 100%;
 }
 
+/**
+ * Fluid root type scale (mirrors the reference design's breakpoints).
+ * Every rem-based size scales across breakpoints from here. Percentages are
+ * used rather than fixed px so the scale still respects the visitor's browser
+ * text-size preference (percent is relative to their default, not a px lock).
+ */
+@media (max-width: 359.98px) { html { font-size: 87.5%; } }
+@media (min-width: 360px) and (max-width: 575.98px) { html { font-size: 93.75%; } }
+@media (min-width: 576px) and (max-width: 991.98px) { html { font-size: 96.875%; } }
+@media (min-width: 992px) and (max-width: 1199.98px) { html { font-size: 100%; } }
+@media (min-width: 1200px) and (max-width: 1439.98px) { html { font-size: 93.75%; } }
+@media (min-width: 1440px) and (max-width: 1599.98px) { html { font-size: 106.25%; } }
+@media (min-width: 1600px) and (max-width: 1919.98px) { html { font-size: 109.375%; } }
+@media (min-width: 1920px) and (max-width: 2239.98px) { html { font-size: 112.5%; } }
+@media (min-width: 2240px) and (max-width: 2559.98px) { html { font-size: 131.25%; } }
+@media (min-width: 2560px) and (max-width: 3199.98px) { html { font-size: 143.75%; } }
+@media (min-width: 3200px) { html { font-size: 168.75%; } }
+
 *,
 *::before,
 *::after {

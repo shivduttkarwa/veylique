@@ -2110,6 +2110,18 @@
           });
         });
       });
+
+      /* Cursor spotlight — a soft accent glow follows the pointer across each
+         card (desktop / fine pointer only). */
+      if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        items.forEach(function (item) {
+          item.addEventListener('pointermove', function (event) {
+            var rect = item.getBoundingClientRect();
+            item.style.setProperty('--mx', (event.clientX - rect.left) + 'px');
+            item.style.setProperty('--my', (event.clientY - rect.top) + 'px');
+          });
+        });
+      }
     });
   }
 
