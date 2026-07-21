@@ -993,24 +993,12 @@
         activeAnimations = [];
       }
 
-      function animateSlideZoom(currentIndex) {
+      function animateSlideZoom() {
+        /* The active image's zoom is handled entirely by the CSS --image-scale
+           transition — a single GPU-composited animation. Previously a Web
+           Animations zoom ran on top of the same transform and snapped to the
+           CSS value at the end, which read as a jerk in the last frames. */
         clearZoomAnimations();
-        if (reduceMotion || !Element.prototype.animate) return;
-
-        var currentInner = section.querySelector(
-          '[data-veylique-arrivals-slide][data-index="' + currentIndex + '"] .veylique-slide-inner'
-        );
-
-        if (!currentInner) return;
-
-        var animation = currentInner.animate(
-          [
-            { transform: 'translate3d(0, 0, 0) scale(1.16)' },
-            { transform: 'translate3d(0, 0, 0) scale(1)' }
-          ],
-          { duration: 1280, easing: 'cubic-bezier(0.19, 1, 0.22, 1)', fill: 'both' }
-        );
-        activeAnimations.push(animation);
       }
 
       function updateButtons() {
