@@ -1231,6 +1231,52 @@
           activate(index);
         });
       });
+
+      /* Mobile: pinned scroll experience. The section is tall and its inner pins
+         to the viewport; scroll progress through the section steps the open
+         accordion (item 0 → last), each opening only while the image is pinned.
+         Desktop keeps click-to-switch. */
+      var occMq = window.matchMedia('(max-width: 991.98px)');
+      var occScheduled = false;
+      var occLast = -1;
+
+      /* Give the section a tall scroll zone (in px, so it's guaranteed taller
+         than the viewport) — each step gets ~0.6 viewport of scroll. */
+      function occLayout() {
+        if (occMq.matches && items.length > 1) {
+          section.style.height = Math.round(window.innerHeight * (items.length * 0.6 + 1)) + 'px';
+        } else {
+          section.style.height = '';
+          occLast = -1;
+        }
+      }
+
+      function occActivateByScroll() {
+        occScheduled = false;
+        if (!occMq.matches || items.length < 2) return;
+        var range = section.offsetHeight - window.innerHeight;
+        if (range <= 0) return;
+        var progress = (0 - section.getBoundingClientRect().top) / range;
+        if (progress < 0) progress = 0;
+        if (progress > 1) progress = 1;
+        var index = Math.floor(progress * items.length);
+        if (index > items.length - 1) index = items.length - 1;
+        if (index !== occLast) {
+          occLast = index;
+          activate(index);
+        }
+      }
+
+      function occOnScroll() {
+        if (occScheduled) return;
+        occScheduled = true;
+        window.requestAnimationFrame(occActivateByScroll);
+      }
+
+      window.addEventListener('scroll', occOnScroll, { passive: true });
+      window.addEventListener('resize', function () { occLayout(); occOnScroll(); });
+      occLayout();
+      occOnScroll();
     });
   }
 

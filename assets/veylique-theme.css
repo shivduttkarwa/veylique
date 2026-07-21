@@ -1714,12 +1714,17 @@ body {
   inset: 0;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.55s ease;
+  transform: scale(1.06);
+  transition:
+    opacity 0.7s var(--mustard-ease, cubic-bezier(0.22, 1, 0.36, 1)),
+    transform 1.1s var(--mustard-ease, cubic-bezier(0.22, 1, 0.36, 1));
+  will-change: opacity, transform;
 }
 
 .veylique-occ-slide.is-active {
   opacity: 1;
   pointer-events: auto;
+  transform: scale(1);
 }
 
 .veylique-occ-slide img,
@@ -3261,8 +3266,42 @@ body {
     transform: translateY(50%);
   }
 
+  /* Mobile: pinned scroll experience. The section is tall; its inner pins to
+     the viewport, and scroll progress through the section steps the accordion
+     (see initOccasions). Image + list stay put — nothing scrolls under the
+     image — and each item opens only while pinned. */
+  .veylique-occ {
+    padding: 0;
+  }
+
+  .veylique-occ-inner {
+    position: sticky;
+    top: 4.5rem;
+    height: calc(100svh - 4.5rem);
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    align-content: start;
+    align-items: start;
+    gap: clamp(0.75rem, 3vw, 1.5rem);
+    padding-block: 1rem;
+  }
+
   .veylique-occ-media {
-    aspect-ratio: 25 / 17;
+    order: -1;
+    aspect-ratio: auto;
+    height: clamp(12rem, 34svh, 20rem);
+  }
+
+  .veylique-occ-list {
+    border-top: 0;
+  }
+
+  .veylique-occ-item:first-child {
+    border-top: 0.0625rem solid var(--mustard-border);
+  }
+
+  .veylique-occ-head {
+    padding: 1.1rem 0;
   }
 
   .veylique-occ-body > .veylique-occ-desc {

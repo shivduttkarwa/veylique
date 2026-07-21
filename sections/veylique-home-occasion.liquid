@@ -8,7 +8,7 @@
 <section class="veylique-occ full-width" aria-label="{{ section.settings.heading | escape }}" data-veylique-occasion>
   <div class="veylique-occ-inner">
     <div class="veylique-occ-list" role="tablist" aria-label="{{ section.settings.tabs_label | escape }}" data-occ-list>
-      {% for block in section.blocks %}
+      {% for block in section.blocks limit: 5 %}
         <div class="veylique-occ-item{% if forloop.first %} is-active{% endif %}" data-occ-item {{ block.shopify_attributes }}>
           <button class="veylique-occ-head" type="button" role="tab" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" data-occ-tab="{{ forloop.index0 }}">
             <span class="veylique-occ-name">{{ block.settings.heading }}</span>
@@ -22,7 +22,7 @@
     </div>
 
     <div class="veylique-occ-media">
-      {% for block in section.blocks %}
+      {% for block in section.blocks limit: 5 %}
         {% liquid
           assign occasion_alt = block.settings.alt | default: block.settings.heading
         %}
