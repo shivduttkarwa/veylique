@@ -3143,6 +3143,11 @@ body {
   z-index: 30;
   width: 100vw;
   height: 100vh;
+  /* The global media reset (`canvas { max-width: 100% }`) would clamp this to
+     the scrollbar-excluding containing block while the WebGL draw buffer is
+     sized to window.innerWidth (scrollbar included). That mismatch squeezes the
+     flying card leftward with a gap on the right until it docks — so opt out. */
+  max-width: none;
   display: block;
   opacity: 0;
   pointer-events: none;
