@@ -503,8 +503,8 @@
 
 @media (max-width: 768px) {
   .veylique-slider-section {
-    height: 60vh;
     min-height: 30rem;
+    height: 60vh;
   }
 
   .veylique-slide {
@@ -548,12 +548,16 @@
   }
 
   .veylique-slide-number {
-    margin-bottom: 1.75rem;
     font-size: 5.25rem;
+    margin-bottom: 1.75rem;
   }
 
-  .veylique-card-text,
+  .veylique-card-text {
+    font-size: 0.8125rem;
+  }
+
   .veylique-card-button {
+    padding: 0.8125rem 1rem;
     font-size: 0.8125rem;
   }
 
@@ -572,7 +576,10 @@
   }
 
   .veylique-content-card {
+    top: calc(1rem + min(45vh, 28.75rem) - 1.75rem);
+    left: 50%;
     width: min(17.375rem, calc(100vw - 2.25rem));
+    min-height: 0;
     transform: translate3d(calc(-50% + 2.5rem), 0, 0);
   }
 
@@ -586,6 +593,10 @@
 
   .veylique-slider-section .veylique-card-body {
     padding: 1.375rem 1.125rem 1.125rem;
+  }
+
+  .veylique-mobile-arrows {
+    bottom: 0.75rem;
   }
 }
 {% endstylesheet %}
