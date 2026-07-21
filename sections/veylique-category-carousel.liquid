@@ -246,25 +246,9 @@
   }
 
   .veylique-cat-swiper {
-    overflow: visible;
-    overflow-y: visible;
-    scrollbar-width: none;
-    cursor: grab;
+    overflow: hidden;
     touch-action: pan-y;
     user-select: none;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .veylique-cat-swiper.is-pointer-down {
-    cursor: grabbing;
-  }
-
-  .veylique-cat-swiper.is-dragging .veylique-cat-card {
-    pointer-events: none;
-  }
-
-  .veylique-cat-swiper::-webkit-scrollbar {
-    display: none;
   }
 
   .veylique-cat-swiper:focus-visible {
@@ -272,17 +256,23 @@
     outline-offset: 0.25rem;
   }
 
+  /* Scoped Swiper structural styles (library CSS is not loaded globally). */
   .veylique-cat-swiper .swiper-wrapper {
     display: flex;
+    box-sizing: content-box;
     align-items: stretch;
-    gap: 1rem;
     width: 100%;
+    z-index: 1;
+    transition-property: transform;
+    transform: translateZ(0);
     will-change: transform;
   }
 
   .veylique-cat-swiper .swiper-slide {
-    flex: 0 0 calc((100% - 0.4rem) / 1.4);
+    flex-shrink: 0;
+    position: relative;
     height: auto;
+    transition-property: transform;
   }
 
   .veylique-cat-card {
@@ -335,14 +325,9 @@
     transition: opacity 0.5s ease;
   }
 
-  .veylique-cat-card:hover .veylique-cat-media:has(.veylique-cat-img--hover.is-loaded) .veylique-cat-img--main {
-    opacity: 0;
-  }
-
-  .veylique-cat-card:hover .veylique-cat-img--hover.is-loaded {
-    opacity: 1;
-  }
-
+  /* Hover image-swap is desktop-only (below). On touch/coarse-pointer devices
+     the hover image stays hidden, so each category card shows a single static
+     image that never changes on tap. */
   @media (hover: hover) and (pointer: fine) {
     .veylique-cat-img--main {
       transition:
@@ -484,22 +469,6 @@
   .veylique-cat-nav-btn:disabled {
     opacity: 0.28;
     pointer-events: none;
-  }
-
-  @media (min-width: 600px) {
-    .veylique-cat-swiper .swiper-slide {
-      flex-basis: calc((100% - 1.2rem) / 2.2);
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .veylique-cat-swiper .swiper-wrapper {
-      gap: 1.5rem;
-    }
-
-    .veylique-cat-swiper .swiper-slide {
-      flex-basis: calc((100% - 4.5rem) / 4);
-    }
   }
 
   @media (max-width: 1199px) {

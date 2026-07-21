@@ -676,257 +676,28 @@
         });
       }
 
-      if (!scroller) return;
+      if (!scroller || typeof Swiper === 'undefined') return;
 
-      var wrapper = scroller.querySelector('.swiper-wrapper');
-      if (!wrapper) return;
-
-      var slides = [];
-      var activeIndex = 0;
-      var currentTranslate = 0;
-      var targetTranslate = 0;
-      var minTranslate = 0;
-      var maxIndex = 0;
-      var slideStep = 0;
-      var animationFrame = 0;
-
-      function clampTranslate(value) {
-        return Math.min(0, Math.max(minTranslate, value));
-      }
-
-      function indexToTranslate(index) {
-        return clampTranslate(-index * slideStep);
-      }
-
-      function translateToIndex(value) {
-        if (!slideStep) return 0;
-        return Math.min(maxIndex, Math.max(0, Math.round(Math.abs(clampTranslate(value)) / slideStep)));
-      }
-
-      function setTranslate(value) {
-        wrapper.style.transform = 'translate3d(' + value + 'px, 0, 0)';
-      }
-
-      function stopAnimation() {
-        if (!animationFrame) return;
-        window.cancelAnimationFrame(animationFrame);
-        animationFrame = 0;
-      }
-
-      function easeOutCubic(progress) {
-        return 1 - Math.pow(1 - progress, 3);
-      }
-
-      function updateNav() {
-        var atStart = targetTranslate >= -1;
-        var atEnd = targetTranslate <= minTranslate + 1 || activeIndex >= maxIndex;
-
-        if (prev) {
-          prev.classList.toggle('swiper-button-disabled', atStart);
-          prev.disabled = atStart;
-        }
-
-        if (next) {
-          next.classList.toggle('swiper-button-disabled', atEnd);
-          next.disabled = atEnd;
-        }
-      }
-
-      function animateTo(value, duration) {
-        stopAnimation();
-
-        targetTranslate = clampTranslate(value);
-
-        if (reduceMotion || !duration) {
-          currentTranslate = targetTranslate;
-          activeIndex = translateToIndex(targetTranslate);
-          setTranslate(currentTranslate);
-          updateNav();
-          return;
-        }
-
-        var from = currentTranslate;
-        var to = targetTranslate;
-        var start = performance.now();
-
-        function tick(now) {
-          var progress = Math.min(1, (now - start) / duration);
-          currentTranslate = from + (to - from) * easeOutCubic(progress);
-          setTranslate(currentTranslate);
-
-          if (progress < 1) {
-            animationFrame = window.requestAnimationFrame(tick);
-            return;
-          }
-
-          animationFrame = 0;
-          currentTranslate = to;
-          activeIndex = translateToIndex(to);
-          setTranslate(currentTranslate);
-          updateNav();
-        }
-
-        animationFrame = window.requestAnimationFrame(tick);
-        updateNav();
-      }
-
-      function slideTo(index, duration) {
-        activeIndex = Math.min(maxIndex, Math.max(0, index));
-        animateTo(indexToTranslate(activeIndex), duration);
-      }
-
-      function slideByDirection(direction) {
-        slideTo(activeIndex + direction, 680);
-      }
-
-      function measureSlider() {
-        slides = Array.prototype.slice.call(wrapper.querySelectorAll('.swiper-slide'));
-
-        if (!slides.length) {
-          minTranslate = 0;
-          maxIndex = 0;
-          slideStep = 0;
-          setTranslate(0);
-          updateNav();
-          return;
-        }
-
-        var styles = window.getComputedStyle(wrapper);
-        var gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
-        var firstSlide = slides[0];
-        var lastSlide = slides[slides.length - 1];
-        var totalWidth = lastSlide.offsetLeft - firstSlide.offsetLeft + lastSlide.offsetWidth;
-
-        slideStep = firstSlide.getBoundingClientRect().width + gap;
-        minTranslate = Math.min(0, scroller.clientWidth - totalWidth);
-        maxIndex = slideStep ? Math.ceil(Math.abs(minTranslate) / slideStep) : 0;
-        activeIndex = Math.min(maxIndex, Math.max(0, activeIndex));
-        currentTranslate = indexToTranslate(activeIndex);
-        targetTranslate = currentTranslate;
-        setTranslate(currentTranslate);
-        updateNav();
-      }
-
-      function endDrag(event) {
-        if (!dragState.active) return;
-
-        if (event && scroller.releasePointerCapture) {
-          try {
-            scroller.releasePointerCapture(dragState.pointerId);
-          } catch (error) {
-            // The pointer can already be released if the browser cancels the gesture.
-          }
-        }
-
-        scroller.classList.remove('is-pointer-down', 'is-dragging');
-
-        if (dragState.didDrag) {
-          dragState.suppressClickUntil = Date.now() + 320;
-          var velocity = Math.max(-2.4, Math.min(2.4, dragState.velocity || 0));
-          var projectedTranslate = currentTranslate + velocity * 420;
-          slideTo(translateToIndex(projectedTranslate), 680);
-        } else {
-          animateTo(targetTranslate, 260);
-        }
-
-        dragState.active = false;
-        dragState.pointerId = null;
-      }
-
-      scroller.addEventListener('pointerdown', function (event) {
-        if (event.button !== 0 || !event.isPrimary || !maxIndex) return;
-        if (event.target.closest('[data-veylique-cat-prev], [data-veylique-cat-next]')) return;
-
-        stopAnimation();
-        dragState.active = true;
-        dragState.pointerId = event.pointerId;
-        dragState.startX = event.clientX;
-        dragState.startY = event.clientY;
-        dragState.startTranslate = currentTranslate;
-        dragState.lastX = event.clientX;
-        dragState.lastTime = performance.now();
-        dragState.velocity = 0;
-        dragState.didDrag = false;
-        scroller.classList.add('is-pointer-down');
-
-        if (scroller.setPointerCapture) {
-          scroller.setPointerCapture(event.pointerId);
+      new Swiper(scroller, {
+        slidesPerView: 1.4,
+        spaceBetween: 16,
+        speed: 600,
+        grabCursor: true,
+        watchOverflow: true,
+        threshold: 4,
+        resistanceRatio: 0.72,
+        a11y: { enabled: true },
+        keyboard: { enabled: true, onlyInViewport: true },
+        navigation: {
+          prevEl: prev,
+          nextEl: next,
+          disabledClass: 'swiper-button-disabled'
+        },
+        breakpoints: {
+          600: { slidesPerView: 2.2, spaceBetween: 18 },
+          1024: { slidesPerView: 4, spaceBetween: 24 }
         }
       });
-
-      scroller.addEventListener('pointermove', function (event) {
-        if (!dragState.active || event.pointerId !== dragState.pointerId) return;
-
-        var deltaX = event.clientX - dragState.startX;
-        var deltaY = event.clientY - dragState.startY;
-        var isHorizontal = Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 4;
-
-        if (!dragState.didDrag && !isHorizontal) return;
-
-        dragState.didDrag = true;
-        scroller.classList.add('is-dragging');
-        event.preventDefault();
-
-        var nextTranslate = dragState.startTranslate + deltaX;
-
-        if (nextTranslate > 0) {
-          nextTranslate *= 0.28;
-        } else if (nextTranslate < minTranslate) {
-          nextTranslate = minTranslate + (nextTranslate - minTranslate) * 0.28;
-        }
-
-        currentTranslate = nextTranslate;
-        targetTranslate = clampTranslate(nextTranslate);
-        setTranslate(currentTranslate);
-
-        var now = performance.now();
-        var elapsed = now - dragState.lastTime;
-        if (elapsed > 0) {
-          dragState.velocity = (event.clientX - dragState.lastX) / elapsed;
-          dragState.lastX = event.clientX;
-          dragState.lastTime = now;
-        }
-      });
-
-      scroller.addEventListener('pointerup', endDrag);
-      scroller.addEventListener('pointercancel', endDrag);
-      scroller.addEventListener('lostpointercapture', endDrag);
-
-      scroller.addEventListener('click', function (event) {
-        if (Date.now() > dragState.suppressClickUntil) return;
-
-        event.preventDefault();
-        event.stopPropagation();
-      }, true);
-
-      if (prev) {
-        prev.addEventListener('click', function () {
-          slideByDirection(-1);
-        });
-      }
-
-      if (next) {
-        next.addEventListener('click', function () {
-          slideByDirection(1);
-        });
-      }
-
-      scroller.addEventListener('keydown', function (event) {
-        if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-        event.preventDefault();
-        slideByDirection(event.key === 'ArrowRight' ? 1 : -1);
-      });
-
-      var resizeFrame = 0;
-      window.addEventListener('resize', function () {
-        if (resizeFrame) return;
-        resizeFrame = window.requestAnimationFrame(function () {
-          resizeFrame = 0;
-          measureSlider();
-        });
-      });
-
-      measureSlider();
     });
   }
 
@@ -1041,256 +812,44 @@
     });
   }
 
+  /* Bestsellers + Latest Products: shared Swiper product carousel. Same clean,
+     swipe-first behavior as New Arrivals; nav arrows drive desktop, swipe drives
+     touch. Markup already carries the .swiper/.swiper-wrapper/.swiper-slide
+     structure, so this just wires Swiper to the existing hooks. */
   function initCardSliders(root) {
+    if (typeof Swiper === 'undefined') return;
+
     root.querySelectorAll('[data-veylique-card-slider]').forEach(function (slider) {
       if (slider.dataset.veyliqueCardSliderReady === 'true') return;
+
+      var viewport = slider.querySelector('[data-veylique-card-slider-viewport]');
+      if (!viewport) return;
       slider.dataset.veyliqueCardSliderReady = 'true';
 
-      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var viewport = slider.querySelector('[data-veylique-card-slider-viewport]');
-      var track = slider.querySelector('[data-veylique-card-slider-track]');
       var prev = slider.querySelector('[data-veylique-card-slider-prev]');
       var next = slider.querySelector('[data-veylique-card-slider-next]');
-      if (!viewport || !track) return;
 
-      var slides = [];
-      var activeIndex = 0;
-      var currentTranslate = 0;
-      var targetTranslate = 0;
-      var minTranslate = 0;
-      var maxIndex = 0;
-      var slideStep = 0;
-      var frame = 0;
-      var drag = {
-        active: false,
-        pointerId: null,
-        startX: 0,
-        startY: 0,
-        startTranslate: 0,
-        lastX: 0,
-        lastTime: 0,
-        velocity: 0,
-        didDrag: false,
-        suppressClickUntil: 0
-      };
-
-      function clampTranslate(value) {
-        return Math.min(0, Math.max(minTranslate, value));
-      }
-
-      function setTranslate(value) {
-        track.style.transform = 'translate3d(' + value + 'px, 0, 0)';
-      }
-
-      function easeOutCubic(progress) {
-        return 1 - Math.pow(1 - progress, 3);
-      }
-
-      function translateToIndex(value) {
-        if (!slideStep) return 0;
-        return Math.min(maxIndex, Math.max(0, Math.round(Math.abs(clampTranslate(value)) / slideStep)));
-      }
-
-      function indexToTranslate(index) {
-        return clampTranslate(-index * slideStep);
-      }
-
-      function updateNav() {
-        var atStart = targetTranslate >= -1;
-        var atEnd = targetTranslate <= minTranslate + 1 || activeIndex >= maxIndex;
-
-        if (prev) {
-          prev.disabled = atStart;
-          prev.classList.toggle('swiper-button-disabled', atStart);
-        }
-
-        if (next) {
-          next.disabled = atEnd;
-          next.classList.toggle('swiper-button-disabled', atEnd);
-        }
-      }
-
-      function stopAnimation() {
-        if (!frame) return;
-        window.cancelAnimationFrame(frame);
-        frame = 0;
-      }
-
-      function animateTo(value, duration) {
-        stopAnimation();
-        targetTranslate = clampTranslate(value);
-
-        if (reduceMotion || !duration) {
-          currentTranslate = targetTranslate;
-          activeIndex = translateToIndex(targetTranslate);
-          setTranslate(currentTranslate);
-          updateNav();
-          return;
-        }
-
-        var from = currentTranslate;
-        var to = targetTranslate;
-        var start = performance.now();
-
-        function tick(now) {
-          var progress = Math.min(1, (now - start) / duration);
-          currentTranslate = from + (to - from) * easeOutCubic(progress);
-          setTranslate(currentTranslate);
-
-          if (progress < 1) {
-            frame = window.requestAnimationFrame(tick);
-            return;
-          }
-
-          frame = 0;
-          currentTranslate = to;
-          activeIndex = translateToIndex(to);
-          setTranslate(currentTranslate);
-          updateNav();
-        }
-
-        frame = window.requestAnimationFrame(tick);
-        updateNav();
-      }
-
-      function slideTo(index, duration) {
-        activeIndex = Math.min(maxIndex, Math.max(0, index));
-        animateTo(indexToTranslate(activeIndex), duration);
-      }
-
-      function measure() {
-        slides = Array.prototype.slice.call(track.querySelectorAll('.swiper-slide'));
-        if (!slides.length) {
-          minTranslate = 0;
-          maxIndex = 0;
-          slideStep = 0;
-          setTranslate(0);
-          updateNav();
-          return;
-        }
-
-        var styles = window.getComputedStyle(track);
-        var gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
-        var first = slides[0];
-        var last = slides[slides.length - 1];
-        var totalWidth = last.offsetLeft - first.offsetLeft + last.offsetWidth;
-
-        slideStep = first.getBoundingClientRect().width + gap;
-        minTranslate = Math.min(0, viewport.clientWidth - totalWidth);
-        maxIndex = slideStep ? Math.ceil(Math.abs(minTranslate) / slideStep) : 0;
-        activeIndex = Math.min(maxIndex, Math.max(0, activeIndex));
-        currentTranslate = indexToTranslate(activeIndex);
-        targetTranslate = currentTranslate;
-        setTranslate(currentTranslate);
-        updateNav();
-      }
-
-      function endDrag(event) {
-        if (!drag.active) return;
-
-        if (event && viewport.releasePointerCapture) {
-          try {
-            viewport.releasePointerCapture(drag.pointerId);
-          } catch (error) {
-            // Pointer may already be released by the browser.
-          }
-        }
-
-        viewport.classList.remove('is-pointer-down', 'is-dragging');
-
-        if (drag.didDrag) {
-          drag.suppressClickUntil = Date.now() + 320;
-          slideTo(translateToIndex(currentTranslate + Math.max(-2.4, Math.min(2.4, drag.velocity)) * 420), 680);
-        } else {
-          animateTo(targetTranslate, 260);
-        }
-
-        drag.active = false;
-        drag.pointerId = null;
-      }
-
-      viewport.addEventListener('pointerdown', function (event) {
-        if (event.button !== 0 || !event.isPrimary || !maxIndex) return;
-        stopAnimation();
-        drag.active = true;
-        drag.pointerId = event.pointerId;
-        drag.startX = event.clientX;
-        drag.startY = event.clientY;
-        drag.startTranslate = currentTranslate;
-        drag.lastX = event.clientX;
-        drag.lastTime = performance.now();
-        drag.velocity = 0;
-        drag.didDrag = false;
-        viewport.classList.add('is-pointer-down');
-        if (viewport.setPointerCapture) viewport.setPointerCapture(event.pointerId);
-      });
-
-      viewport.addEventListener('pointermove', function (event) {
-        if (!drag.active || event.pointerId !== drag.pointerId) return;
-
-        var deltaX = event.clientX - drag.startX;
-        var deltaY = event.clientY - drag.startY;
-        var horizontal = Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 4;
-        if (!drag.didDrag && !horizontal) return;
-
-        drag.didDrag = true;
-        viewport.classList.add('is-dragging');
-        event.preventDefault();
-
-        var nextTranslate = drag.startTranslate + deltaX;
-        if (nextTranslate > 0) nextTranslate *= 0.28;
-        else if (nextTranslate < minTranslate) nextTranslate = minTranslate + (nextTranslate - minTranslate) * 0.28;
-
-        currentTranslate = nextTranslate;
-        targetTranslate = clampTranslate(nextTranslate);
-        setTranslate(currentTranslate);
-
-        var now = performance.now();
-        var elapsed = now - drag.lastTime;
-        if (elapsed > 0) {
-          drag.velocity = (event.clientX - drag.lastX) / elapsed;
-          drag.lastX = event.clientX;
-          drag.lastTime = now;
+      new Swiper(viewport, {
+        slidesPerView: 1.3,
+        spaceBetween: 16,
+        speed: 600,
+        grabCursor: true,
+        watchOverflow: true,
+        threshold: 4,
+        resistanceRatio: 0.72,
+        a11y: { enabled: true },
+        keyboard: { enabled: true, onlyInViewport: true },
+        navigation: {
+          prevEl: prev,
+          nextEl: next,
+          disabledClass: 'swiper-button-disabled'
+        },
+        breakpoints: {
+          560: { slidesPerView: 2.2, spaceBetween: 18 },
+          900: { slidesPerView: 3, spaceBetween: 20 },
+          1200: { slidesPerView: 4, spaceBetween: 24 }
         }
       });
-
-      viewport.addEventListener('pointerup', endDrag);
-      viewport.addEventListener('pointercancel', endDrag);
-      viewport.addEventListener('lostpointercapture', endDrag);
-      viewport.addEventListener('click', function (event) {
-        if (Date.now() > drag.suppressClickUntil) return;
-        event.preventDefault();
-        event.stopPropagation();
-      }, true);
-
-      if (prev) {
-        prev.addEventListener('click', function () {
-          slideTo(activeIndex - 1, 680);
-        });
-      }
-
-      if (next) {
-        next.addEventListener('click', function () {
-          slideTo(activeIndex + 1, 680);
-        });
-      }
-
-      viewport.addEventListener('keydown', function (event) {
-        if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-        event.preventDefault();
-        slideTo(activeIndex + (event.key === 'ArrowRight' ? 1 : -1), 680);
-      });
-
-      var resizeFrame = 0;
-      window.addEventListener('resize', function () {
-        if (resizeFrame) return;
-        resizeFrame = window.requestAnimationFrame(function () {
-          resizeFrame = 0;
-          measure();
-        });
-      });
-
-      measure();
     });
   }
 
