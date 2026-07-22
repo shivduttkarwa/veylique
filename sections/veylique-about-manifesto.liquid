@@ -1,0 +1,130 @@
+<div class="veylique-about-manifesto full-width" data-veylique-manifesto>
+  <div class="veylique-about-manifesto-inner">
+    <blockquote class="veylique-about-manifesto-q">{{ section.settings.quote }}</blockquote>
+    {%- if section.settings.cite != blank -%}
+      <cite class="veylique-about-manifesto-cite">{{ section.settings.cite | escape }}</cite>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .veylique-about-manifesto {
+    background: var(--mustard-bg);
+    padding: clamp(5rem, 11vw, 8.75rem) clamp(1.5rem, 6vw, 6rem);
+  }
+  .veylique-about-manifesto-inner {
+    max-width: 56.25rem;
+    border-left: 0.125rem solid var(--mustard-accent);
+    padding-left: clamp(2rem, 4vw, 3.5rem);
+  }
+  .veylique-about-manifesto-q {
+    font-family: "Clash Display", Inter, sans-serif;
+    font-size: clamp(1.625rem, 4.5vw, 3.375rem);
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    color: var(--mustard-text);
+    border: none;
+    padding: 0;
+    margin: 0 0 1.75rem;
+  }
+  .veylique-about-manifesto-cite {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mustard-accent);
+    font-style: normal;
+  }
+  @media (max-width: 768px) {
+    .veylique-about-manifesto-inner { padding-left: 1.5rem; }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    function whenReady(cb) {
+      var n = 0;
+      (function check() {
+        if (window.gsap && window.ScrollTrigger) { cb(); return; }
+        if (n++ > 200) return;
+        requestAnimationFrame(check);
+      })();
+    }
+    function initManifesto(root) {
+      var sections = root.querySelectorAll('[data-veylique-manifesto]');
+      sections.forEach(function (section) {
+        if (section.dataset.veyliqueManifestoReady === 'true') return;
+        section.dataset.veyliqueManifestoReady = 'true';
+
+        var mq = section.querySelector('.veylique-about-manifesto-q');
+        var cite = section.querySelector('.veylique-about-manifesto-cite');
+        if (!mq || typeof SplitText === 'undefined') return;
+
+        var gsap = window.gsap;
+        gsap.registerPlugin(window.ScrollTrigger);
+        gsap.registerPlugin(SplitText);
+
+        var split = new SplitText(mq, { type: 'lines', linesClass: 'veylique-si-line' });
+        split.lines.forEach(function (line) {
+          var mask = document.createElement('div');
+          mask.className = 'veylique-si-mask';
+          line.parentNode.insertBefore(mask, line);
+          mask.appendChild(line);
+        });
+
+        gsap.set(split.lines, { yPercent: 110 });
+        if (cite) gsap.set(cite, { autoAlpha: 0, y: 8 });
+
+        window.ScrollTrigger.create({
+          trigger: mq,
+          start: 'top 80%',
+          once: true,
+          onEnter: function () {
+            var tl = gsap.timeline();
+            tl.to(split.lines, { yPercent: 0, duration: 1.0, ease: 'power4.out', stagger: 0.16 });
+            if (cite) tl.to(cite, { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.2');
+          }
+        });
+      });
+    }
+    function boot(root) {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      whenReady(function () { initManifesto(root); });
+    }
+    if (document.readyState === 'complete') {
+      boot(document);
+    } else {
+      document.addEventListener('DOMContentLoaded', function () { boot(document); });
+    }
+    document.addEventListener('shopify:section:load', function (event) { boot(event.target); });
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.veylique-about-manifesto.name",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "quote",
+      "label": "t:sections.veylique-about-manifesto.settings.quote.label",
+      "default": "The best clothes do more than complete an outfit. They make the day feel easier, brighter, and more your own."
+    },
+    {
+      "type": "text",
+      "id": "cite",
+      "label": "t:sections.veylique-about-manifesto.settings.cite.label",
+      "default": "— Sophie Laurent, Founder & Creative Director"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.veylique-about-manifesto.presets.name"
+    }
+  ]
+}
+{% endschema %}

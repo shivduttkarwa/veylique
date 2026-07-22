@@ -1,0 +1,161 @@
+<div class="veylique-about-stats full-width">
+  <div class="veylique-about-stats-row" data-veylique-about-stats>
+    {%- for block in section.blocks -%}
+      <div class="veylique-about-stat-cell veylique-about-stat-reveal-js" {{ block.shopify_attributes }}>
+        <span class="veylique-about-stat-tag">{{ block.settings.tag | escape }}</span>
+        <span class="veylique-about-stat-n{% if block.settings.stroke %} veylique-about-stat-n--stroke{% endif %}">{{ block.settings.number | escape }}</span>
+      </div>
+    {%- endfor -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .veylique-about-stats { background: #0e0b0a; }
+  .veylique-about-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 0.0625rem solid rgba(255, 255, 255, 0.07);
+    border-bottom: 0.0625rem solid rgba(255, 255, 255, 0.07);
+  }
+  .veylique-about-stat-cell {
+    padding: clamp(2.5rem, 5vw, 4.5rem) clamp(1.5rem, 4vw, 3.5rem);
+    border-right: 0.0625rem solid rgba(255, 255, 255, 0.07);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow: hidden;
+  }
+  .veylique-about-stat-cell:last-child { border-right: none; }
+  .veylique-about-stat-tag {
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.32);
+  }
+  .veylique-about-stat-n {
+    font-family: "Clash Display", Inter, sans-serif;
+    font-size: clamp(3.6rem, 9vw, 7.2rem);
+    font-weight: 300;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    color: #fff;
+    display: block;
+  }
+  .veylique-about-stat-n--stroke {
+    color: transparent;
+    -webkit-text-stroke: 0.0625rem rgba(255, 255, 255, 0.55);
+  }
+  .veylique-stat-mask { display: block; overflow: hidden; }
+
+  @media (max-width: 1024px) {
+    .veylique-about-stats-row { grid-template-columns: repeat(2, 1fr); }
+    .veylique-about-stat-cell:nth-child(2) { border-right: none; }
+    .veylique-about-stat-cell:nth-child(3) { border-top: 0.0625rem solid rgba(255, 255, 255, 0.07); }
+    .veylique-about-stat-cell:nth-child(4) { border-top: 0.0625rem solid rgba(255, 255, 255, 0.07); border-right: none; }
+  }
+  @media (max-width: 600px) {
+    .veylique-about-stats-row { grid-template-columns: 1fr 1fr; }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    function whenReady(cb) {
+      var n = 0;
+      (function check() {
+        if (window.gsap && window.ScrollTrigger) { cb(); return; }
+        if (n++ > 200) return;
+        requestAnimationFrame(check);
+      })();
+    }
+    function initStats(root) {
+      var rows = root.querySelectorAll('[data-veylique-about-stats]');
+      rows.forEach(function (row) {
+        if (row.dataset.veyliqueStatsReady === 'true') return;
+        row.dataset.veyliqueStatsReady = 'true';
+        window.gsap.registerPlugin(window.ScrollTrigger);
+
+        var cells = Array.prototype.slice.call(row.querySelectorAll('.veylique-about-stat-reveal-js'));
+        if (!cells.length) return;
+
+        var inners = cells.map(function (cell) {
+          var children = Array.prototype.slice.call(cell.childNodes);
+          var mask = document.createElement('div');
+          var inner = document.createElement('div');
+          mask.className = 'veylique-stat-mask';
+          children.forEach(function (child) { inner.appendChild(child); });
+          mask.appendChild(inner);
+          cell.appendChild(mask);
+          return inner;
+        });
+
+        window.gsap.set(inners, { yPercent: 110 });
+        window.ScrollTrigger.create({
+          trigger: row,
+          start: 'top 85%',
+          once: true,
+          onEnter: function () {
+            window.gsap.to(inners, { yPercent: 0, duration: 1.0, ease: 'power4.out', stagger: 0.12 });
+          }
+        });
+      });
+    }
+
+    function boot(root) {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      whenReady(function () { initStats(root); });
+    }
+    if (document.readyState === 'complete') {
+      boot(document);
+    } else {
+      document.addEventListener('DOMContentLoaded', function () { boot(document); });
+    }
+    document.addEventListener('shopify:section:load', function (event) { boot(event.target); });
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.veylique-about-stats.name",
+  "tag": "section",
+  "max_blocks": 4,
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "t:sections.veylique-about-stats.blocks.stat.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "t:sections.veylique-about-stats.blocks.stat.settings.tag.label",
+          "default": "Considered details"
+        },
+        {
+          "type": "text",
+          "id": "number",
+          "label": "t:sections.veylique-about-stats.blocks.stat.settings.number.label",
+          "default": "48+"
+        },
+        {
+          "type": "checkbox",
+          "id": "stroke",
+          "label": "t:sections.veylique-about-stats.blocks.stat.settings.stroke.label",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.veylique-about-stats.presets.name",
+      "blocks": [
+        { "type": "stat", "settings": { "tag": "Considered details", "number": "48+", "stroke": false } },
+        { "type": "stat", "settings": { "tag": "Vendor partners", "number": "12", "stroke": true } },
+        { "type": "stat", "settings": { "tag": "Comfort-first fits", "number": "100%", "stroke": false } },
+        { "type": "stat", "settings": { "tag": "Founded in Paris", "number": "2018", "stroke": true } }
+      ]
+    }
+  ]
+}
+{% endschema %}

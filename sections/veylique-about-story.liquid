@@ -1,0 +1,493 @@
+<section class="veylique-about-story full-width" data-veylique-about-story>
+  <div class="veylique-about-story-img-col">
+    <div class="veylique-about-story-img-pin">
+      {% render 'veylique-responsive-image',
+        image: section.settings.image,
+        fallback: section.settings.fallback,
+        alt: section.settings.founder_name,
+        width: 1400,
+        height: 1800
+      %}
+      <div class="veylique-about-story-veil" aria-hidden="true"></div>
+
+      {%- if section.settings.badge_text != blank -%}
+        <div class="veylique-about-story-badge" aria-hidden="true">
+          <svg class="veylique-about-story-badge-orbit" viewBox="0 0 120 120" focusable="false">
+            <defs>
+              <path id="veyliqueStoryOrbit-{{ section.id }}" d="M 60,60 m -46,0 a 46,46 0 1,1 92,0 a 46,46 0 1,1 -92,0"/>
+            </defs>
+            <text>
+              <textPath href="#veyliqueStoryOrbit-{{ section.id }}" textLength="289" lengthAdjust="spacingAndGlyphs">{{ section.settings.badge_text | escape }}</textPath>
+            </text>
+          </svg>
+          <svg class="veylique-about-story-badge-star" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M12 0c.6 6.4 5.6 11.4 12 12-6.4.6-11.4 5.6-12 12-.6-6.4-5.6-11.4-12-12C6.4 11.4 11.4 6.4 12 0Z"/></svg>
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.founder_name != blank -%}
+        <div class="veylique-about-founder-card">
+          {%- if section.settings.founder_kicker != blank -%}
+            <span class="veylique-about-founder-kicker">{{ section.settings.founder_kicker | escape }}</span>
+          {%- endif -%}
+          <span class="veylique-about-founder-name">{{ section.settings.founder_name | escape }}</span>
+          {%- if section.settings.founder_role != blank -%}
+            <span class="veylique-about-founder-role">{{ section.settings.founder_role | escape }}</span>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div class="veylique-about-story-text-col">
+    <span class="veylique-about-story-rail" aria-hidden="true"><span class="veylique-about-story-rail-fill veylique-about-story-rail-js"></span></span>
+
+    {%- for block in section.blocks -%}
+      <div
+        class="veylique-about-story-panel veylique-about-story-panel-js{% if block.settings.alt %} veylique-about-story-panel--alt{% endif %}"
+        {{ block.shopify_attributes }}
+      >
+        <div class="veylique-about-story-meta">
+          <span class="veylique-about-story-num">{{ block.settings.number | escape }}</span>
+          <span class="veylique-about-story-meta-line" aria-hidden="true"></span>
+          {%- if block.settings.label != blank -%}
+            <p class="veylique-about-label veylique-about-label--warm">{{ block.settings.label | escape }}</p>
+          {%- endif -%}
+        </div>
+        <h2 class="veylique-about-story-h2">{{ block.settings.heading | escape }}</h2>
+        {%- if block.settings.lead != blank -%}
+          <p class="veylique-about-body veylique-about-body--lead">{{ block.settings.lead }}</p>
+        {%- endif -%}
+        {%- if block.settings.body != blank -%}
+          <p class="veylique-about-body">{{ block.settings.body }}</p>
+        {%- endif -%}
+        {%- if block.settings.link_label != blank -%}
+          <a href="{{ block.settings.link | default: '#' }}" class="veylique-about-link">
+            {{ block.settings.link_label | escape }}
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        {%- endif -%}
+        <span class="veylique-about-story-ghost" aria-hidden="true">{{ block.settings.number | escape }}</span>
+      </div>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .veylique-about-story { display: grid; grid-template-columns: 1fr 1fr; }
+  .veylique-about-story-img-col { position: relative; }
+  .veylique-about-story-img-pin {
+    position: sticky;
+    top: 4.5rem;
+    height: calc(100vh - 4.5rem);
+    overflow: hidden;
+  }
+  .veylique-about-story-img-pin img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .veylique-about-story-veil {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(to top, rgba(14, 11, 10, 0.58) 0%, rgba(14, 11, 10, 0.12) 32%, rgba(14, 11, 10, 0) 48%);
+  }
+  .veylique-about-story-img-pin::after {
+    content: '';
+    position: absolute;
+    inset: clamp(0.875rem, 1.5vw, 1.5rem);
+    z-index: 2;
+    border: 0.0625rem solid rgba(255, 255, 255, 0.3);
+    pointer-events: none;
+  }
+  .veylique-about-story-badge {
+    position: absolute;
+    top: clamp(1.5rem, 3vw, 2.5rem);
+    right: clamp(1.5rem, 3vw, 2.5rem);
+    z-index: 3;
+    width: clamp(6rem, 9vw, 8.25rem);
+    aspect-ratio: 1 / 1;
+    display: grid;
+    place-items: center;
+    color: #fff;
+  }
+  .veylique-about-story-badge-orbit {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    animation: veylique-about-orbit 22s linear infinite;
+  }
+  .veylique-about-story-badge-orbit text {
+    font-family: var(--mustard-font-body);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    fill: rgba(255, 255, 255, 0.88);
+  }
+  .veylique-about-story-badge-star { position: relative; }
+  @keyframes veylique-about-orbit { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) {
+    .veylique-about-story-badge-orbit { animation: none; }
+  }
+  .veylique-about-founder-card {
+    position: absolute;
+    left: clamp(1.5rem, 3vw, 2.5rem);
+    bottom: clamp(1.5rem, 3vw, 2.5rem);
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1.125rem 1.5rem 1.25rem;
+    background: rgba(14, 11, 10, 0.32);
+    border: 0.0625rem solid rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(0.875rem);
+    -webkit-backdrop-filter: blur(0.875rem);
+  }
+  .veylique-about-founder-kicker {
+    font-size: 0.5625rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--mustard-green);
+    margin-bottom: 0.375rem;
+  }
+  .veylique-about-founder-name {
+    font-family: "Clash Display", Inter, sans-serif;
+    font-size: clamp(1.25rem, 2vw, 1.625rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: #fff;
+  }
+  .veylique-about-founder-role { font-size: 0.6875rem; letter-spacing: 0.04em; color: rgba(255, 255, 255, 0.62); }
+
+  .veylique-about-story-text-col { position: relative; background: #fff; }
+  .veylique-about-story-rail {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 0.125rem;
+    display: block;
+    background: rgba(36, 24, 22, 0.07);
+    z-index: 2;
+  }
+  .veylique-about-story-rail-fill {
+    position: absolute;
+    inset: 0;
+    display: block;
+    background: var(--mustard-accent);
+    transform: scaleY(0);
+    transform-origin: top center;
+  }
+  .veylique-about-story-panel {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(4rem, 9vw, 7.5rem) clamp(2.5rem, 6vw, 5.5rem);
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    border-bottom: 0.0625rem solid rgba(36, 24, 22, 0.09);
+  }
+  .veylique-about-story-panel:last-child { border-bottom: none; }
+  .veylique-about-story-panel--alt { background: var(--mustard-bg); }
+  .veylique-about-story-panel > * { position: relative; z-index: 1; }
+  .veylique-about-story-meta {
+    display: flex;
+    align-items: center;
+    gap: 1.125rem;
+    margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
+  }
+  .veylique-about-story-meta .veylique-about-label { margin: 0; }
+  .veylique-about-story-num {
+    font-family: "Clash Display", Inter, sans-serif;
+    font-size: clamp(2.5rem, 4.5vw, 3.75rem);
+    font-weight: 300;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 0.0625rem rgba(36, 24, 22, 0.4);
+  }
+  .veylique-about-story-meta-line { width: 2.5rem; height: 0.0625rem; background: var(--mustard-accent); }
+  .veylique-about-story-h2 {
+    margin: 0 0 1.75rem;
+    font-family: "Clash Display", Inter, sans-serif;
+    font-size: clamp(1.875rem, 4vw, 3.25rem);
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    color: var(--mustard-text);
+    max-width: 17ch;
+  }
+
+  .veylique-about-label {
+    display: block;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--mustard-accent);
+    margin: 0 0 1rem;
+  }
+  .veylique-about-label--warm { color: var(--mustard-accent-dark); }
+  .veylique-about-body { font-size: 0.875rem; line-height: 1.9; color: var(--mustard-muted); margin: 0 0 1rem; }
+  .veylique-about-story-panel .veylique-about-body { max-width: 32rem; }
+  .veylique-about-body--lead { font-size: 1rem; line-height: 1.85; color: #4c3d38; }
+  .veylique-about-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mustard-text);
+    text-decoration: none;
+    margin-top: 0.5rem;
+    transition: gap 0.2s, color 0.2s;
+  }
+  .veylique-about-link:hover { gap: 0.875rem; color: var(--mustard-accent-dark); }
+  .veylique-about-story-ghost {
+    position: absolute;
+    right: -0.75rem;
+    bottom: -3rem;
+    z-index: 0;
+    font-family: "Clash Display", Inter, sans-serif;
+    font-size: clamp(11rem, 19vw, 17.5rem);
+    font-weight: 700;
+    letter-spacing: -0.06em;
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 0.0625rem rgba(36, 24, 22, 0.08);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  @media (max-width: 768px) {
+    .veylique-about-story { grid-template-columns: 1fr; }
+    .veylique-about-story-img-pin { position: relative; top: auto; height: 76vw; min-height: 20rem; }
+    .veylique-about-story-panel { padding: 3.5rem 1.5rem; min-height: auto; }
+    .veylique-about-story-rail { display: none; }
+    .veylique-about-story-badge { width: 5.25rem; }
+    .veylique-about-founder-card { padding: 0.875rem 1.125rem 1rem; }
+    .veylique-about-story-ghost { font-size: 8.5rem; bottom: -1.25rem; right: -0.25rem; }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    function whenReady(cb) {
+      var n = 0;
+      (function check() {
+        if (window.gsap && window.ScrollTrigger) { cb(); return; }
+        if (n++ > 200) return;
+        requestAnimationFrame(check);
+      })();
+    }
+    function initStory(root) {
+      var stories = root.querySelectorAll('[data-veylique-about-story]');
+      stories.forEach(function (story) {
+        if (story.dataset.veyliqueStoryReady === 'true') return;
+        story.dataset.veyliqueStoryReady = 'true';
+        var gsap = window.gsap;
+        gsap.registerPlugin(window.ScrollTrigger);
+
+        story.querySelectorAll('.veylique-about-story-panel-js').forEach(function (panel) {
+          var children = Array.prototype.slice.call(panel.children);
+          if (!children.length) return;
+          gsap.set(children, { autoAlpha: 0, y: 24 });
+          window.ScrollTrigger.create({
+            trigger: panel,
+            start: 'top 65%',
+            once: true,
+            onEnter: function () {
+              gsap.to(children, { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power3.out', stagger: 0.12 });
+            }
+          });
+        });
+
+        var fill = story.querySelector('.veylique-about-story-rail-js');
+        var col = story.querySelector('.veylique-about-story-text-col');
+        if (fill && col) {
+          gsap.to(fill, {
+            scaleY: 1,
+            ease: 'none',
+            scrollTrigger: { trigger: col, start: 'top 75%', end: 'bottom 40%', scrub: 0.4 }
+          });
+        }
+
+        /* Founder image — mosaic scatter reveal */
+        var pin = story.querySelector('.veylique-about-story-img-pin');
+        var img = pin ? pin.querySelector('img') : null;
+        if (pin && img) {
+          var grid = document.createElement('div');
+          grid.className = 'veylique-mosaic-grid';
+          for (var i = 0; i < 24; i++) {
+            var span = document.createElement('span');
+            span.className = 'veylique-mosaic-tile';
+            grid.appendChild(span);
+          }
+          pin.appendChild(grid);
+          var tiles = grid.querySelectorAll('.veylique-mosaic-tile');
+          window.ScrollTrigger.create({
+            trigger: pin,
+            start: 'top 80%',
+            once: true,
+            onEnter: function () {
+              pin.style.overflow = 'visible';
+              gsap.to(tiles, {
+                opacity: 0,
+                scale: 0.4,
+                rotate: function () { return gsap.utils.random(-18, 18); },
+                yPercent: function () { return gsap.utils.random(-80, 80); },
+                xPercent: function () { return gsap.utils.random(-80, 80); },
+                duration: 0.9,
+                ease: 'power4.inOut',
+                stagger: { amount: 0.65, from: 'random' },
+                onComplete: function () { gsap.set(grid, { display: 'none' }); pin.style.overflow = 'hidden'; }
+              });
+            }
+          });
+        }
+      });
+    }
+
+    function boot(root) {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      whenReady(function () { initStory(root); });
+    }
+    if (document.readyState === 'complete') {
+      boot(document);
+    } else {
+      document.addEventListener('DOMContentLoaded', function () { boot(document); });
+    }
+    document.addEventListener('shopify:section:load', function (event) { boot(event.target); });
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.veylique-about-story.name",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.veylique-about-story.settings.image.label"
+    },
+    {
+      "type": "text",
+      "id": "fallback",
+      "label": "t:sections.veylique-about-story.settings.fallback.label",
+      "default": "founder.jpg"
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "t:sections.veylique-about-story.settings.badge_text.label",
+      "default": "Founded in Paris — 2018 — Founded in Paris — 2018 — "
+    },
+    {
+      "type": "text",
+      "id": "founder_kicker",
+      "label": "t:sections.veylique-about-story.settings.founder_kicker.label",
+      "default": "Founder"
+    },
+    {
+      "type": "text",
+      "id": "founder_name",
+      "label": "t:sections.veylique-about-story.settings.founder_name.label",
+      "default": "Sophie Laurent"
+    },
+    {
+      "type": "text",
+      "id": "founder_role",
+      "label": "t:sections.veylique-about-story.settings.founder_role.label",
+      "default": "Founder & Creative Director"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "panel",
+      "name": "t:sections.veylique-about-story.blocks.panel.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "number",
+          "label": "t:sections.veylique-about-story.blocks.panel.settings.number.label",
+          "default": "01"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.veylique-about-story.blocks.panel.settings.label.label",
+          "default": "The Beginning"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.veylique-about-story.blocks.panel.settings.heading.label",
+          "default": "A fashion line rooted in real life"
+        },
+        {
+          "type": "textarea",
+          "id": "lead",
+          "label": "t:sections.veylique-about-story.blocks.panel.settings.lead.label",
+          "default": "Veylique was born from a simple idea: everyday clothes should feel polished without asking you to compromise on comfort."
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "t:sections.veylique-about-story.blocks.panel.settings.body.label"
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "t:sections.veylique-about-story.blocks.panel.settings.link_label.label"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.veylique-about-story.blocks.panel.settings.link.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "alt",
+          "label": "t:sections.veylique-about-story.blocks.panel.settings.alt.label",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.veylique-about-story.presets.name",
+      "blocks": [
+        {
+          "type": "panel",
+          "settings": {
+            "number": "01",
+            "label": "The Beginning",
+            "heading": "A fashion line rooted in real life",
+            "lead": "Veylique was born from a simple idea: everyday clothes should feel polished without asking you to compromise on comfort. Each collection is built around wearable silhouettes, reliable fabrics, and details that earn their place.",
+            "link_label": "Explore fabrics",
+            "alt": false
+          }
+        },
+        {
+          "type": "panel",
+          "settings": {
+            "number": "02",
+            "label": "Our Process",
+            "heading": "From sketch to wardrobe",
+            "lead": "We work with trusted mills, pattern makers, and finishing partners to refine every piece before it reaches your wardrobe.",
+            "body": "Every garment is fit-tested for movement, drape, wash feel, and repeat wear, so it looks good beyond the first try-on.",
+            "alt": true
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

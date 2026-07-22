@@ -1,0 +1,100 @@
+<section class="veylique-about-press full-width">
+  {%- if section.settings.label != blank -%}
+    <p class="veylique-about-press-label">{{ section.settings.label | escape }}</p>
+  {%- endif -%}
+  <div class="veylique-about-press-scroll" aria-hidden="true">
+    <div class="veylique-about-press-track">
+      {%- for i in (1..2) -%}
+        {%- for block in section.blocks -%}
+          <span class="veylique-about-press-n" {{ block.shopify_attributes }}>{{ block.settings.name | escape }}</span>
+          <span class="veylique-about-press-sep">&middot;</span>
+        {%- endfor -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .veylique-about-press {
+    background: var(--mustard-bg);
+    border-top: 0.0625rem solid var(--mustard-border);
+    padding: 3.75rem 0;
+    overflow: hidden;
+  }
+  .veylique-about-press-label {
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--mustard-muted);
+    text-align: center;
+    margin: 0 0 2.25rem;
+  }
+  .veylique-about-press-scroll { overflow: hidden; }
+  .veylique-about-press-track {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    animation: veylique-about-marq 22s linear infinite;
+    width: max-content;
+  }
+  .veylique-about-press-n {
+    font-family: "Clash Display", Inter, sans-serif;
+    font-size: clamp(1.125rem, 2.5vw, 1.75rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--mustard-muted);
+    padding: 0 1rem;
+  }
+  .veylique-about-press-sep { color: var(--mustard-accent); font-size: 1.25rem; padding: 0 0.5rem; }
+  @keyframes veylique-about-marq {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .veylique-about-press-track { animation: none; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.veylique-about-press.name",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "t:sections.veylique-about-press.settings.label.label",
+      "default": "As Featured In"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "press",
+      "name": "t:sections.veylique-about-press.blocks.press.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "t:sections.veylique-about-press.blocks.press.settings.name.label",
+          "default": "The Style Edit"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.veylique-about-press.presets.name",
+      "blocks": [
+        { "type": "press", "settings": { "name": "The Style Edit" } },
+        { "type": "press", "settings": { "name": "Modern Wardrobe" } },
+        { "type": "press", "settings": { "name": "Style Journal" } },
+        { "type": "press", "settings": { "name": "The Style Report" } },
+        { "type": "press", "settings": { "name": "Considered Living" } },
+        { "type": "press", "settings": { "name": "Daily Fits" } },
+        { "type": "press", "settings": { "name": "The Wardrobe Review" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

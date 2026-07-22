@@ -1,159 +1,59 @@
 {
   "sections": {
     "hero": {
-      "type": "veylique-page-hero",
+      "type": "veylique-about-hero",
       "settings": {
-        "kicker": "What We Offer",
-        "heading": "Services",
-        "text": "Personal styling, wardrobe edits, and occasion dressing — considered help for a wardrobe you actually wear.",
-        "fallback": "shop-hero.jpg"
+        "label": "What We Offer",
+        "heading_line_1": "Our Services",
+        "heading_line_2": "",
+        "sub": "Personal styling, fit guidance, wardrobe edits, and occasion dressing designed around how you actually live.",
+        "fallback": "hero-3.webp",
+        "show_scroll": true
       }
     },
     "services": {
-      "type": "veylique-services-list",
-      "blocks": {
-        "svc0": {
-          "type": "service",
-          "settings": {
-            "icon": "styling",
-            "meta": "60 min · from $90",
-            "title": "Personal Styling Consultation",
-            "desc": "A one-on-one session to understand your fit preferences, lifestyle, colour comfort, and everyday outfit goals.",
-            "link": "/pages/contact",
-            "fallback_1": "service-1-consult-1.jpg",
-            "fallback_2": "service-1-consult-2.jpg"
-          }
-        },
-        "svc1": {
-          "type": "service",
-          "settings": {
-            "icon": "wardrobe",
-            "meta": "45 min · from $120",
-            "title": "Wardrobe Edit & Outfit Planning",
-            "desc": "A practical edit of what to keep, what to pair, and which missing pieces will make getting dressed easier.",
-            "link": "/pages/contact",
-            "fallback_1": "service-2-consult-1.jpg",
-            "fallback_2": "service-2-consult-2.jpg"
-          }
-        },
-        "svc2": {
-          "type": "service",
-          "settings": {
-            "icon": "occasion",
-            "meta": "75 min · from $150",
-            "title": "Occasion Dressing Session",
-            "desc": "Looks for weddings, festive days, work events, and travel, styled with comfort, proportion, and repeat wear in mind.",
-            "link": "/pages/contact",
-            "fallback_1": "service-3-consult-1.jpg",
-            "fallback_2": "service-3-consult-2.jpg"
-          }
-        },
-        "svc3": {
-          "type": "service",
-          "settings": {
-            "icon": "fit",
-            "meta": "30 min · from $70",
-            "title": "Fit & Size Guidance",
-            "desc": "Measurements, silhouette notes, and fabric guidance to help you choose the right size before you order.",
-            "link": "/pages/contact",
-            "fallback_1": "service-4-consult-1.jpg",
-            "fallback_2": "service-4-consult-2.jpg"
-          }
-        },
-        "svc4": {
-          "type": "service",
-          "settings": {
-            "icon": "bridal",
-            "meta": "12 weeks · from $480",
-            "title": "Bridal & Event Styling",
-            "desc": "A focused styling programme for ceremonies, parties, and milestone moments, planned look by look.",
-            "link": "/pages/contact",
-            "fallback_1": "service-5-consult-1.jpg",
-            "fallback_2": "service-5-consult-2.jpg"
-          }
-        },
-        "svc5": {
-          "type": "service",
-          "settings": {
-            "icon": "virtual",
-            "meta": "30 min · from $50",
-            "title": "Virtual Style Coaching",
-            "desc": "Expert guidance from anywhere, with seasonal check-ins to keep your wardrobe feeling current and useful.",
-            "link": "/pages/contact",
-            "fallback_1": "service-6-consult-2.jpg",
-            "fallback_2": "service-6-consult-1.jpg"
-          }
-        }
-      },
-      "block_order": [
-        "svc0",
-        "svc1",
-        "svc2",
-        "svc3",
-        "svc4",
-        "svc5"
-      ],
+      "type": "veylique-svc-section",
       "settings": {
         "eyebrow": "Our Expertise",
         "heading": "What We Do",
         "text": "Services designed around your wardrobe — from first consultation to outfits you keep reaching for.",
         "more_label": "Book this service"
-      }
+      },
+      "blocks": {
+        "svc0": { "type": "service", "settings": { "icon": "styling", "meta": "60 min · from $90", "title": "Personal Styling Consultation", "desc": "A one-on-one session to understand your fit preferences, lifestyle, colour comfort, and everyday outfit goals.", "link": "/pages/contact", "fallback_1": "service-1-consult-1.jpg", "fallback_2": "service-1-consult-2.jpg" } },
+        "svc1": { "type": "service", "settings": { "icon": "wardrobe", "meta": "45 min · from $120", "title": "Wardrobe Edit & Outfit Planning", "desc": "A practical edit of what to keep, what to pair, and which missing pieces will make getting dressed easier.", "link": "/pages/contact", "fallback_1": "service-2-consult-1.jpg", "fallback_2": "service-2-consult-2.jpg" } },
+        "svc2": { "type": "service", "settings": { "icon": "occasion", "meta": "75 min · from $150", "title": "Occasion Dressing Session", "desc": "Looks for weddings, festive days, work events, and travel, styled with comfort, proportion, and repeat wear in mind.", "link": "/pages/contact", "fallback_1": "service-3-consult-1.jpg", "fallback_2": "service-3-consult-2.jpg" } },
+        "svc3": { "type": "service", "settings": { "icon": "fit", "meta": "30 min · from $70", "title": "Fit & Size Guidance", "desc": "Measurements, silhouette notes, and fabric guidance to help you choose the right size before you order.", "link": "/pages/contact", "fallback_1": "service-4-consult-1.jpg", "fallback_2": "service-4-consult-2.jpg" } },
+        "svc4": { "type": "service", "settings": { "icon": "bridal", "meta": "12 weeks · from $480", "title": "Bridal & Event Styling", "desc": "A focused styling programme for ceremonies, parties, and milestone moments, planned look by look.", "link": "/pages/contact", "fallback_1": "service-5-consult-1.jpg", "fallback_2": "service-5-consult-2.jpg" } },
+        "svc5": { "type": "service", "settings": { "icon": "virtual", "meta": "30 min · from $50", "title": "Virtual Style Coaching", "desc": "Expert guidance from anywhere, with seasonal check-ins to keep your wardrobe feeling current and useful.", "link": "/pages/contact", "fallback_1": "service-6-consult-2.jpg", "fallback_2": "service-6-consult-1.jpg" } }
+      },
+      "block_order": ["svc0", "svc1", "svc2", "svc3", "svc4", "svc5"]
     },
     "method": {
-      "type": "veylique-services-method",
-      "blocks": {
-        "step0": {
-          "type": "step",
-          "settings": {
-            "name": "Discover",
-            "desc": "We begin with a conversation about your lifestyle, fit preferences, colour comfort, and wardrobe gaps.",
-            "fallback": "method-1-discover.jpg"
-          }
-        },
-        "step1": {
-          "type": "step",
-          "settings": {
-            "name": "Fit",
-            "desc": "We map sizing, proportions, fabric preferences, and the occasions your clothes need to handle.",
-            "fallback": "method-2-analyse.jpg"
-          }
-        },
-        "step2": {
-          "type": "step",
-          "settings": {
-            "name": "Curate",
-            "desc": "We build outfit ideas and product recommendations that work together instead of sitting alone.",
-            "fallback": "method-3-Curate.jpg"
-          }
-        },
-        "step3": {
-          "type": "step",
-          "settings": {
-            "name": "Wear",
-            "desc": "We refine your wardrobe season by season as your plans, climate, and personal style evolve.",
-            "fallback": "method-4-Glow.jpg"
-          }
-        }
-      },
-      "block_order": [
-        "step0",
-        "step1",
-        "step2",
-        "step3"
-      ],
+      "type": "veylique-svc-method",
       "settings": {
         "eyebrow": "The Veylique Method",
         "heading": "Four steps to better outfits."
-      }
+      },
+      "blocks": {
+        "step0": { "type": "step", "settings": { "name": "Discover", "desc": "We begin with a conversation about your lifestyle, fit preferences, colour comfort, and wardrobe gaps.", "fallback": "method-1-discover.jpg" } },
+        "step1": { "type": "step", "settings": { "name": "Fit", "desc": "We map sizing, proportions, fabric preferences, and the occasions your clothes need to handle.", "fallback": "method-2-analyse.jpg" } },
+        "step2": { "type": "step", "settings": { "name": "Curate", "desc": "We build outfit ideas and product recommendations that work together instead of sitting alone.", "fallback": "method-3-Curate.jpg" } },
+        "step3": { "type": "step", "settings": { "name": "Wear", "desc": "We refine your wardrobe season by season as your plans, climate, and personal style evolve.", "fallback": "method-4-Glow.jpg" } }
+      },
+      "block_order": ["step0", "step1", "step2", "step3"]
     },
     "cta": {
       "type": "veylique-home-full-cta",
       "settings": {
-        "heading": "Book a styling session.",
-        "button_label": "Get in touch",
+        "aria_label": "Begin your wardrobe",
+        "fallback": "hero-4.webp",
+        "mobile_fallback": "hero-4.webp",
+        "label": "Begin Your Wardrobe",
+        "heading": "Ready when your wardrobe is.",
+        "button_label": "Book a Session",
         "button_link": "/pages/contact",
-        "fallback": "cta.webp"
+        "button2_label": "Shop All Products"
       }
     }
   },

@@ -1,0 +1,321 @@
+{% liquid
+  assign hero_bg = section.settings.fallback | asset_url
+  if section.settings.image != blank
+    assign hero_bg = section.settings.image | image_url: width: 2400
+  endif
+%}
+
+<noscript>
+  <style>
+    .veylique-page-hero-reveal-js { visibility: visible !important; }
+  </style>
+</noscript>
+
+<div
+  class="veylique-page-hero full-width"
+  data-veylique-about-hero
+  style="--mustard-page-hero-bg: url('{{ hero_bg }}'); --mustard-page-hero-bg-mobile: url('{{ hero_bg }}');"
+  aria-label="{{ section.settings.heading_line_1 | strip_html | append: ' ' | append: section.settings.heading_line_2 | strip_html | escape }}"
+>
+  <div class="veylique-page-hero-body">
+    {%- if section.settings.label != blank -%}
+      <p class="veylique-about-label veylique-page-hero-label">{{ section.settings.label | escape }}</p>
+    {%- endif -%}
+
+    <h1 class="veylique-page-hero-h1 veylique-page-hero-reveal-js">
+      <span class="veylique-page-hero-line">{{ section.settings.heading_line_1 }}</span>
+      {%- if section.settings.heading_line_2 != blank -%}
+        <span class="veylique-page-hero-line veylique-page-hero-line--soft">{{ section.settings.heading_line_2 }}</span>
+      {%- endif -%}
+    </h1>
+
+    {%- if section.settings.sub != blank -%}
+      <p class="veylique-page-hero-sub">{{ section.settings.sub }}</p>
+    {%- endif -%}
+  </div>
+
+  {%- if section.settings.show_scroll -%}
+    <span class="veylique-scroll-down" aria-hidden="true">
+      <span class="veylique-scroll-dot"></span>
+      <span class="veylique-scroll-dot"></span>
+      <span class="veylique-scroll-dot"></span>
+    </span>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .veylique-page-hero {
+    position: relative;
+    height: 100vh;
+    max-height: 100vh;
+    background-color: #0e0b0a;
+    background-image: var(--mustard-page-hero-bg, var(--mustard-placeholder-bg));
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+  @media (max-width: 767.98px) {
+    .veylique-page-hero {
+      background-image: var(--mustard-page-hero-bg-mobile, var(--mustard-page-hero-bg, var(--mustard-placeholder-bg)));
+    }
+  }
+  .veylique-page-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(154deg, rgba(14, 11, 10, 0.74) 0%, rgba(14, 11, 10, 0.55) 44%, rgba(14, 11, 10, 0.84) 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .veylique-page-hero-body {
+    position: relative;
+    z-index: 1;
+    width: min(calc(100% - clamp(3rem, 8vw, 8rem)), 55rem);
+    margin-inline: clamp(1.5rem, 6vw, 6rem);
+    padding: clamp(4rem, 8vw, 6rem) 0 clamp(3rem, 5vw, 4rem);
+  }
+
+  .veylique-about-label {
+    display: block;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--mustard-accent);
+    margin: 0 0 1rem;
+  }
+  .veylique-page-hero-label {
+    color: rgba(255, 255, 255, 0.74);
+    margin-bottom: 1.125rem;
+  }
+  .veylique-page-hero-h1 {
+    margin: 0 0 1.375rem;
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+  }
+  /* Hidden until the reveal timeline runs; the failsafe animation forces it
+     visible after 2.5s even if JS/GSAP never loads, so it can't stay hidden. */
+  .veylique-page-hero-reveal-js {
+    visibility: hidden;
+    animation: veylique-hero-reveal-failsafe 0.01ms linear 2.5s forwards;
+  }
+  @keyframes veylique-hero-reveal-failsafe { to { visibility: visible; } }
+  @media (prefers-reduced-motion: reduce) {
+    .veylique-page-hero-reveal-js { visibility: visible; animation: none; }
+  }
+  .veylique-page-hero-line {
+    display: block;
+    font-family: "Clash Display", Inter, sans-serif;
+    font-size: clamp(3.25rem, 8vw, 7.25rem);
+    font-weight: 300;
+    color: #fff;
+  }
+  .veylique-page-hero-line--soft { color: rgba(255, 255, 255, 0.66); }
+  .veylique-page-hero-sub {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.82);
+    line-height: 1.75;
+    max-width: 35rem;
+    margin: 0 0 2rem;
+  }
+
+  .veylique-scroll-down {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    opacity: 0.6;
+  }
+  .veylique-scroll-dot {
+    display: block;
+    width: 0.3rem;
+    height: 0.3rem;
+    border-radius: 50%;
+    background: #ffffff;
+    animation: veylique-about-dot-fall 1.6s ease-in-out infinite;
+    opacity: 0;
+  }
+  .veylique-scroll-dot:nth-child(1) { animation-delay: 0s; }
+  .veylique-scroll-dot:nth-child(2) { animation-delay: 0.3s; }
+  .veylique-scroll-dot:nth-child(3) { animation-delay: 0.6s; }
+  @keyframes veylique-about-dot-fall {
+    0%   { opacity: 0;   transform: translateY(-0.5rem); }
+    30%  { opacity: 1;   transform: translateY(0); }
+    70%  { opacity: 0.4; transform: translateY(0.5rem); }
+    100% { opacity: 0;   transform: translateY(1rem); }
+  }
+
+  @media (max-width: 1024px) {
+    .veylique-page-hero-body {
+      width: min(calc(100% - 3rem), 42rem);
+      margin-inline: 1.5rem;
+    }
+  }
+  @media (max-width: 768px) {
+    .veylique-page-hero {
+      height: 85vh;
+      min-height: 32rem;
+      max-height: none;
+      align-items: flex-end;
+    }
+    .veylique-page-hero-body {
+      width: calc(100% - 3rem);
+      margin-inline: 1.5rem;
+      padding: 6rem 0 2.75rem;
+    }
+    .veylique-page-hero-sub { font-size: 0.9375rem; margin-bottom: 1.625rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .veylique-scroll-dot { animation: none; opacity: 0.6; }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    var settings = {
+      eyebrowAt: 0,
+      titleAt: 0.18,
+      titleAtNoEyebrow: 0,
+      subtitleOverlap: '-=0.55',
+      eyebrowDuration: 0.85,
+      titleDuration: 1.05,
+      subtitleDuration: 0.7,
+      titleStagger: 0.12,
+      titleEase: 'power4.out',
+      fadeEase: 'power2.out'
+    };
+
+    function whenReady(cb) {
+      var n = 0;
+      (function check() {
+        if (typeof gsap !== 'undefined') { cb(); return; }
+        if (n++ > 200) { cb(); return; }
+        requestAnimationFrame(check);
+      })();
+    }
+
+    function show(items) {
+      items.forEach(function (el) { if (el) el.style.visibility = 'visible'; });
+    }
+
+    function animateHero(hero) {
+      var title = hero.querySelector('.veylique-page-hero-h1');
+      if (!title) return;
+      var eyebrow = hero.querySelector('.veylique-page-hero-label');
+      var sub = hero.querySelector('.veylique-page-hero-sub');
+      var lines = Array.prototype.slice.call(title.querySelectorAll('.veylique-page-hero-line'));
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (reduce || typeof gsap === 'undefined' || !lines.length) {
+        show([title, eyebrow, sub]);
+        return;
+      }
+
+      /* The heading already has explicit line spans — mask each and slide it up
+         (no SplitText needed, so this runs even when SplitText isn't loaded). */
+      lines.forEach(function (line) {
+        if (line.parentNode && line.parentNode.classList && line.parentNode.classList.contains('veylique-si-mask')) return;
+        var mask = document.createElement('div');
+        mask.className = 'veylique-si-mask';
+        line.parentNode.insertBefore(mask, line);
+        mask.appendChild(line);
+      });
+
+      show([title, eyebrow, sub]);
+
+      gsap.set(lines, { yPercent: 110 });
+      if (eyebrow) gsap.set(eyebrow, { autoAlpha: 0, y: 8, filter: 'blur(5px)' });
+      if (sub) gsap.set(sub, { autoAlpha: 0, y: 18 });
+
+      var tl = gsap.timeline();
+      if (eyebrow) {
+        tl.to(eyebrow, { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: settings.eyebrowDuration, ease: settings.fadeEase }, settings.eyebrowAt);
+      }
+      var titleAt = eyebrow ? settings.titleAt : settings.titleAtNoEyebrow;
+      tl.to(lines, { yPercent: 0, duration: settings.titleDuration, ease: settings.titleEase, stagger: settings.titleStagger }, titleAt);
+      if (sub) {
+        tl.to(sub, { autoAlpha: 1, y: 0, duration: settings.subtitleDuration, ease: settings.fadeEase }, settings.subtitleOverlap);
+      }
+    }
+
+    function initHero(root) {
+      var heroes = root.querySelectorAll('[data-veylique-about-hero]');
+      heroes.forEach(function (hero) {
+        if (hero.dataset.veyliqueAboutHeroReady === 'true') return;
+        hero.dataset.veyliqueAboutHeroReady = 'true';
+        whenReady(function () { animateHero(hero); });
+      });
+    }
+
+    if (document.readyState === 'complete') {
+      initHero(document);
+    } else {
+      document.addEventListener('DOMContentLoaded', function () { initHero(document); });
+    }
+    document.addEventListener('shopify:section:load', function (event) { initHero(event.target); });
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.veylique-about-hero.name",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.veylique-about-hero.settings.image.label"
+    },
+    {
+      "type": "text",
+      "id": "fallback",
+      "label": "t:sections.veylique-about-hero.settings.fallback.label",
+      "default": "hero-2.webp"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "t:sections.veylique-about-hero.settings.label.label",
+      "default": "About Veylique"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading_line_1",
+      "label": "t:sections.veylique-about-hero.settings.heading_line_1.label",
+      "default": "Designed for"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading_line_2",
+      "label": "t:sections.veylique-about-hero.settings.heading_line_2.label",
+      "default": "real life."
+    },
+    {
+      "type": "textarea",
+      "id": "sub",
+      "label": "t:sections.veylique-about-hero.settings.sub.label",
+      "default": "We create women's fashion with easy silhouettes, expressive prints, and comfort that moves through real life."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_scroll",
+      "label": "t:sections.veylique-about-hero.settings.show_scroll.label",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.veylique-about-hero.presets.name"
+    }
+  ]
+}
+{% endschema %}

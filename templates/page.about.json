@@ -1,49 +1,138 @@
 {
   "sections": {
     "hero": {
-      "type": "veylique-page-hero",
+      "type": "veylique-about-hero",
       "settings": {
-        "kicker": "About Veylique",
-        "heading": "Designed for real life",
-        "fallback": "hero-2.webp"
+        "label": "About Veylique",
+        "heading_line_1": "Designed for",
+        "heading_line_2": "real life.",
+        "sub": "We create women's fashion with easy silhouettes, expressive prints, and comfort that moves through real life.",
+        "fallback": "hero-2.webp",
+        "show_scroll": true
       }
     },
     "manifesto": {
-      "type": "veylique-rich-text",
+      "type": "veylique-about-manifesto",
       "settings": {
-        "kicker": "Manifesto",
-        "heading": "Everyday clothes should feel polished without asking you to compromise.",
-        "text": "<p>Veylique is built around wearable silhouettes, reliable fabrics, and details that earn their place in a real wardrobe.</p>"
+        "quote": "The best clothes do more than complete an outfit. They make the day feel easier, brighter, and more your own.",
+        "cite": "— Sophie Laurent, Founder & Creative Director"
       }
+    },
+    "stats": {
+      "type": "veylique-about-stats",
+      "blocks": {
+        "s1": { "type": "stat", "settings": { "tag": "Considered details", "number": "48+", "stroke": false } },
+        "s2": { "type": "stat", "settings": { "tag": "Vendor partners", "number": "12", "stroke": true } },
+        "s3": { "type": "stat", "settings": { "tag": "Comfort-first fits", "number": "100%", "stroke": false } },
+        "s4": { "type": "stat", "settings": { "tag": "Founded in Paris", "number": "2018", "stroke": true } }
+      },
+      "block_order": ["s1", "s2", "s3", "s4"]
     },
     "story": {
-      "type": "veylique-image-with-text",
+      "type": "veylique-about-story",
       "settings": {
-        "kicker": "Our story",
-        "heading": "Modern wardrobe pieces with a softer point of view",
-        "fallback": "founder.jpg"
-      }
+        "fallback": "founder.jpg",
+        "badge_text": "Founded in Paris — 2018 — Founded in Paris — 2018 — ",
+        "founder_kicker": "Founder",
+        "founder_name": "Sophie Laurent",
+        "founder_role": "Founder & Creative Director"
+      },
+      "blocks": {
+        "p1": {
+          "type": "panel",
+          "settings": {
+            "number": "01",
+            "label": "The Beginning",
+            "heading": "A fashion line rooted in real life",
+            "lead": "Veylique was born from a simple idea: everyday clothes should feel polished without asking you to compromise on comfort. Each collection is built around wearable silhouettes, reliable fabrics, and details that earn their place.",
+            "link_label": "Explore fabrics",
+            "alt": false
+          }
+        },
+        "p2": {
+          "type": "panel",
+          "settings": {
+            "number": "02",
+            "label": "Our Process",
+            "heading": "From sketch to wardrobe",
+            "lead": "We work with trusted mills, pattern makers, and finishing partners to refine every piece before it reaches your wardrobe.",
+            "body": "Every garment is fit-tested for movement, drape, wash feel, and repeat wear, so it looks good beyond the first try-on.",
+            "alt": true
+          }
+        }
+      },
+      "block_order": ["p1", "p2"]
     },
     "values": {
-      "type": "veylique-process",
+      "type": "veylique-about-values",
       "settings": {
-        "kicker": "Values",
-        "heading": "What guides every collection"
-      }
+        "eyebrow": "What We Stand For",
+        "heading": "Three principles. Every decision.",
+        "fallback": "hero-4.webp"
+      },
+      "blocks": {
+        "v1": { "type": "value", "settings": { "watermark": "I", "index": "01", "heading": "Material Honesty", "text": "We choose breathable weaves, soft linings, and finishes that feel good against the body and stand up to everyday wear." } },
+        "v2": { "type": "value", "settings": { "watermark": "II", "index": "02", "heading": "Fit Precision", "text": "A beautiful print is only half the work. We tune proportions, seams, and closures until every piece feels natural to move in." } },
+        "v3": { "type": "value", "settings": { "watermark": "III", "index": "03", "heading": "Mindful Fashion", "text": "Premium should feel considered. We design versatile pieces that can be styled often, cared for easily, and loved longer." } }
+      },
+      "block_order": ["v1", "v2", "v3"]
+    },
+    "materials": {
+      "type": "veylique-about-materials",
+      "settings": {
+        "eyebrow": "Fabric Philosophy",
+        "heading": "Thoughtful by design.",
+        "text": "Signature materials, selected for comfort, drape, durability, and everyday ease."
+      },
+      "blocks": {
+        "m1": { "type": "material", "settings": { "fallback": "about-ingredient-rose-otto.jpg", "tag": "I", "name": "Cotton Voile", "desc": "Light, breathable, and soft against the skin, chosen for everyday dresses and easy summer layers." } },
+        "m2": { "type": "material", "settings": { "fallback": "about-ingredient-bakuchiol.jpg", "tag": "II", "name": "Linen Blend", "desc": "Textured without feeling stiff, giving co-ords and separates a relaxed yet polished structure." } },
+        "m3": { "type": "material", "settings": { "fallback": "about-ingredient-blue-tansy.jpg", "tag": "III", "name": "Viscose Crepe", "desc": "Fluid, drapey, and crease-friendly, selected for pieces that need to move from desk to dinner." } },
+        "c1": { "type": "check", "settings": { "text": "No scratchy linings" } },
+        "c2": { "type": "check", "settings": { "text": "No fussy care rituals" } },
+        "c3": { "type": "check", "settings": { "text": "Comfort-first fit standard" } },
+        "c4": { "type": "check", "settings": { "text": "Responsible sourcing where possible" } }
+      },
+      "block_order": ["m1", "m2", "m3", "c1", "c2", "c3", "c4"]
+    },
+    "press": {
+      "type": "veylique-about-press",
+      "settings": {
+        "label": "As Featured In"
+      },
+      "blocks": {
+        "n1": { "type": "press", "settings": { "name": "The Style Edit" } },
+        "n2": { "type": "press", "settings": { "name": "Modern Wardrobe" } },
+        "n3": { "type": "press", "settings": { "name": "Style Journal" } },
+        "n4": { "type": "press", "settings": { "name": "The Style Report" } },
+        "n5": { "type": "press", "settings": { "name": "Considered Living" } },
+        "n6": { "type": "press", "settings": { "name": "Daily Fits" } },
+        "n7": { "type": "press", "settings": { "name": "The Wardrobe Review" } }
+      },
+      "block_order": ["n1", "n2", "n3", "n4", "n5", "n6", "n7"]
     },
     "cta": {
-      "type": "veylique-image-banner",
+      "type": "veylique-home-full-cta",
       "settings": {
+        "aria_label": "Begin your wardrobe",
         "fallback": "hero-3.webp",
-        "heading": "Discover the collection"
+        "mobile_fallback": "hero-3.webp",
+        "label": "Begin Your Wardrobe",
+        "heading": "Your wardrobe refresh awaits.",
+        "button_label": "Shop All Products",
+        "button2_label": "Get In Touch",
+        "button2_link": "/pages/contact"
       }
     }
   },
   "order": [
     "hero",
     "manifesto",
+    "stats",
     "story",
     "values",
+    "materials",
+    "press",
     "cta"
   ]
 }

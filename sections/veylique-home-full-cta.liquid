@@ -14,12 +14,20 @@
 <section class="veylique-fullcta full-width" aria-label="{{ section.settings.aria_label | escape }}" style="--cta-bg: url('{{ cta_bg }}'); --cta-bg-mobile: url('{{ cta_bg_mobile }}');">
   <div class="veylique-fullcta-overlay"></div>
   <div class="veylique-fullcta-inner">
+    {%- if section.settings.label != blank -%}
+      <p class="veylique-fullcta-label veylique-reveal-js veylique-reveal--static-js">{{ section.settings.label | escape }}</p>
+    {%- endif -%}
     <h2 class="veylique-fullcta-heading veylique-reveal-js veylique-reveal--static-js">{{ section.settings.heading }}</h2>
     <div class="veylique-fullcta-btns">
-      <a href="{{ section.settings.button_link | default: routes.all_products_collection_url }}" class="veylique-fullcta-btn veylique-reveal-js veylique-reveal--static-js">
+      <a href="{{ section.settings.button_link | default: routes.all_products_collection_url }}" class="veylique-fullcta-btn veylique-reveal-js veylique-reveal--static-js" data-veylique-delay="0.15">
         <span>{{ section.settings.button_label }}</span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
+      {%- if section.settings.button2_label != blank -%}
+        <a href="{{ section.settings.button2_link | default: '#' }}" class="veylique-fullcta-btn veylique-fullcta-btn--outline veylique-reveal-js veylique-reveal--static-js" data-veylique-delay="0.28">
+          <span>{{ section.settings.button2_label }}</span>
+        </a>
+      {%- endif -%}
     </div>
   </div>
 </section>
@@ -58,6 +66,11 @@
       "default": "hero-1.webp"
     },
     {
+      "type": "text",
+      "id": "label",
+      "label": "t:sections.veylique-home-full-cta.settings.label.label"
+    },
+    {
       "type": "inline_richtext",
       "id": "heading",
       "label": "t:sections.veylique-home-full-cta.settings.heading.label",
@@ -73,6 +86,16 @@
       "type": "url",
       "id": "button_link",
       "label": "t:sections.veylique-home-full-cta.settings.button_link.label"
+    },
+    {
+      "type": "text",
+      "id": "button2_label",
+      "label": "t:sections.veylique-home-full-cta.settings.button2_label.label"
+    },
+    {
+      "type": "url",
+      "id": "button2_link",
+      "label": "t:sections.veylique-home-full-cta.settings.button2_link.label"
     }
   ],
   "presets": [
