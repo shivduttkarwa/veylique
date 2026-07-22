@@ -33,6 +33,31 @@
   "collections": {
     "title": "Collections"
   },
+  "collection": {
+    "product_count": {
+      "one": "{{ count }} product",
+      "other": "{{ count }} products"
+    },
+    "filters": "Filters",
+    "filter_and_sort": "Filter and sort",
+    "sort_by": "Sort by",
+    "apply": "Apply",
+    "clear_all": "Clear all",
+    "active_filters": "Active filters",
+    "remove_filter": "Remove filter {{ label }}",
+    "columns": "Columns",
+    "close": "Close",
+    "price_from": "From",
+    "price_to": "To",
+    "max_price_html": "The highest price is {{ price }}",
+    "pagination": "Pagination",
+    "page": "Page {{ number }}",
+    "no_products_title": "No products yet",
+    "no_products_text": "Check back soon — new pieces are on their way.",
+    "no_results_title": "No matches found",
+    "no_results_text": "Try removing a filter or two to see more of the collection.",
+    "browse_all": "Browse all products"
+  },
   "contact": {
     "form": {
       "email": "Email",

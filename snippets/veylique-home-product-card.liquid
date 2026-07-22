@@ -15,9 +15,12 @@
   @param {string} [fallback] - Theme asset fallback for the main image.
   @param {string} [hover_fallback] - Theme asset fallback for the hover image.
   @param {string} [link] - Fallback destination.
+  @param {boolean} [show_brand] - Show vendor/brand line, inline discount and rating badge (shop/PLP layout).
+  @param {boolean} [quick_add] - Show a hover "add to bag" action with size chips (real products only).
 
   @example
   {% render 'veylique-home-product-card', product: product %}
+  {% render 'veylique-home-product-card', product: product, show_brand: true, quick_add: true %}
 {% enddoc %}
 
 {% liquid
@@ -33,6 +36,10 @@
   assign on_sale = false
   assign sold_out = false
   assign discount = 0
+  assign card_vendor = ''
+  assign rating_value = 0
+  assign rating_count = 0
+  assign show_size_chips = false
 
   if product != blank
     assign card_title = product.title
@@ -40,6 +47,7 @@
     assign card_price = product.price | money
     assign card_image = product.featured_image
     assign card_hover_image = product.images[1]
+    assign card_vendor = product.vendor
     unless product.available
       assign sold_out = true
     endunless
@@ -48,19 +56,39 @@
       assign card_compare = product.compare_at_price | money
       assign discount = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round
     endif
+
+    if product.metafields.reviews.rating != blank
+      assign rating_value = product.metafields.reviews.rating.value | round: 1
+      assign rating_count = product.metafields.reviews.rating_count | default: 0
+    endif
+
+    if product.options.size == 1
+      assign first_option = product.options.first | downcase
+      if first_option contains 'size'
+        assign show_size_chips = true
+      endif
+    endif
   endif
 
   assign main_fallback = fallback | default: 'hero-1.webp'
   assign secondary_fallback = hover_fallback | default: main_fallback
 %}
 
-<article class="veylique-pcard veylique-reveal-js veylique-reveal--static-js">
+<article class="veylique-pcard veylique-reveal-js veylique-reveal--static-js{% if show_brand %} veylique-pcard--rich{% endif %}">
   <div class="veylique-pcard__media-wrap">
     <a class="veylique-pcard__media-link" href="{{ card_link }}" aria-label="{{ card_title | escape }}">
       {% if sold_out %}
         <span class="veylique-pcard__badge veylique-pcard__badge--out">{{ 'products.sold_out' | t }}</span>
       {% elsif on_sale %}
         <span class="veylique-pcard__badge">{% if discount > 0 %}{{ 'products.save_percent_html' | t: percent: discount }}{% else %}{{ 'products.badge_sale' | t }}{% endif %}</span>
+      {% endif %}
+
+      {% if show_brand and rating_value > 0 %}
+        <span class="veylique-pcard__rating">
+          {{ rating_value }}
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          {% if rating_count > 0 %}<span class="veylique-pcard__rating-count">| {{ rating_count }}</span>{% endif %}
+        </span>
       {% endif %}
 
       <div class="veylique-pcard__media">
@@ -92,18 +120,52 @@
     </button>
 
     {% unless sold_out %}
-      <a class="veylique-pcard__shop" href="{{ card_link }}" tabindex="-1" aria-hidden="true">{{ 'products.choose_options' | t }}</a>
+      {% if quick_add and product != blank %}
+        <div class="veylique-pcard__qa">
+          {% if show_size_chips %}
+            <span class="veylique-pcard__qa-label">{{ 'products.select_size' | t }}</span>
+            <div class="veylique-pcard__sizes">
+              {% for variant in product.variants %}
+                <a
+                  class="veylique-pcard__size{% unless variant.available %} is-oos{% endunless %}"
+                  href="{{ product.url }}?variant={{ variant.id }}"
+                >{{ variant.title | escape }}</a>
+              {% endfor %}
+            </div>
+          {% else %}
+            <a class="veylique-pcard__add" href="{{ card_link }}">{{ 'products.add_to_cart' | t }}</a>
+          {% endif %}
+        </div>
+      {% else %}
+        <a class="veylique-pcard__shop" href="{{ card_link }}" tabindex="-1" aria-hidden="true">{{ 'products.choose_options' | t }}</a>
+      {% endif %}
     {% endunless %}
   </div>
 
   <div class="veylique-pcard__info">
-    <h3 class="veylique-pcard__title"><a href="{{ card_link }}">{{ card_title }}</a></h3>
-    <div class="veylique-pcard__price">
-      {% if card_compare != blank %}
-        <span class="veylique-pcard__price-old">{{ card_compare }}</span>
-      {% endif %}
-      <span class="veylique-pcard__price-now{% if on_sale %} is-sale{% endif %}">{{ card_price }}</span>
-    </div>
+    {% if show_brand and card_vendor != blank %}
+      <div class="veylique-pcard__meta">
+        <p class="veylique-pcard__brand">{{ card_vendor | escape }}</p>
+        <h3 class="veylique-pcard__name"><a href="{{ card_link }}">{{ card_title }}</a></h3>
+      </div>
+      <div class="veylique-pcard__price veylique-pcard__price--rich">
+        <span class="veylique-pcard__price-now{% if on_sale %} is-sale{% endif %}">{{ card_price }}</span>
+        {% if card_compare != blank %}
+          <span class="veylique-pcard__price-old">{{ card_compare }}</span>
+        {% endif %}
+        {% if discount > 0 %}
+          <span class="veylique-pcard__discount">{{ 'products.save_percent_html' | t: percent: discount }}</span>
+        {% endif %}
+      </div>
+    {% else %}
+      <h3 class="veylique-pcard__title"><a href="{{ card_link }}">{{ card_title }}</a></h3>
+      <div class="veylique-pcard__price">
+        {% if card_compare != blank %}
+          <span class="veylique-pcard__price-old">{{ card_compare }}</span>
+        {% endif %}
+        <span class="veylique-pcard__price-now{% if on_sale %} is-sale{% endif %}">{{ card_price }}</span>
+      </div>
+    {% endif %}
   </div>
 </article>
 
@@ -306,5 +368,171 @@
   }
   .veylique-pcard__price-now.is-sale {
     color: var(--veylique-color-rose, #c58d80);
+  }
+
+  /* ---- Rich / PLP variant (show_brand) ---- */
+  .veylique-pcard__rating {
+    position: absolute;
+    left: 0.625rem;
+    bottom: 0.625rem;
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--veylique-radius-xs, 0.25rem);
+    background: rgba(255, 255, 255, 0.92);
+    -webkit-backdrop-filter: blur(0.25rem);
+    backdrop-filter: blur(0.25rem);
+    color: var(--veylique-color-foreground, #241f1a);
+    font-family: var(--veylique-font-body);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .veylique-pcard__rating svg { color: #1d9e5e; }
+  .veylique-pcard__rating-count {
+    color: var(--veylique-color-muted, #756b60);
+    font-weight: 500;
+  }
+
+  .veylique-pcard--rich .veylique-pcard__info {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.375rem;
+    padding-top: 0.75rem;
+  }
+  .veylique-pcard__meta { min-width: 0; }
+  .veylique-pcard__brand {
+    margin: 0;
+    font-family: var(--veylique-font-body);
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--veylique-color-foreground, #241f1a);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .veylique-pcard__name {
+    margin: 0.125rem 0 0;
+    font-family: var(--veylique-font-body);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    line-height: 1.3;
+    color: var(--veylique-color-muted, #756b60);
+  }
+  .veylique-pcard__name a {
+    color: inherit;
+    text-decoration: none;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  @media (hover: hover) {
+    .veylique-pcard__name a:hover { color: var(--veylique-color-foreground, #241f1a); }
+  }
+  .veylique-pcard__price--rich {
+    justify-content: flex-start;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+  .veylique-pcard__price--rich .veylique-pcard__price-now {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--veylique-color-foreground, #241f1a);
+  }
+  .veylique-pcard__discount {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--veylique-color-rose, #c58d80);
+  }
+
+  /* ---- Quick add (hover) ---- */
+  .veylique-pcard__qa {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.96) 65%, rgba(255, 255, 255, 0));
+    transform: translateY(101%);
+    transition: transform 0.35s var(--veylique-ease-standard, ease);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .veylique-pcard__media-wrap:hover .veylique-pcard__qa,
+    .veylique-pcard__media-wrap:focus-within .veylique-pcard__qa {
+      transform: translateY(0);
+    }
+  }
+  /* Touch: hide the hover quick add — tapping the card opens the product. */
+  @media (hover: none), (pointer: coarse) {
+    .veylique-pcard__qa { display: none; }
+  }
+  .veylique-pcard__qa-label {
+    font-family: var(--veylique-font-body);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--veylique-color-muted, #756b60);
+    text-align: center;
+  }
+  .veylique-pcard__sizes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.375rem;
+  }
+  .veylique-pcard__size {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    border: var(--veylique-border-width, 0.0625rem) solid var(--veylique-color-border, rgba(36, 31, 26, 0.14));
+    border-radius: var(--veylique-radius-xs, 0.25rem);
+    background: var(--veylique-color-surface, #fff);
+    color: var(--veylique-color-foreground, #241f1a);
+    font-family: var(--veylique-font-body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  }
+  @media (hover: hover) {
+    .veylique-pcard__size:hover {
+      border-color: var(--veylique-color-foreground, #241f1a);
+      background: var(--veylique-color-foreground, #241f1a);
+      color: var(--veylique-color-surface, #fff);
+    }
+  }
+  .veylique-pcard__size.is-oos {
+    color: var(--veylique-color-muted, #756b60);
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+  .veylique-pcard__add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.75rem;
+    border-radius: var(--veylique-radius-sm, 0.5rem);
+    background: var(--veylique-color-foreground, #241f1a);
+    color: var(--veylique-color-surface, #fff);
+    font-family: var(--veylique-font-body);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .veylique-pcard__qa { transition: none; }
   }
 {% endstylesheet %}

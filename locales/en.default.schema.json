@@ -75,6 +75,95 @@
     }
   },
   "sections": {
+    "collection": {
+      "settings": {
+        "header_hero": {
+          "content": "Hero"
+        },
+        "show_hero": {
+          "label": "Show hero banner"
+        },
+        "hero_image": {
+          "label": "Hero image",
+          "info": "Overrides the collection image and the fallback below."
+        },
+        "hero_fallback": {
+          "label": "Hero fallback asset",
+          "info": "Theme asset filename shown when no collection or hero image is set."
+        },
+        "header_content": {
+          "content": "Header"
+        },
+        "show_breadcrumb": {
+          "label": "Show breadcrumb"
+        },
+        "kicker": {
+          "label": "Kicker"
+        },
+        "show_description": {
+          "label": "Show collection description"
+        },
+        "heading_alignment": {
+          "label": "Heading alignment"
+        },
+        "header_grid": {
+          "content": "Product grid"
+        },
+        "products_per_page": {
+          "label": "Products per page"
+        },
+        "columns_desktop": {
+          "label": "Columns on desktop"
+        },
+        "columns_switch_min": {
+          "label": "Compact column count",
+          "info": "The lower option shown in the desktop column switcher."
+        },
+        "columns_tablet": {
+          "label": "Columns on tablet"
+        },
+        "columns_mobile": {
+          "label": "Columns on mobile"
+        },
+        "header_card": {
+          "content": "Product card"
+        },
+        "show_vendor": {
+          "label": "Show vendor and rating",
+          "info": "Shows the brand line, discount and review rating (if set)."
+        },
+        "enable_quick_add": {
+          "label": "Enable quick add on hover",
+          "info": "Shows size chips (or an add button) that link to the product."
+        },
+        "header_toolbar": {
+          "content": "Toolbar"
+        },
+        "show_product_count": {
+          "label": "Show product count"
+        },
+        "enable_sorting": {
+          "label": "Enable sorting"
+        },
+        "enable_column_switcher": {
+          "label": "Enable column switcher"
+        },
+        "header_filters": {
+          "content": "Filtering"
+        },
+        "enable_filtering": {
+          "label": "Enable filtering",
+          "info": "Set up filters in Search & Discovery."
+        },
+        "sticky_sidebar": {
+          "label": "Sticky filter sidebar"
+        },
+        "open_filters": {
+          "label": "Filters open by default",
+          "info": "Number of filter groups expanded on load."
+        }
+      }
+    },
     "veylique-blog-posts": {
       "name": "Blog posts",
       "settings": {
