@@ -20,7 +20,30 @@
     "checkout": "Checkout",
     "title": "Cart",
     "update": "Update",
-    "remove": "Remove"
+    "remove": "Remove",
+    "eyebrow": "Your selection",
+    "item_count": {
+      "one": "{{ count }} item",
+      "other": "{{ count }} items"
+    },
+    "product": "Product",
+    "price": "Price",
+    "quantity": "Quantity",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "summary": "Order summary",
+    "tax_note": "Taxes and shipping calculated at checkout.",
+    "continue_shopping": "Continue shopping",
+    "note": "Order note",
+    "note_placeholder": "Add a note about your order…",
+    "decrease_quantity": "Decrease quantity",
+    "increase_quantity": "Increase quantity",
+    "quantity_for": "Quantity for {{ title }}",
+    "remove_title": "Remove {{ title }}",
+    "trust_secure": "Secure checkout, encrypted end to end",
+    "trust_returns": "Easy returns within 14 days",
+    "empty_title": "Your cart is empty",
+    "empty_text": "Once you add pieces you love, they'll appear here — ready whenever you are."
   },
   "customers": {
     "login": {
@@ -75,15 +98,28 @@
   },
   "password": {
     "title": "This shop is private",
+    "eyebrow": "Opening soon",
+    "tagline": "We're putting the finishing touches on something special. Enter the password to take a look.",
     "password": "Password",
-    "enter": "Enter"
+    "enter": "Enter",
+    "admin_link_html": "Are you the store owner? <a href=\"/admin\">Log in here</a>"
   },
   "search": {
     "title": "Search",
+    "eyebrow": "Find your pieces",
     "placeholder": "Search articles, pages, or products",
     "submit": "Search",
-    "no_results_html": "No results found for {{ terms }}",
-    "results_for_html": "{{ count }} results found for {{ terms }}"
+    "no_results_html": "No results found for “{{ terms }}”",
+    "results_for_html": "{{ count }} results found for {{ terms }}",
+    "results_count": {
+      "one": "{{ count }} result",
+      "other": "{{ count }} results"
+    },
+    "empty_text": "Try a different search term, or browse the full collection.",
+    "browse_all": "Browse all products",
+    "result_page": "Page",
+    "result_article": "Journal",
+    "pagination": "Search pagination"
   },
   "products": {
     "add_to_cart": "Add to cart",

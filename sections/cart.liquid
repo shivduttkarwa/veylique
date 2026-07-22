@@ -1,37 +1,648 @@
 {% comment %}
-  This section is used in the cart template to render /cart page with an
-  overview of the items in customer's cart.
+  Cart page — /cart. Elegant, fully-functional cart built on Shopify cart
+  objects. Works without JavaScript (native cart form POST); JS only
+  progressively enhances the quantity steppers.
 
   https://shopify.dev/docs/storefronts/themes/architecture/templates/cart
 {% endcomment %}
 
-<h1>{{ 'cart.title' | t }}</h1>
+{%- if cart == empty -%}
+  <div class="veylique-cart-empty full-width" data-veylique-cart>
+    <div class="veylique-cart-empty-stage">
+      <div class="veylique-cart-empty-copy">
+        <span class="veylique-cart-empty-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        </span>
+        <p class="veylique-cart-empty-eyebrow">{{ 'cart.title' | t }}</p>
+        <h1 class="veylique-cart-empty-title">{{ 'cart.empty_title' | t }}</h1>
+        <p class="veylique-cart-empty-text">{{ 'cart.empty_text' | t }}</p>
+        <div class="veylique-cart-empty-actions">
+          <a href="{{ routes.all_products_collection_url }}" class="veylique-button veylique-button--solid">{{ 'cart.continue_shopping' | t }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{%- else -%}
+  <div class="veylique-cart-page full-width" data-veylique-cart>
+    <div class="veylique-cart-hero">
+      <div class="veylique-cart-hero-inner">
+        <p class="veylique-cart-eyebrow">{{ 'cart.eyebrow' | t }}</p>
+        <h1 class="veylique-cart-title">{{ 'cart.title' | t }} · {{ 'cart.item_count' | t: count: cart.item_count }}</h1>
+      </div>
+    </div>
 
-<form action="{{ routes.cart_url }}" method="post">
-  <table>
-    {% for item in cart.items %}
-      <tr>
-        <td>
-          {% render 'image', image: item.image, url: item.url %}
-        </td>
-        <td>
-          <p>{{ item.product.title }}</p>
-          {{ 'cart.remove' | t | link_to: item.url_to_remove }}
-        </td>
-        <td>
-          <input type="text" name="updates[]" value="{{ item.quantity }}">
-          <input type="submit" value="{{ 'cart.update' | t }}">
-        </td>
-      </tr>
-    {% endfor %}
-  </table>
+    <div class="veylique-cart-body">
+      <div class="veylique-cart-body-inner">
+        {% form 'cart', cart, class: 'veylique-cart-form', data-veylique-cart-form: '' %}
+          <div class="veylique-cart-items">
+            <div class="veylique-cart-thead" aria-hidden="true">
+              <span class="veylique-cart-th veylique-cart-th--media"></span>
+              <span class="veylique-cart-th veylique-cart-th--product">{{ 'cart.product' | t }}</span>
+              <span class="veylique-cart-th veylique-cart-th--price">{{ 'cart.price' | t }}</span>
+              <span class="veylique-cart-th veylique-cart-th--qty">{{ 'cart.quantity' | t }}</span>
+              <span class="veylique-cart-th veylique-cart-th--total">{{ 'cart.total' | t }}</span>
+            </div>
 
-  <input type="submit" name="checkout" value="{{ 'cart.checkout' | t }}">
-</form>
+            {%- for item in cart.items -%}
+              <div class="veylique-cart-row" data-veylique-cart-row>
+                <div class="veylique-cart-row-img">
+                  <a href="{{ item.url }}">
+                    {%- if item.image -%}
+                      {%- assign item_alt = item.title | escape -%}
+                      {{ item.image | image_url: width: 220 | image_tag: loading: 'lazy', widths: '110, 220', alt: item_alt }}
+                    {%- else -%}
+                      {{ 'product-apparel-1' | placeholder_svg_tag: 'veylique-media' }}
+                    {%- endif -%}
+                  </a>
+                </div>
+
+                <div class="veylique-cart-row-name">
+                  {%- if item.product.vendor != blank -%}
+                    <span class="veylique-cart-row-cat">{{ item.product.vendor | escape }}</span>
+                  {%- endif -%}
+                  <a href="{{ item.url }}" class="veylique-cart-row-title">{{ item.product.title | escape }}</a>
+
+                  {%- unless item.variant.title == 'Default Title' -%}
+                    <div class="veylique-cart-row-options">
+                      {%- for option in item.options_with_values -%}
+                        <span>{{ option.name | escape }}: {{ option.value | escape }}</span>
+                      {%- endfor -%}
+                    </div>
+                  {%- endunless -%}
+
+                  {%- for property in item.properties -%}
+                    {%- assign first_char = property.first | slice: 0 -%}
+                    {%- if property.last != blank and first_char != '_' -%}
+                      <div class="veylique-cart-row-options"><span>{{ property.first | escape }}: {{ property.last | escape }}</span></div>
+                    {%- endif -%}
+                  {%- endfor -%}
+
+                  {%- if item.line_level_discount_allocations.size > 0 -%}
+                    <ul class="veylique-cart-row-discounts" role="list">
+                      {%- for allocation in item.line_level_discount_allocations -%}
+                        <li>{{ allocation.discount_application.title | escape }} (−{{ allocation.amount | money }})</li>
+                      {%- endfor -%}
+                    </ul>
+                  {%- endif -%}
+
+                  <a href="{{ item.url_to_remove }}" class="veylique-cart-row-remove-inline" data-veylique-cart-remove>{{ 'cart.remove' | t }}</a>
+                </div>
+
+                <div class="veylique-cart-row-price" data-cart-label="{{ 'cart.price' | t }}">
+                  {%- if item.original_price > item.final_price -%}
+                    <s class="veylique-cart-row-price-old">{{ item.original_price | money }}</s>
+                  {%- endif -%}
+                  {{ item.final_price | money }}
+                </div>
+
+                <div class="veylique-cart-row-qty">
+                  <div class="veylique-qty-stepper" data-veylique-qty>
+                    <button type="button" class="veylique-qty-btn" data-qty-down aria-label="{{ 'cart.decrease_quantity' | t }}">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <input
+                      class="veylique-qty-input"
+                      type="number"
+                      inputmode="numeric"
+                      min="0"
+                      name="updates[]"
+                      value="{{ item.quantity }}"
+                      aria-label="{{ 'cart.quantity_for' | t: title: item.product.title }}"
+                      data-qty-input
+                    >
+                    <button type="button" class="veylique-qty-btn" data-qty-up aria-label="{{ 'cart.increase_quantity' | t }}">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="veylique-cart-row-total" data-cart-label="{{ 'cart.total' | t }}">{{ item.final_line_price | money }}</div>
+
+                <a href="{{ item.url_to_remove }}" class="veylique-cart-remove" aria-label="{{ 'cart.remove_title' | t: title: item.product.title }}" data-veylique-cart-remove>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </a>
+              </div>
+            {%- endfor -%}
+
+            <div class="veylique-cart-actions">
+              <a href="{{ routes.all_products_collection_url }}" class="veylique-button veylique-button--ghost veylique-cart-continue">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                {{ 'cart.continue_shopping' | t }}
+              </a>
+              <button type="submit" name="update" class="veylique-button veylique-button--outline veylique-cart-update">{{ 'cart.update' | t }}</button>
+            </div>
+
+            {%- if section.settings.show_note -%}
+              <div class="veylique-cart-note">
+                <label for="CartNote">{{ 'cart.note' | t }}</label>
+                <textarea id="CartNote" name="note" rows="3" placeholder="{{ 'cart.note_placeholder' | t }}">{{ cart.note }}</textarea>
+              </div>
+            {%- endif -%}
+          </div>
+
+          <aside class="veylique-cart-summary-col">
+            <div class="veylique-cart-summary">
+              <h2 class="veylique-cart-summary-title">{{ 'cart.summary' | t }}</h2>
+
+              <div class="veylique-cart-summary-rows">
+                <div class="veylique-cart-summary-row">
+                  <span>{{ 'cart.subtotal' | t }}</span>
+                  <span>{{ cart.items_subtotal_price | money }}</span>
+                </div>
+
+                {%- for discount in cart.cart_level_discount_applications -%}
+                  <div class="veylique-cart-summary-row veylique-cart-summary-row--discount">
+                    <span>{{ discount.title | escape }}</span>
+                    <span>−{{ discount.total_allocated_amount | money }}</span>
+                  </div>
+                {%- endfor -%}
+
+                <div class="veylique-cart-summary-row veylique-cart-summary-row--total">
+                  <span>{{ 'cart.total' | t }}</span>
+                  <span>{{ cart.total_price | money }}</span>
+                </div>
+              </div>
+
+              <p class="veylique-cart-taxnote">{{ 'cart.tax_note' | t }}</p>
+
+              <div class="veylique-cart-checkout">
+                <button type="submit" name="checkout" class="veylique-button veylique-button--solid">{{ 'cart.checkout' | t }}</button>
+                {%- if additional_checkout_buttons -%}
+                  <div class="veylique-cart-express">{{ content_for_additional_checkout_buttons }}</div>
+                {%- endif -%}
+              </div>
+
+              <ul class="veylique-cart-trust" role="list">
+                <li class="veylique-cart-trust-item">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  {{ 'cart.trust_secure' | t }}
+                </li>
+                <li class="veylique-cart-trust-item">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                  {{ 'cart.trust_returns' | t }}
+                </li>
+              </ul>
+            </div>
+          </aside>
+        {% endform %}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .veylique-cart-page {
+    background: linear-gradient(180deg, #f8f4f0 0%, #f4efea 100%);
+    min-height: 80vh;
+  }
+  .veylique-cart-hero {
+    background:
+      radial-gradient(circle at 15% -40%, rgba(182, 128, 92, 0.12), transparent 42%),
+      #ffffff;
+    border-bottom: 0.0625rem solid var(--mustard-border);
+    padding: 2.625rem 0 2.375rem;
+  }
+  .veylique-cart-hero-inner {
+    width: min(100% - 3rem, var(--mustard-container));
+    margin-inline: auto;
+  }
+  .veylique-cart-eyebrow {
+    margin: 0 0 0.625rem;
+    font-family: var(--mustard-font-body);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--mustard-accent-dark);
+  }
+  .veylique-cart-title {
+    margin: 0;
+    font-family: "Clash Display", Inter, sans-serif;
+    font-size: clamp(2rem, 4vw, 3.25rem);
+    font-weight: 400;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+    color: var(--mustard-text);
+  }
+
+  .veylique-cart-body { padding: 2.75rem 0 5.75rem; }
+  .veylique-cart-body-inner {
+    width: min(100% - 3rem, var(--mustard-container));
+    margin-inline: auto;
+  }
+  .veylique-cart-form {
+    display: grid;
+    grid-template-columns: 1fr 23.75rem;
+    gap: 2.625rem;
+    align-items: start;
+  }
+  .veylique-cart-items { min-width: 0; }
+
+  .veylique-cart-thead {
+    display: grid;
+    grid-template-columns: 5.5rem 1fr 6.25rem 8.75rem 6.25rem;
+    gap: 0 1rem;
+    padding: 0 1.125rem 0.875rem 0;
+    border-bottom: 0.0625rem solid var(--mustard-border);
+    margin-bottom: 0.625rem;
+    align-items: center;
+  }
+  .veylique-cart-th {
+    font-family: var(--mustard-font-body);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--mustard-muted);
+  }
+  .veylique-cart-th--price { text-align: center; }
+  .veylique-cart-th--qty { text-align: center; }
+  .veylique-cart-th--total { text-align: right; }
+
+  .veylique-cart-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 5.5rem 1fr 6.25rem 8.75rem 6.25rem;
+    gap: 0 1rem;
+    align-items: center;
+    padding: 1.375rem 1.125rem 1.375rem 0;
+    border-bottom: 0.0625rem solid var(--mustard-border);
+    border-radius: 1rem;
+    transition: background 0.18s ease, transform 0.18s ease;
+  }
+  @media (hover: hover) {
+    .veylique-cart-row:hover { background: rgba(255, 255, 255, 0.62); transform: translateY(-0.0625rem); }
+  }
+  .veylique-cart-row-img {
+    width: 5.5rem;
+    height: 6.75rem;
+    border-radius: 1rem;
+    overflow: hidden;
+    background: #ffffff;
+    border: 0.0625rem solid rgba(36, 24, 22, 0.08);
+  }
+  .veylique-cart-row-img img,
+  .veylique-cart-row-img svg { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .veylique-cart-row-name { padding-right: 1rem; min-width: 0; }
+  .veylique-cart-row-cat {
+    display: block;
+    font-family: var(--mustard-font-body);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mustard-muted);
+    margin-bottom: 0.3125rem;
+  }
+  .veylique-cart-row-title {
+    font-family: "Clash Display", Inter, sans-serif;
+    font-size: 1.0625rem;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    color: var(--mustard-text);
+    text-decoration: none;
+    display: block;
+    line-height: 1.25;
+    transition: color 0.18s;
+  }
+  .veylique-cart-row-title:hover { color: var(--mustard-accent-dark); }
+  .veylique-cart-row-options {
+    margin-top: 0.375rem;
+    font-family: var(--mustard-font-body);
+    font-size: 0.8125rem;
+    color: var(--mustard-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+  }
+  .veylique-cart-row-discounts {
+    margin: 0.5rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.75rem;
+    color: var(--mustard-accent-dark);
+  }
+  .veylique-cart-row-remove-inline {
+    display: none;
+    margin-top: 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--mustard-muted);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  .veylique-cart-row-price { text-align: center; font-family: var(--mustard-font-body); font-size: 0.9375rem; font-weight: 700; color: var(--mustard-text); }
+  .veylique-cart-row-price-old { display: block; font-weight: 400; color: var(--mustard-muted); }
+
+  .veylique-cart-row-qty { display: flex; justify-content: center; }
+  .veylique-qty-stepper {
+    display: inline-flex;
+    align-items: center;
+    border: 0.0625rem solid var(--mustard-text);
+    overflow: hidden;
+    min-height: 2.625rem;
+  }
+  .veylique-qty-btn {
+    width: 2.625rem;
+    height: 2.625rem;
+    border: none;
+    background: transparent;
+    color: var(--mustard-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+  @media (hover: hover) { .veylique-qty-btn:hover { transform: scale(1.18); } }
+  .veylique-qty-input {
+    width: 3rem;
+    height: 2.625rem;
+    border: none;
+    border-left: 0.0625rem solid var(--mustard-text);
+    border-right: 0.0625rem solid var(--mustard-text);
+    background: transparent;
+    text-align: center;
+    font-family: var(--mustard-font-body);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--mustard-text);
+    padding: 0;
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+  .veylique-qty-input::-webkit-outer-spin-button,
+  .veylique-qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+  .veylique-cart-row-total {
+    text-align: right;
+    font-family: "Clash Display", Inter, sans-serif;
+    font-size: 1.125rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--mustard-text);
+  }
+  .veylique-cart-remove {
+    position: absolute;
+    top: 1.5rem;
+    right: 0;
+    width: 1.75rem;
+    height: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--mustard-muted);
+    border: 0.0625rem solid transparent;
+    transition: background 0.18s, color 0.18s, border-color 0.18s;
+  }
+  .veylique-cart-remove:hover { background: rgba(239, 68, 68, 0.08); color: #dc2626; border-color: rgba(239, 68, 68, 0.2); }
+
+  .veylique-cart-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding-top: 1.5rem;
+  }
+  .veylique-cart-continue { margin-right: auto; }
+  .veylique-js-ready .veylique-cart-update { display: none; }
+
+  .veylique-cart-note { margin-top: 1.75rem; max-width: 34rem; }
+  .veylique-cart-note label {
+    display: block;
+    margin-bottom: 0.45rem;
+    font-family: var(--mustard-font-body);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--mustard-text);
+  }
+  .veylique-cart-note textarea {
+    width: 100%;
+    border: 0.0625rem solid var(--mustard-border);
+    border-radius: 0.4375rem;
+    padding: 0.75rem 1rem;
+    background: #fff;
+    color: var(--mustard-text);
+    font: inherit;
+    font-size: 0.875rem;
+    resize: vertical;
+  }
+
+  .veylique-cart-summary-col { position: sticky; top: 6rem; align-self: start; }
+  .veylique-cart-summary {
+    background: rgba(255, 255, 255, 0.8);
+    -webkit-backdrop-filter: blur(0.5rem);
+    backdrop-filter: blur(0.5rem);
+    border: 0.0625rem solid rgba(36, 24, 22, 0.12);
+    border-radius: 1.625rem;
+    padding: 2rem;
+    box-shadow: 0 1.25rem 2.75rem rgba(36, 24, 22, 0.08);
+  }
+  .veylique-cart-summary-title {
+    margin: 0 0 1.5rem;
+    font-family: "Clash Display", Inter, sans-serif;
+    font-size: 1.375rem;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: var(--mustard-text);
+  }
+  .veylique-cart-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.75rem 0;
+    border-bottom: 0.0625rem solid var(--mustard-border);
+    font-family: var(--mustard-font-body);
+    font-size: 0.9375rem;
+    color: var(--mustard-text);
+  }
+  .veylique-cart-summary-row span:first-child { color: var(--mustard-muted); }
+  .veylique-cart-summary-row--discount span { color: var(--mustard-accent-dark); }
+  .veylique-cart-summary-row--total {
+    border-bottom: none;
+    padding-top: 1rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
+  .veylique-cart-summary-row--total span:first-child { color: var(--mustard-text); }
+  .veylique-cart-taxnote {
+    margin: 0.5rem 0 1.25rem;
+    font-size: 0.75rem;
+    color: var(--mustard-muted);
+  }
+  .veylique-cart-checkout .veylique-button { width: 100%; }
+  .veylique-cart-express { margin-top: 0.75rem; display: grid; gap: 0.5rem; }
+
+  .veylique-cart-trust {
+    margin: 1.5rem 0 0;
+    padding: 1.25rem 0 0;
+    list-style: none;
+    border-top: 0.0625rem solid var(--mustard-border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+  .veylique-cart-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5625rem;
+    font-family: var(--mustard-font-body);
+    font-size: 0.75rem;
+    color: var(--mustard-muted);
+  }
+  .veylique-cart-trust-item svg { color: var(--mustard-accent-dark); flex-shrink: 0; }
+
+  /* Empty state */
+  .veylique-cart-empty { background: linear-gradient(180deg, #f8f4f0 0%, #f4efea 100%); }
+  .veylique-cart-empty-stage {
+    display: grid;
+    grid-template-columns: minmax(1.5rem, 1fr) minmax(0, 40rem) minmax(0, 1fr);
+    min-height: 60vh;
+    align-items: center;
+  }
+  .veylique-cart-empty-copy {
+    grid-column: 2;
+    padding: clamp(3rem, 8vw, 6rem) clamp(1.5rem, 5vw, 3rem);
+    text-align: center;
+  }
+  .veylique-cart-empty-icon {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    background: #fff;
+    border: 0.0625rem solid var(--mustard-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.75rem;
+    color: var(--mustard-accent);
+    box-shadow: 0 0.25rem 1rem rgba(36, 24, 22, 0.06);
+  }
+  .veylique-cart-empty-eyebrow {
+    margin: 0 0 0.75rem;
+    font-family: var(--mustard-font-body);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--mustard-accent);
+  }
+  .veylique-cart-empty-title {
+    margin: 0 0 1rem;
+    font-family: var(--mustard-font-heading);
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--mustard-text);
+  }
+  .veylique-cart-empty-text {
+    margin: 0 auto 2.25rem;
+    font-family: var(--mustard-font-body);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: var(--mustard-muted);
+    max-width: 26rem;
+  }
+  .veylique-cart-empty-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
+
+  /* Tablet / mobile: collapse the row grid into a card. */
+  @media (max-width: 990px) {
+    .veylique-cart-form { grid-template-columns: 1fr; }
+    .veylique-cart-summary-col { position: static; }
+  }
+  @media (max-width: 749px) {
+    .veylique-cart-thead { display: none; }
+    .veylique-cart-row {
+      grid-template-columns: 5rem 1fr;
+      gap: 0.5rem 1rem;
+      padding: 1.25rem 0;
+      border-radius: 0;
+    }
+    .veylique-cart-row-img { grid-row: span 4; width: 5rem; height: 6.25rem; }
+    .veylique-cart-row-name { grid-column: 2; padding-right: 2rem; }
+    .veylique-cart-row-price,
+    .veylique-cart-row-total {
+      grid-column: 2;
+      text-align: left;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .veylique-cart-row-price::before,
+    .veylique-cart-row-total::before {
+      content: attr(data-cart-label);
+      font-family: var(--mustard-font-body);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--mustard-muted);
+    }
+    .veylique-cart-row-qty { grid-column: 2; justify-content: flex-start; }
+    .veylique-cart-continue { margin-right: 0; width: 100%; justify-content: center; }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    function init(root) {
+      var carts = root.querySelectorAll('[data-veylique-cart]');
+      carts.forEach(function (cart) {
+        if (cart.dataset.veyliqueCartReady === 'true') return;
+        cart.dataset.veyliqueCartReady = 'true';
+        cart.classList.add('veylique-js-ready');
+
+        var form = cart.querySelector('[data-veylique-cart-form]');
+
+        function commit() {
+          if (!form) return;
+          if (typeof form.requestSubmit === 'function') form.requestSubmit();
+          else form.submit();
+        }
+
+        cart.querySelectorAll('[data-veylique-qty]').forEach(function (stepper) {
+          var input = stepper.querySelector('[data-qty-input]');
+          var down = stepper.querySelector('[data-qty-down]');
+          var up = stepper.querySelector('[data-qty-up]');
+          if (!input) return;
+
+          if (down) down.addEventListener('click', function () {
+            var v = parseInt(input.value, 10) || 0;
+            input.value = Math.max(0, v - 1);
+            commit();
+          });
+          if (up) up.addEventListener('click', function () {
+            var v = parseInt(input.value, 10) || 0;
+            input.value = v + 1;
+            commit();
+          });
+          input.addEventListener('change', commit);
+        });
+      });
+    }
+
+    if (document.readyState !== 'loading') init(document);
+    else document.addEventListener('DOMContentLoaded', function () { init(document); });
+    document.addEventListener('shopify:section:load', function (event) { init(event.target); });
+  })();
+{% endjavascript %}
 
 {% schema %}
 {
   "name": "t:general.cart",
-  "settings": []
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_note",
+      "label": "t:sections.cart.settings.show_note.label",
+      "default": true
+    }
+  ]
 }
 {% endschema %}
