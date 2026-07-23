@@ -857,18 +857,35 @@
       if (image.complete && image.naturalWidth) markLoaded();
       else image.addEventListener('load', markLoaded, { once: true });
 
-      // Robustness for carousels below the fold: a lazy hover image may not have
-      // finished loading (so no load event yet) by the time it is hovered, which
-      // left the swap frozen. On first hover, promote it to eager and reveal it
-      // so the animation always plays.
+      // Promote to eager on first approach so the reveal isn't blocked on a lazy
+      // fetch. is-loaded is still only set on the real load event above, so the
+      // clip reveal never shows a blank/half-loaded image.
       var card = image.closest('.veylique-pcard, .veylique-best-card, .veylique-lp-card');
       if (card) {
         card.addEventListener('pointerenter', function () {
           if (image.getAttribute('loading') === 'lazy') image.loading = 'eager';
-          markLoaded();
         }, { once: true });
       }
     });
+
+    // Warm all hover images shortly after the page has loaded so they are
+    // downloaded before the user hovers — the reveal then never waits on a lazy
+    // fetch (mirrors the static demo). is-loaded is only added once an image is
+    // truly loaded, so the clip reveal never flashes a blank image.
+    if (!window.veyliqueHoverWarmScheduled &&
+        window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      window.veyliqueHoverWarmScheduled = true;
+      var warmHoverImages = function () {
+        window.setTimeout(function () {
+          document.querySelectorAll('.veylique-pcard__img--hover, .veylique-best-img--hover, .veylique-lp-img--hover').forEach(function (img) {
+            if (img.getAttribute('loading') === 'lazy') img.loading = 'eager';
+            if (img.complete && img.naturalWidth) img.classList.add('is-loaded');
+          });
+        }, 300);
+      };
+      if (document.readyState === 'complete') warmHoverImages();
+      else window.addEventListener('load', warmHoverImages, { once: true });
+    }
 
     root.querySelectorAll('[data-veylique-wish]').forEach(function (button) {
       if (button.dataset.veyliqueWishReady === 'true') return;
