@@ -424,6 +424,25 @@
     transform: translateY(50%) rotate(-45deg);
   }
 
+  /* Hide the animated header items until JS adds .is-ready, so they don't
+     paint fully visible and then jump to opacity:0 when the reveal keyframe
+     kicks in (that jump is the load flicker). Mirrors the hero content's
+     default-hidden pattern. */
+  .veylique-header-logo,
+  .veylique-nav-list li,
+  .veylique-header-actions > * {
+    opacity: 0;
+  }
+
+  /* Safety net: if motion is reduced (or the reveal never runs), show them. */
+  @media (prefers-reduced-motion: reduce) {
+    .veylique-header-logo,
+    .veylique-nav-list li,
+    .veylique-header-actions > * {
+      opacity: 1;
+    }
+  }
+
   .veylique-header.is-ready .veylique-header-logo {
     animation: veyliqueHeaderFade 420ms ease both;
   }
