@@ -71,7 +71,7 @@
         "category_dresses": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "dresses",
             "heading": "Dresses",
             "link": "",
             "fallback": "hero-1.webp",
@@ -81,7 +81,7 @@
         "category_ethnic": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "ethnic-wear",
             "heading": "Ethnic Wear",
             "link": "",
             "fallback": "hero-2.webp",
@@ -91,7 +91,7 @@
         "category_western": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "western-wear",
             "heading": "Western Wear",
             "link": "",
             "fallback": "hero-3.webp",
@@ -101,7 +101,7 @@
         "category_coord": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "co-ord-sets",
             "heading": "Co-ord Sets",
             "link": "",
             "fallback": "hero-4.webp",
@@ -111,7 +111,7 @@
         "category_tops": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "tops-shirts",
             "heading": "Tops & Shirts",
             "link": "",
             "fallback": "hero-5.webp",
@@ -121,7 +121,7 @@
         "category_accessories": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "accessories",
             "heading": "Accessories",
             "link": "",
             "fallback": "cta.webp",
@@ -150,7 +150,7 @@
       "settings": {
         "heading": "New Arrivals",
         "text": "The newest pieces to land in the collection, fresh off the rack and ready to wear.",
-        "collection": "",
+        "collection": "new-arrivals",
         "products_to_show": 4,
         "button_label": "Shop Now",
         "aria_label": "Veylique new arrivals",
@@ -200,7 +200,7 @@
       "settings": {
         "heading": "Shop Bestsellers",
         "text": "Our most-loved styles, trusted by thousands worldwide.",
-        "collection": "",
+        "collection": "bestsellers",
         "products_to_show": 8,
         "show_navigation": true,
         "controls_label": "Bestsellers carousel controls",
@@ -335,7 +335,7 @@
       "settings": {
         "heading": "Latest Products",
         "text": "Freshly launched styles and seasonal essentials selected for your next outfit.",
-        "collection": "",
+        "collection": "latest-products",
         "products_to_show": 10,
         "show_navigation": true,
         "controls_label": "Latest products carousel controls",
