@@ -25,5 +25,4 @@ CONTRIBUTING.md
 LICENSE.md
 
 # Local deployment utilities
-deploy.bat
 scripts/*
