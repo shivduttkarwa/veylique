@@ -17,17 +17,17 @@ shopify-upload/
 release
 *.zip
 
-# Old static-demo vendor/font artifacts kept locally for reference only.
-# These are not Theme Store-safe theme assets and are excluded from Shopify upload.
+# Old static-demo artifacts kept locally for reference only. These are NOT
+# referenced by any section/block/snippet and are excluded from deploys.
 assets/bootstrap*.css
 assets/bootstrap*.js
 assets/swiper*.css
-assets/swiper*.js
-assets/gsap*.js
-assets/ScrollTrigger*.js
-assets/SplitText*.js
 assets/rainyday*.js
-assets/clash-display*
 assets/inter*
 assets/demo-vid.mp4
 assets/footer-video.mp4
+
+# IMPORTANT: gsap / ScrollTrigger / SplitText / swiper JS and the clash-display
+# fonts ARE runtime dependencies of the theme (animations, sliders, headings)
+# and MUST stay committed so the Shopify GitHub integration deploys them.
+# Do NOT re-add them to .gitignore.
