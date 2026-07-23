@@ -151,7 +151,7 @@
         "heading": "New Arrivals",
         "text": "The newest pieces to land in the collection, fresh off the rack and ready to wear.",
         "collection": "new-arrivals",
-        "products_to_show": 4,
+        "products_to_show": 6,
         "button_label": "Shop Now",
         "aria_label": "Veylique new arrivals",
         "controls_label": "Slider controls",
@@ -567,9 +567,12 @@
         "aria_label": "Shop all products",
         "fallback": "hero-1.webp",
         "mobile_fallback": "hero-1.webp",
+        "label": "",
         "heading": "For <em>every</em> size.",
         "button_label": "Shop All Products",
-        "button_link": ""
+        "button_link": "",
+        "button2_label": "",
+        "button2_link": ""
       }
     },
     "faq": {
