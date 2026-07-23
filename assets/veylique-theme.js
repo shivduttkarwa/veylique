@@ -856,6 +856,18 @@
 
       if (image.complete && image.naturalWidth) markLoaded();
       else image.addEventListener('load', markLoaded, { once: true });
+
+      // Robustness for carousels below the fold: a lazy hover image may not have
+      // finished loading (so no load event yet) by the time it is hovered, which
+      // left the swap frozen. On first hover, promote it to eager and reveal it
+      // so the animation always plays.
+      var card = image.closest('.veylique-pcard, .veylique-best-card, .veylique-lp-card');
+      if (card) {
+        card.addEventListener('pointerenter', function () {
+          if (image.getAttribute('loading') === 'lazy') image.loading = 'eager';
+          markLoaded();
+        }, { once: true });
+      }
     });
 
     root.querySelectorAll('[data-veylique-wish]').forEach(function (button) {

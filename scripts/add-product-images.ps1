@@ -30,6 +30,7 @@
 param(
   [Parameter(Mandatory = $true)][string]$ImagesRoot,
   [string]$Store = "veylique-development.myshopify.com",
+  [string[]]$Only,
   [switch]$KeepPlaceholder
 )
 
@@ -80,12 +81,18 @@ function Get-MimeType([string]$ext) {
 function Get-ImagesForHandle([string]$handle) {
   $sub = Join-Path $ImagesRoot $handle
   if (Test-Path $sub -PathType Container) {
-    return Get-ChildItem $sub -File | Where-Object { $exts -contains $_.Extension.ToLower() } | Sort-Object Name
+    $files = Get-ChildItem $sub -File | Where-Object { $exts -contains $_.Extension.ToLower() }
+  } else {
+    # prefix match in root: "<handle>.ext" or "<handle>-*.ext"
+    $files = Get-ChildItem $ImagesRoot -File |
+      Where-Object { ($exts -contains $_.Extension.ToLower()) -and ($_.BaseName -eq $handle -or $_.BaseName -like "$handle-*") }
   }
-  # prefix match in root: "<handle>.ext" or "<handle>-*.ext"
-  return Get-ChildItem $ImagesRoot -File |
-    Where-Object { ($exts -contains $_.Extension.ToLower()) -and ($_.BaseName -eq $handle -or $_.BaseName -like "$handle-*") } |
-    Sort-Object Name
+  # Order so a "main" image is the featured (first) one and "hover" is last;
+  # everything else falls in between by name. (Alphabetically "hover" < "main",
+  # so a plain name sort would wrongly make hover the featured image.)
+  return $files | Sort-Object @{ Expression = {
+      if ($_.BaseName -match 'main') { 0 } elseif ($_.BaseName -match 'hover') { 2 } else { 1 }
+    } }, Name
 }
 
 # Upload one local file to Shopify staged storage, return its resourceUrl.
@@ -98,11 +105,20 @@ function Send-StagedUpload {
   if ($r.stagedUploadsCreate.userErrors) { throw "stagedUploadsCreate: $($r.stagedUploadsCreate.userErrors | ConvertTo-Json)" }
   $target = $r.stagedUploadsCreate.stagedTargets[0]
 
-  # Build multipart form: all returned params first, file last (GCS requires this order).
-  $form = [ordered]@{}
-  foreach ($p in $target.parameters) { $form[$p.name] = $p.value }
-  $form["file"] = Get-Item $File.FullName
-  Invoke-RestMethod -Uri $target.url -Method Post -Form $form | Out-Null
+  # Upload via curl.exe: GCS/S3 staged targets are strict about multipart form
+  # encoding (PowerShell's -Form produces a body they reject). All returned
+  # params go first, in order, then the file field last.
+  $curlArgs = @('--silent', '--show-error', '--fail')
+  foreach ($p in $target.parameters) {
+    $curlArgs += '-F'
+    $curlArgs += ('{0}={1}' -f $p.name, $p.value)
+  }
+  $curlArgs += '-F'
+  $curlArgs += ('file=@{0};type={1}' -f $File.FullName, $mime)
+  $curlArgs += $target.url
+
+  $out = & curl.exe @curlArgs 2>&1
+  if ($LASTEXITCODE -ne 0) { throw "curl upload failed for $($File.Name): $out" }
   return $target.resourceUrl
 }
 
@@ -111,6 +127,7 @@ Write-Host "=== Attaching product images from $ImagesRoot ===" -ForegroundColor 
 $attached = 0; $skipped = 0
 
 foreach ($handle in $handles) {
+  if ($Only -and $Only.Count -gt 0 -and ($Only -notcontains $handle)) { continue }
   $imgs = Get-ImagesForHandle $handle
   if (-not $imgs -or $imgs.Count -eq 0) {
     Write-Host "  - $handle : no images found, skipping" -ForegroundColor DarkGray
