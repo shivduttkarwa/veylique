@@ -249,6 +249,16 @@ body {
   width: 100%;
   height: 100%;
   display: block;
+  opacity: 0;
+  transition: opacity 350ms ease;
+}
+
+/* The canvas is opaque and fills a placeholder color before the first
+   slideshow image loads. Keep it hidden (the eager fallback image shows
+   underneath) and let JS reveal it only after the first real draw, so the
+   hero doesn't flash its placeholder fill once on load. */
+.veylique-home-hero__canvas.is-ready {
+  opacity: 1;
 }
 
 .veylique-home-hero__content {

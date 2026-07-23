@@ -100,6 +100,7 @@
     var transitionCount = 0;
     var labelChanged = false;
     var frameId = 0;
+    var revealed = false;
     var pointer = {
       x: 0,
       y: 0,
@@ -386,6 +387,12 @@
         context.drawImage(baseLayer, 0, 0, baseLayer.width, baseLayer.height, 0, 0, width, height);
         drawPointerDeformation();
         drawNoise();
+        // Reveal the canvas only after the first real image is drawn, so its
+        // opaque placeholder fill never flashes over the eager fallback image.
+        if (!revealed) {
+          revealed = true;
+          canvas.classList.add('is-ready');
+        }
       }
 
       frameId = window.requestAnimationFrame(render);
