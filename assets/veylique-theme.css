@@ -2321,6 +2321,13 @@ body {
   border-radius: 50%;
 }
 
+/* Keep the bubble image above the gold ::after disc so only the ring (the
+   -0.1875rem inset) shows gold on hover/active — not the whole circle. */
+.veylique-testi-bubble img {
+  position: relative;
+  z-index: 1;
+}
+
 .veylique-testi-bubble::after {
   content: "";
   position: absolute;
