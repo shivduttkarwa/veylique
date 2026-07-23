@@ -1,13 +1,22 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero": {
       "type": "veylique-about-hero",
       "settings": {
+        "fallback": "hero-2.webp",
         "label": "About Veylique",
         "heading_line_1": "Designed for",
         "heading_line_2": "real life.",
         "sub": "We create women's fashion with easy silhouettes, expressive prints, and comfort that moves through real life.",
-        "fallback": "hero-2.webp",
         "show_scroll": true
       }
     },
@@ -21,22 +30,49 @@
     "stats": {
       "type": "veylique-about-stats",
       "blocks": {
-        "s1": { "type": "stat", "settings": { "tag": "Considered details", "number": "48+", "stroke": false } },
-        "s2": { "type": "stat", "settings": { "tag": "Vendor partners", "number": "12", "stroke": true } },
-        "s3": { "type": "stat", "settings": { "tag": "Comfort-first fits", "number": "100%", "stroke": false } },
-        "s4": { "type": "stat", "settings": { "tag": "Founded in Paris", "number": "2018", "stroke": true } }
+        "s1": {
+          "type": "stat",
+          "settings": {
+            "tag": "Considered details",
+            "number": "48+",
+            "stroke": false
+          }
+        },
+        "s2": {
+          "type": "stat",
+          "settings": {
+            "tag": "Vendor partners",
+            "number": "12",
+            "stroke": true
+          }
+        },
+        "s3": {
+          "type": "stat",
+          "settings": {
+            "tag": "Comfort-first fits",
+            "number": "100%",
+            "stroke": false
+          }
+        },
+        "s4": {
+          "type": "stat",
+          "settings": {
+            "tag": "Founded in Paris",
+            "number": "2018",
+            "stroke": true
+          }
+        }
       },
-      "block_order": ["s1", "s2", "s3", "s4"]
+      "block_order": [
+        "s1",
+        "s2",
+        "s3",
+        "s4"
+      ],
+      "settings": {}
     },
     "story": {
       "type": "veylique-about-story",
-      "settings": {
-        "fallback": "founder.jpg",
-        "badge_text": "Founded in Paris — 2018 — Founded in Paris — 2018 — ",
-        "founder_kicker": "Founder",
-        "founder_name": "Sophie Laurent",
-        "founder_role": "Founder & Creative Director"
-      },
       "blocks": {
         "p1": {
           "type": "panel",
@@ -61,55 +97,188 @@
           }
         }
       },
-      "block_order": ["p1", "p2"]
+      "block_order": [
+        "p1",
+        "p2"
+      ],
+      "settings": {
+        "fallback": "founder.jpg",
+        "badge_text": "Founded in Paris — 2018 — Founded in Paris — 2018 — ",
+        "founder_kicker": "Founder",
+        "founder_name": "Sophie Laurent",
+        "founder_role": "Founder & Creative Director"
+      }
     },
     "values": {
       "type": "veylique-about-values",
+      "blocks": {
+        "v1": {
+          "type": "value",
+          "settings": {
+            "watermark": "I",
+            "index": "01",
+            "heading": "Material Honesty",
+            "text": "We choose breathable weaves, soft linings, and finishes that feel good against the body and stand up to everyday wear."
+          }
+        },
+        "v2": {
+          "type": "value",
+          "settings": {
+            "watermark": "II",
+            "index": "02",
+            "heading": "Fit Precision",
+            "text": "A beautiful print is only half the work. We tune proportions, seams, and closures until every piece feels natural to move in."
+          }
+        },
+        "v3": {
+          "type": "value",
+          "settings": {
+            "watermark": "III",
+            "index": "03",
+            "heading": "Mindful Fashion",
+            "text": "Premium should feel considered. We design versatile pieces that can be styled often, cared for easily, and loved longer."
+          }
+        }
+      },
+      "block_order": [
+        "v1",
+        "v2",
+        "v3"
+      ],
       "settings": {
         "eyebrow": "What We Stand For",
         "heading": "Three principles. Every decision.",
         "fallback": "hero-4.webp"
-      },
-      "blocks": {
-        "v1": { "type": "value", "settings": { "watermark": "I", "index": "01", "heading": "Material Honesty", "text": "We choose breathable weaves, soft linings, and finishes that feel good against the body and stand up to everyday wear." } },
-        "v2": { "type": "value", "settings": { "watermark": "II", "index": "02", "heading": "Fit Precision", "text": "A beautiful print is only half the work. We tune proportions, seams, and closures until every piece feels natural to move in." } },
-        "v3": { "type": "value", "settings": { "watermark": "III", "index": "03", "heading": "Mindful Fashion", "text": "Premium should feel considered. We design versatile pieces that can be styled often, cared for easily, and loved longer." } }
-      },
-      "block_order": ["v1", "v2", "v3"]
+      }
     },
     "materials": {
       "type": "veylique-about-materials",
+      "blocks": {
+        "m1": {
+          "type": "material",
+          "settings": {
+            "fallback": "about-ingredient-rose-otto.jpg",
+            "tag": "I",
+            "name": "Cotton Voile",
+            "desc": "Light, breathable, and soft against the skin, chosen for everyday dresses and easy summer layers."
+          }
+        },
+        "m2": {
+          "type": "material",
+          "settings": {
+            "fallback": "about-ingredient-bakuchiol.jpg",
+            "tag": "II",
+            "name": "Linen Blend",
+            "desc": "Textured without feeling stiff, giving co-ords and separates a relaxed yet polished structure."
+          }
+        },
+        "m3": {
+          "type": "material",
+          "settings": {
+            "fallback": "about-ingredient-blue-tansy.jpg",
+            "tag": "III",
+            "name": "Viscose Crepe",
+            "desc": "Fluid, drapey, and crease-friendly, selected for pieces that need to move from desk to dinner."
+          }
+        },
+        "c1": {
+          "type": "check",
+          "settings": {
+            "text": "No scratchy linings"
+          }
+        },
+        "c2": {
+          "type": "check",
+          "settings": {
+            "text": "No fussy care rituals"
+          }
+        },
+        "c3": {
+          "type": "check",
+          "settings": {
+            "text": "Comfort-first fit standard"
+          }
+        },
+        "c4": {
+          "type": "check",
+          "settings": {
+            "text": "Responsible sourcing where possible"
+          }
+        }
+      },
+      "block_order": [
+        "m1",
+        "m2",
+        "m3",
+        "c1",
+        "c2",
+        "c3",
+        "c4"
+      ],
       "settings": {
         "eyebrow": "Fabric Philosophy",
         "heading": "Thoughtful by design.",
         "text": "Signature materials, selected for comfort, drape, durability, and everyday ease."
-      },
-      "blocks": {
-        "m1": { "type": "material", "settings": { "fallback": "about-ingredient-rose-otto.jpg", "tag": "I", "name": "Cotton Voile", "desc": "Light, breathable, and soft against the skin, chosen for everyday dresses and easy summer layers." } },
-        "m2": { "type": "material", "settings": { "fallback": "about-ingredient-bakuchiol.jpg", "tag": "II", "name": "Linen Blend", "desc": "Textured without feeling stiff, giving co-ords and separates a relaxed yet polished structure." } },
-        "m3": { "type": "material", "settings": { "fallback": "about-ingredient-blue-tansy.jpg", "tag": "III", "name": "Viscose Crepe", "desc": "Fluid, drapey, and crease-friendly, selected for pieces that need to move from desk to dinner." } },
-        "c1": { "type": "check", "settings": { "text": "No scratchy linings" } },
-        "c2": { "type": "check", "settings": { "text": "No fussy care rituals" } },
-        "c3": { "type": "check", "settings": { "text": "Comfort-first fit standard" } },
-        "c4": { "type": "check", "settings": { "text": "Responsible sourcing where possible" } }
-      },
-      "block_order": ["m1", "m2", "m3", "c1", "c2", "c3", "c4"]
+      }
     },
     "press": {
       "type": "veylique-about-press",
+      "blocks": {
+        "n1": {
+          "type": "press",
+          "settings": {
+            "name": "The Style Edit"
+          }
+        },
+        "n2": {
+          "type": "press",
+          "settings": {
+            "name": "Modern Wardrobe"
+          }
+        },
+        "n3": {
+          "type": "press",
+          "settings": {
+            "name": "Style Journal"
+          }
+        },
+        "n4": {
+          "type": "press",
+          "settings": {
+            "name": "The Style Report"
+          }
+        },
+        "n5": {
+          "type": "press",
+          "settings": {
+            "name": "Considered Living"
+          }
+        },
+        "n6": {
+          "type": "press",
+          "settings": {
+            "name": "Daily Fits"
+          }
+        },
+        "n7": {
+          "type": "press",
+          "settings": {
+            "name": "The Wardrobe Review"
+          }
+        }
+      },
+      "block_order": [
+        "n1",
+        "n2",
+        "n3",
+        "n4",
+        "n5",
+        "n6",
+        "n7"
+      ],
       "settings": {
         "label": "As Featured In"
-      },
-      "blocks": {
-        "n1": { "type": "press", "settings": { "name": "The Style Edit" } },
-        "n2": { "type": "press", "settings": { "name": "Modern Wardrobe" } },
-        "n3": { "type": "press", "settings": { "name": "Style Journal" } },
-        "n4": { "type": "press", "settings": { "name": "The Style Report" } },
-        "n5": { "type": "press", "settings": { "name": "Considered Living" } },
-        "n6": { "type": "press", "settings": { "name": "Daily Fits" } },
-        "n7": { "type": "press", "settings": { "name": "The Wardrobe Review" } }
-      },
-      "block_order": ["n1", "n2", "n3", "n4", "n5", "n6", "n7"]
+      }
     },
     "cta": {
       "type": "veylique-home-full-cta",
