@@ -75,46 +75,6 @@
     }
   },
   "sections": {
-    "main-login": {
-      "name": "Login",
-      "settings": {
-        "form_header": { "content": "Form" },
-        "eyebrow": { "label": "Eyebrow" },
-        "heading": { "label": "Heading" },
-        "subheading": { "label": "Subheading" },
-        "email_placeholder": { "label": "Email placeholder" },
-        "password_placeholder": { "label": "Password placeholder" },
-        "aside_header": { "content": "Brand panel" },
-        "image": { "label": "Panel image" },
-        "fallback": { "label": "Fallback asset" },
-        "aside_eyebrow": { "label": "Panel eyebrow" },
-        "aside_heading": { "label": "Panel heading" },
-        "aside_text": { "label": "Panel text" }
-      }
-    },
-    "main-register": {
-      "name": "Register",
-      "settings": {
-        "form_header": { "content": "Form" },
-        "heading": { "label": "Heading" },
-        "subheading": { "label": "Subheading" }
-      }
-    },
-    "main-reset-password": {
-      "name": "Reset password"
-    },
-    "main-activate-account": {
-      "name": "Activate account"
-    },
-    "main-account": {
-      "name": "Account"
-    },
-    "main-order": {
-      "name": "Order"
-    },
-    "main-addresses": {
-      "name": "Addresses"
-    },
     "cart": {
       "settings": {
         "show_note": {
