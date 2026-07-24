@@ -1,0 +1,107 @@
+{% comment %}
+  Account dashboard — order history plus account details and default address.
+{% endcomment %}
+
+<section class="vq-account" aria-labelledby="AccountTitle-{{ section.id }}">
+  <div class="vq-account__inner">
+    <header class="vq-account__header">
+      <div>
+        <span class="vq-account__eyebrow">{{ 'customers.account.eyebrow' | t }}</span>
+        <h1 id="AccountTitle-{{ section.id }}" class="vq-account__title">
+          {{ 'customers.account.greeting' | t }} <span>{{ customer.first_name | default: customer.name | escape }}</span>
+        </h1>
+      </div>
+      <div class="vq-account__actions">
+        <a href="{{ routes.account_addresses_url }}" class="veylique-btn btn-white">{{ 'customers.account.addresses' | t }}</a>
+        <a href="{{ routes.account_logout_url }}" class="veylique-btn btn-black">{{ 'customers.account.logout' | t }}</a>
+      </div>
+    </header>
+
+    <div class="vq-account__grid">
+      {%- comment -%} ---- Order history ---- {%- endcomment -%}
+      <div class="vq-card">
+        <div class="vq-card__head">
+          <h2 class="vq-card__title">{{ 'customers.account.orders_title' | t }}</h2>
+        </div>
+
+        {% paginate customer.orders by 10 %}
+          {% if customer.orders.size > 0 %}
+            <div class="vq-table-wrap">
+              <table class="vq-table">
+                <caption class="visually-hidden">{{ 'customers.account.orders_title' | t }}</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">{{ 'customers.order.order_name' | t }}</th>
+                    <th scope="col">{{ 'customers.order.date' | t }}</th>
+                    <th scope="col">{{ 'customers.order.payment_status' | t }}</th>
+                    <th scope="col">{{ 'customers.order.fulfillment_status' | t }}</th>
+                    <th scope="col">{{ 'customers.order.total' | t }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for order in customer.orders %}
+                    <tr>
+                      <td><a href="{{ order.customer_url }}">{{ order.name }}</a></td>
+                      <td>{{ order.created_at | date: '%b %d, %Y' }}</td>
+                      <td>
+                        <span class="vq-pill vq-pill--{{ order.financial_status }}">{{ order.financial_status_label }}</span>
+                      </td>
+                      <td>
+                        <span class="vq-pill vq-pill--{{ order.fulfillment_status }}">{{ order.fulfillment_status_label }}</span>
+                      </td>
+                      <td>{{ order.total_net_amount | money }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            {% if paginate.pages > 1 %}
+              <nav class="vq-account__pagination" role="navigation" aria-label="{{ 'customers.account.orders_title' | t }}">
+                {{ paginate | default_pagination }}
+              </nav>
+            {% endif %}
+          {% else %}
+            <div class="vq-empty">
+              <p class="vq-empty__title">{{ 'customers.account.no_orders_title' | t }}</p>
+              <p class="vq-empty__text">{{ 'customers.account.no_orders_text' | t }}</p>
+              <a href="{{ routes.all_products_collection_url }}" class="veylique-btn btn-black">{{ 'customers.account.start_shopping' | t }}</a>
+            </div>
+          {% endif %}
+        {% endpaginate %}
+      </div>
+
+      {%- comment -%} ---- Details + default address ---- {%- endcomment -%}
+      <div>
+        <div class="vq-card">
+          <div class="vq-card__head">
+            <h2 class="vq-card__title">{{ 'customers.account.details_title' | t }}</h2>
+          </div>
+          <p class="vq-meta-label">{{ 'customers.account.name' | t }}</p>
+          <p class="vq-deflist"><address>{{ customer.name | escape }}</address></p>
+          <p class="vq-meta-label" style="margin-top:1.25rem">{{ 'customers.login.email' | t }}</p>
+          <p class="vq-deflist"><address>{{ customer.email }}</address></p>
+        </div>
+
+        <div class="vq-card">
+          <div class="vq-card__head">
+            <h2 class="vq-card__title">{{ 'customers.account.default_address' | t }}</h2>
+            <a href="{{ routes.account_addresses_url }}" class="vq-card__link">{{ 'customers.account.manage' | t }}</a>
+          </div>
+          {% if customer.default_address %}
+            <p class="vq-deflist">{{ customer.default_address | format_address }}</p>
+          {% else %}
+            <p class="vq-empty__text" style="margin:0">{{ 'customers.account.no_address' | t }}</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.main-account.name",
+  "settings": []
+}
+{% endschema %}

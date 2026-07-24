@@ -1,0 +1,73 @@
+{% comment %}
+  Activate account — reached from the invite/activation email Shopify sends
+  when an account is created for a customer. Offers activate or decline.
+{% endcomment %}
+
+<section class="vq-auth" aria-labelledby="ActivateTitle-{{ section.id }}">
+  {% render 'veylique-auth-aside',
+    image: section.settings.image,
+    fallback: section.settings.fallback,
+    eyebrow: section.settings.aside_eyebrow,
+    heading: section.settings.aside_heading,
+    text: section.settings.aside_text
+  %}
+
+  <div class="vq-auth__panel">
+    <div class="vq-auth__card">
+      <div class="vq-auth__head">
+        <span class="vq-auth__eyebrow">{{ 'customers.activate.eyebrow' | t }}</span>
+        <h1 id="ActivateTitle-{{ section.id }}" class="vq-auth__title">{{ 'customers.activate.title' | t }}</h1>
+        <p class="vq-auth__subtitle">{{ 'customers.activate.subtitle' | t }}</p>
+      </div>
+
+      {% form 'activate_customer_password', class: 'vq-form' %}
+        {% if form.errors %}
+          <div class="vq-alert vq-alert--error" role="alert">
+            {{ form.errors | default_errors }}
+          </div>
+        {% endif %}
+
+        <div class="vq-field">
+          <label class="vq-label" for="ActivatePassword-{{ section.id }}">{{ 'customers.reset.password' | t }}</label>
+          <input
+            type="password"
+            class="vq-input"
+            id="ActivatePassword-{{ section.id }}"
+            name="customer[password]"
+            autocomplete="new-password"
+            required
+          >
+        </div>
+
+        <div class="vq-field">
+          <label class="vq-label" for="ActivatePasswordConfirm-{{ section.id }}">{{ 'customers.reset.password_confirm' | t }}</label>
+          <input
+            type="password"
+            class="vq-input"
+            id="ActivatePasswordConfirm-{{ section.id }}"
+            name="customer[password_confirmation]"
+            autocomplete="new-password"
+            required
+          >
+        </div>
+
+        <button type="submit" name="commit" class="veylique-btn btn-black veylique-btn--block">{{ 'customers.activate.submit' | t }}</button>
+        <button type="submit" name="decline" class="veylique-btn btn-white veylique-btn--block">{{ 'customers.activate.decline' | t }}</button>
+      {% endform %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.main-activate-account.name",
+  "settings": [
+    { "type": "header", "content": "t:sections.main-login.settings.aside_header.content" },
+    { "type": "image_picker", "id": "image", "label": "t:sections.main-login.settings.image.label" },
+    { "type": "text", "id": "fallback", "label": "t:sections.main-login.settings.fallback.label", "default": "hero-5.webp" },
+    { "type": "text", "id": "aside_eyebrow", "label": "t:sections.main-login.settings.aside_eyebrow.label", "default": "Veylique" },
+    { "type": "text", "id": "aside_heading", "label": "t:sections.main-login.settings.aside_heading.label", "default": "Welcome to Veylique." },
+    { "type": "text", "id": "aside_text", "label": "t:sections.main-login.settings.aside_text.label", "default": "Set a password to activate your account and unlock your order history." }
+  ]
+}
+{% endschema %}

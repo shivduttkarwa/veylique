@@ -1,0 +1,250 @@
+{% comment %}
+  Customer addresses — add, edit and delete saved addresses. Country/province
+  selects are wired with Shopify's CountryProvinceSelector; add/edit panels use
+  native <details> so the page works without the enhancement JS, and delete is a
+  standard form guarded by a confirm.
+{% endcomment %}
+
+<section class="vq-account" aria-labelledby="AddressesTitle-{{ section.id }}">
+  <div class="vq-account__inner">
+    <header class="vq-account__header">
+      <div>
+        <span class="vq-account__eyebrow">{{ 'customers.addresses.eyebrow' | t }}</span>
+        <h1 id="AddressesTitle-{{ section.id }}" class="vq-account__title">{{ 'customers.addresses.title' | t }}</h1>
+      </div>
+      <div class="vq-account__actions">
+        <a href="{{ routes.account_url }}" class="veylique-btn btn-white">{{ 'customers.addresses.back' | t }}</a>
+      </div>
+    </header>
+
+    {%- comment -%} ---- Add a new address ---- {%- endcomment -%}
+    <details class="vq-address-form" id="AddressNewForm">
+      <summary>{{ 'customers.addresses.add_new' | t }}</summary>
+      <div class="vq-address-form__body">
+        {% form 'customer_address', customer.new_address, class: 'vq-form' %}
+          {% if form.errors %}
+            <div class="vq-alert vq-alert--error" role="alert">{{ form.errors | default_errors }}</div>
+          {% endif %}
+
+          <div class="vq-field__row">
+            <div class="vq-field">
+              <label class="vq-label" for="AddressFirstNameNew">{{ 'customers.register.first_name' | t }}</label>
+              <input type="text" class="vq-input" id="AddressFirstNameNew" name="address[first_name]" value="{{ form.first_name }}" autocomplete="given-name">
+            </div>
+            <div class="vq-field">
+              <label class="vq-label" for="AddressLastNameNew">{{ 'customers.register.last_name' | t }}</label>
+              <input type="text" class="vq-input" id="AddressLastNameNew" name="address[last_name]" value="{{ form.last_name }}" autocomplete="family-name">
+            </div>
+          </div>
+
+          <div class="vq-field">
+            <label class="vq-label" for="AddressCompanyNew">{{ 'customers.addresses.company' | t }}</label>
+            <input type="text" class="vq-input" id="AddressCompanyNew" name="address[company]" value="{{ form.company }}" autocomplete="organization">
+          </div>
+
+          <div class="vq-field">
+            <label class="vq-label" for="AddressAddress1New">{{ 'customers.addresses.address1' | t }}</label>
+            <input type="text" class="vq-input" id="AddressAddress1New" name="address[address1]" value="{{ form.address1 }}" autocomplete="address-line1">
+          </div>
+
+          <div class="vq-field">
+            <label class="vq-label" for="AddressAddress2New">{{ 'customers.addresses.address2' | t }}</label>
+            <input type="text" class="vq-input" id="AddressAddress2New" name="address[address2]" value="{{ form.address2 }}" autocomplete="address-line2">
+          </div>
+
+          <div class="vq-field__row">
+            <div class="vq-field">
+              <label class="vq-label" for="AddressCityNew">{{ 'customers.addresses.city' | t }}</label>
+              <input type="text" class="vq-input" id="AddressCityNew" name="address[city]" value="{{ form.city }}" autocomplete="address-level2">
+            </div>
+            <div class="vq-field">
+              <label class="vq-label" for="AddressZipNew">{{ 'customers.addresses.zip' | t }}</label>
+              <input type="text" class="vq-input" id="AddressZipNew" name="address[zip]" value="{{ form.zip }}" autocapitalize="characters" autocomplete="postal-code">
+            </div>
+          </div>
+
+          <div class="vq-field__row">
+            <div class="vq-field">
+              <label class="vq-label" for="AddressCountryNew">{{ 'customers.addresses.country' | t }}</label>
+              <select class="vq-input" id="AddressCountryNew" name="address[country]" data-default="{{ form.country }}" autocomplete="country">
+                {{ country_option_tags }}
+              </select>
+            </div>
+            <div class="vq-field" id="AddressProvinceContainerNew">
+              <label class="vq-label" for="AddressProvinceNew">{{ 'customers.addresses.province' | t }}</label>
+              <select class="vq-input" id="AddressProvinceNew" name="address[province]" data-default="{{ form.province }}" autocomplete="address-level1"></select>
+            </div>
+          </div>
+
+          <div class="vq-field">
+            <label class="vq-label" for="AddressPhoneNew">{{ 'customers.addresses.phone' | t }}</label>
+            <input type="tel" class="vq-input" id="AddressPhoneNew" name="address[phone]" value="{{ form.phone }}" autocomplete="tel">
+          </div>
+
+          <label class="vq-checkbox">
+            {{ form.set_as_default_checkbox }}
+            {{ 'customers.addresses.set_default' | t }}
+          </label>
+
+          <button type="submit" class="veylique-btn btn-black veylique-btn--block">{{ 'customers.addresses.add_submit' | t }}</button>
+        {% endform %}
+      </div>
+    </details>
+
+    {%- comment -%} ---- Saved addresses ---- {%- endcomment -%}
+    {% paginate customer.addresses by 12 %}
+      {% if customer.addresses.size > 0 %}
+        <div class="vq-address-grid" style="margin-top:1.5rem">
+          {% for address in customer.addresses %}
+            <div class="vq-card">
+              {% if address == customer.default_address %}
+                <span class="vq-address-card__badge">{{ 'customers.addresses.default' | t }}</span>
+              {% endif %}
+              <p class="vq-deflist">{{ address | format_address }}</p>
+
+              <div class="vq-address-card__actions">
+                <form method="post" action="{{ routes.account_addresses_url }}/{{ address.id }}" data-address-delete>
+                  <input type="hidden" name="_method" value="delete">
+                  <button type="submit" class="vq-textlink vq-textlink--danger">{{ 'customers.addresses.delete' | t }}</button>
+                </form>
+              </div>
+
+              <details class="vq-address-form" id="EditAddress-{{ address.id }}">
+                <summary>{{ 'customers.addresses.edit' | t }}</summary>
+                <div class="vq-address-form__body">
+                  {% form 'customer_address', address, class: 'vq-form' %}
+                    {% if form.errors %}
+                      <div class="vq-alert vq-alert--error" role="alert">{{ form.errors | default_errors }}</div>
+                    {% endif %}
+
+                    <div class="vq-field__row">
+                      <div class="vq-field">
+                        <label class="vq-label" for="AddressFirstName-{{ address.id }}">{{ 'customers.register.first_name' | t }}</label>
+                        <input type="text" class="vq-input" id="AddressFirstName-{{ address.id }}" name="address[first_name]" value="{{ address.first_name }}" autocomplete="given-name">
+                      </div>
+                      <div class="vq-field">
+                        <label class="vq-label" for="AddressLastName-{{ address.id }}">{{ 'customers.register.last_name' | t }}</label>
+                        <input type="text" class="vq-input" id="AddressLastName-{{ address.id }}" name="address[last_name]" value="{{ address.last_name }}" autocomplete="family-name">
+                      </div>
+                    </div>
+
+                    <div class="vq-field">
+                      <label class="vq-label" for="AddressCompany-{{ address.id }}">{{ 'customers.addresses.company' | t }}</label>
+                      <input type="text" class="vq-input" id="AddressCompany-{{ address.id }}" name="address[company]" value="{{ address.company }}" autocomplete="organization">
+                    </div>
+
+                    <div class="vq-field">
+                      <label class="vq-label" for="AddressAddress1-{{ address.id }}">{{ 'customers.addresses.address1' | t }}</label>
+                      <input type="text" class="vq-input" id="AddressAddress1-{{ address.id }}" name="address[address1]" value="{{ address.address1 }}" autocomplete="address-line1">
+                    </div>
+
+                    <div class="vq-field">
+                      <label class="vq-label" for="AddressAddress2-{{ address.id }}">{{ 'customers.addresses.address2' | t }}</label>
+                      <input type="text" class="vq-input" id="AddressAddress2-{{ address.id }}" name="address[address2]" value="{{ address.address2 }}" autocomplete="address-line2">
+                    </div>
+
+                    <div class="vq-field__row">
+                      <div class="vq-field">
+                        <label class="vq-label" for="AddressCity-{{ address.id }}">{{ 'customers.addresses.city' | t }}</label>
+                        <input type="text" class="vq-input" id="AddressCity-{{ address.id }}" name="address[city]" value="{{ address.city }}" autocomplete="address-level2">
+                      </div>
+                      <div class="vq-field">
+                        <label class="vq-label" for="AddressZip-{{ address.id }}">{{ 'customers.addresses.zip' | t }}</label>
+                        <input type="text" class="vq-input" id="AddressZip-{{ address.id }}" name="address[zip]" value="{{ address.zip }}" autocapitalize="characters" autocomplete="postal-code">
+                      </div>
+                    </div>
+
+                    <div class="vq-field__row">
+                      <div class="vq-field">
+                        <label class="vq-label" for="AddressCountry-{{ address.id }}">{{ 'customers.addresses.country' | t }}</label>
+                        <select class="vq-input" id="AddressCountry-{{ address.id }}" name="address[country]" data-default="{{ address.country }}" autocomplete="country">
+                          {{ country_option_tags }}
+                        </select>
+                      </div>
+                      <div class="vq-field" id="AddressProvinceContainer-{{ address.id }}">
+                        <label class="vq-label" for="AddressProvince-{{ address.id }}">{{ 'customers.addresses.province' | t }}</label>
+                        <select class="vq-input" id="AddressProvince-{{ address.id }}" name="address[province]" data-default="{{ address.province }}" autocomplete="address-level1"></select>
+                      </div>
+                    </div>
+
+                    <div class="vq-field">
+                      <label class="vq-label" for="AddressPhone-{{ address.id }}">{{ 'customers.addresses.phone' | t }}</label>
+                      <input type="tel" class="vq-input" id="AddressPhone-{{ address.id }}" name="address[phone]" value="{{ address.phone }}" autocomplete="tel">
+                    </div>
+
+                    <label class="vq-checkbox">
+                      {{ form.set_as_default_checkbox }}
+                      {{ 'customers.addresses.set_default' | t }}
+                    </label>
+
+                    <button type="submit" class="veylique-btn btn-black veylique-btn--block">{{ 'customers.addresses.update_submit' | t }}</button>
+                  {% endform %}
+                </div>
+              </details>
+            </div>
+          {% endfor %}
+        </div>
+
+        {% if paginate.pages > 1 %}
+          <nav class="vq-account__pagination" role="navigation" aria-label="{{ 'customers.addresses.title' | t }}">
+            {{ paginate | default_pagination }}
+          </nav>
+        {% endif %}
+      {% else %}
+        <div class="vq-card" style="margin-top:1.5rem">
+          <div class="vq-empty">
+            <p class="vq-empty__title">{{ 'customers.addresses.empty_title' | t }}</p>
+            <p class="vq-empty__text">{{ 'customers.addresses.empty_text' | t }}</p>
+          </div>
+        </div>
+      {% endif %}
+    {% endpaginate %}
+  </div>
+</section>
+
+<script src="{{ 'shopify_common.js' | shopify_asset_url }}" defer></script>
+<script>
+  (function () {
+    function initProvince(country, province, container) {
+      if (typeof Shopify === 'undefined' || !Shopify.CountryProvinceSelector) return;
+      if (!document.getElementById(country)) return;
+      new Shopify.CountryProvinceSelector(country, province, { hideElement: container });
+    }
+
+    function ready() {
+      initProvince('AddressCountryNew', 'AddressProvinceNew', 'AddressProvinceContainerNew');
+      {% for address in customer.addresses %}
+        initProvince('AddressCountry-{{ address.id }}', 'AddressProvince-{{ address.id }}', 'AddressProvinceContainer-{{ address.id }}');
+      {% endfor %}
+
+      document.querySelectorAll('[data-address-edit]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var panel = document.getElementById('EditAddress-' + btn.getAttribute('data-address-edit'));
+          if (!panel) return;
+          var open = !panel.open;
+          panel.open = open;
+          btn.setAttribute('aria-expanded', String(open));
+          if (open) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+      });
+
+      document.querySelectorAll('[data-address-delete]').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+          if (!window.confirm({{ 'customers.addresses.delete_confirm' | t | json }})) {
+            event.preventDefault();
+          }
+        });
+      });
+    }
+
+    if (document.readyState !== 'loading') ready();
+    else document.addEventListener('DOMContentLoaded', ready);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.main-addresses.name",
+  "settings": []
+}
+{% endschema %}
