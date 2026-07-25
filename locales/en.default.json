@@ -1,11 +1,11 @@
 {
-  "accessibility": {
-    "skip_to_content": "Skip to content"
-  },
   "404": {
     "title": "404",
     "not_found": "Page not found.",
     "back_to_shopping": "Back to shopping"
+  },
+  "accessibility": {
+    "skip_to_content": "Skip to content"
   },
   "blog": {
     "article_comments": "Comments",
@@ -147,7 +147,14 @@
     "share": "Share",
     "buy_it_now": "Buy it now",
     "view_full_details": "View full details",
-    "quantity_error": "Sorry, we couldn't add that. Please try again."
+    "quantity_error": "Sorry, we couldn't add that. Please try again.",
+    "badge_new": "New",
+    "only_left": "Only {{ count }} left",
+    "previous_image": "Previous image",
+    "next_image": "Next image",
+    "zoom_image": "Open image in full screen",
+    "close_gallery": "Close",
+    "share_copied": "Link copied to clipboard"
   },
   "general": {
     "breadcrumb": {

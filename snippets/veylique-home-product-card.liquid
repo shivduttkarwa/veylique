@@ -70,6 +70,26 @@
     endif
   endif
 
+  assign is_new = false
+  if product != blank and sold_out == false
+    assign new_cutoff = 'now' | date: '%s' | minus: 2592000
+    assign published = product.published_at | date: '%s' | plus: 0
+    if published > new_cutoff
+      assign is_new = true
+    endif
+  endif
+
+  assign color_option = blank
+  if product != blank
+    for card_option in product.options_with_values
+      assign card_option_name = card_option.name | downcase
+      if card_option_name contains 'color' or card_option_name contains 'colour'
+        assign color_option = card_option
+        break
+      endif
+    endfor
+  endif
+
   assign main_fallback = fallback | default: 'hero-1.webp'
   assign secondary_fallback = hover_fallback | default: main_fallback
 %}
@@ -81,6 +101,8 @@
         <span class="veylique-pcard__badge veylique-pcard__badge--out">{{ 'products.sold_out' | t }}</span>
       {% elsif on_sale %}
         <span class="veylique-pcard__badge">{% if discount > 0 %}{{ 'products.save_percent_html' | t: percent: discount }}{% else %}{{ 'products.badge_sale' | t }}{% endif %}</span>
+      {% elsif is_new %}
+        <span class="veylique-pcard__badge veylique-pcard__badge--new">{{ 'products.badge_new' | t }}</span>
       {% endif %}
 
       {% if show_brand and rating_value > 0 %}
@@ -129,11 +151,25 @@
                 <a
                   class="veylique-pcard__size{% unless variant.available %} is-oos{% endunless %}"
                   href="{{ product.url }}?variant={{ variant.id }}"
+                  {% if variant.available %}
+                    data-veylique-quick-add
+                    data-variant-id="{{ variant.id }}"
+                    data-added-label="{{ 'products.added' | t | escape }}"
+                    aria-label="{{ 'products.add_to_cart' | t }} — {{ card_title | escape }} {{ variant.title | escape }}"
+                  {% endif %}
                 >{{ variant.title | escape }}</a>
               {% endfor %}
             </div>
+          {% elsif product != blank and product.variants.size == 1 %}
+            <a
+              class="veylique-pcard__add"
+              href="{{ card_link }}"
+              data-veylique-quick-add
+              data-variant-id="{{ product.first_available_variant.id }}"
+              data-added-label="{{ 'products.added' | t | escape }}"
+            >{{ 'products.add_to_cart' | t }}</a>
           {% else %}
-            <a class="veylique-pcard__add" href="{{ card_link }}">{{ 'products.add_to_cart' | t }}</a>
+            <a class="veylique-pcard__add" href="{{ card_link }}">{{ 'products.choose_options' | t }}</a>
           {% endif %}
         </div>
       {% else %}
@@ -167,6 +203,20 @@
       </div>
     {% endif %}
   </div>
+
+  {% if color_option != blank and color_option.values.size > 1 %}
+    <a class="veylique-pcard__colors" href="{{ card_link }}" aria-label="{{ color_option.name | escape }}: {{ color_option.values | join: ', ' | escape }}">
+      {% for value in color_option.values limit: 4 %}
+        <span
+          class="veylique-pcard__dot"
+          style="{% if value.swatch.image %}background-image: url({{ value.swatch.image | image_url: width: 40 }});{% elsif value.swatch.color %}background: {{ value.swatch.color }};{% else %}background: {{ value | handleize }};{% endif %}"
+        ></span>
+      {% endfor %}
+      {% if color_option.values.size > 4 %}
+        <span class="veylique-pcard__dot-more">+{{ color_option.values.size | minus: 4 }}</span>
+      {% endif %}
+    </a>
+  {% endif %}
 </article>
 
 {% stylesheet %}
@@ -535,4 +585,105 @@
   @media (prefers-reduced-motion: reduce) {
     .veylique-pcard__qa { transition: none; }
   }
+
+  /* ---- New badge ---- */
+  .veylique-pcard__badge--new {
+    background: var(--veylique-color-secondary, #6f7d68);
+  }
+
+  /* ---- Color swatch dots ---- */
+  .veylique-pcard__colors {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-top: 0.5rem;
+    text-decoration: none;
+  }
+  .veylique-pcard__dot {
+    width: 0.875rem;
+    height: 0.875rem;
+    border-radius: 50%;
+    border: 0.0625rem solid rgba(36, 31, 26, 0.18);
+    background-size: cover;
+    background-position: center;
+    box-shadow: inset 0 0 0 0.09375rem var(--veylique-color-surface, #fff);
+    transition: transform 0.2s var(--veylique-ease-standard, ease);
+  }
+  @media (hover: hover) {
+    .veylique-pcard__colors:hover .veylique-pcard__dot { transform: scale(1.12); }
+  }
+  .veylique-pcard__dot-more {
+    font-family: var(--veylique-font-body);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--veylique-color-muted, #756b60);
+  }
+
+  /* ---- Quick add busy / added states ---- */
+  .veylique-pcard__size.is-busy,
+  .veylique-pcard__add.is-busy {
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .veylique-pcard__size.is-added {
+    border-color: var(--veylique-color-secondary, #6f7d68);
+    background: var(--veylique-color-secondary, #6f7d68);
+    color: #fff;
+  }
+  .veylique-pcard__add.is-added {
+    background: var(--veylique-color-secondary, #6f7d68);
+  }
 {% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    if (window.veyliqueQuickAddReady) return;
+    window.veyliqueQuickAddReady = true;
+
+    function updateCartCount(count) {
+      var el = document.querySelector('.veylique-cart-count');
+      if (el) { el.textContent = count; return; }
+      var trigger = document.querySelector('.veylique-cart-trigger');
+      if (trigger && count > 0) {
+        var span = document.createElement('span');
+        span.className = 'veylique-cart-count';
+        span.textContent = count;
+        trigger.appendChild(span);
+      }
+    }
+
+    document.addEventListener('click', function (event) {
+      var link = event.target.closest('[data-veylique-quick-add]');
+      if (!link || !window.fetch) return; /* no JS support: follow the href */
+      event.preventDefault();
+      if (link.classList.contains('is-busy') || link.classList.contains('is-added')) return;
+
+      link.classList.add('is-busy');
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ id: parseInt(link.dataset.variantId, 10), quantity: 1 })
+      })
+        .then(function (r) { if (!r.ok) throw new Error('add'); return r.json(); })
+        .then(function () { return fetch('/cart.js', { headers: { 'Accept': 'application/json' } }); })
+        .then(function (r) { return r.json(); })
+        .then(function (cart) {
+          updateCartCount(cart.item_count);
+          link.classList.add('is-added');
+          var isTextButton = link.classList.contains('veylique-pcard__add');
+          if (isTextButton && link.dataset.addedLabel) {
+            if (!link.dataset.originalLabel) link.dataset.originalLabel = link.textContent;
+            link.textContent = link.dataset.addedLabel;
+          }
+          window.setTimeout(function () {
+            link.classList.remove('is-added');
+            if (isTextButton && link.dataset.originalLabel) {
+              link.textContent = link.dataset.originalLabel;
+            }
+          }, 2000);
+        })
+        .catch(function () { window.location.href = link.href; })
+        .finally(function () { link.classList.remove('is-busy'); });
+    });
+  })();
+{% endjavascript %}

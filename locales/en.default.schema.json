@@ -1639,6 +1639,43 @@
       "presets": {
         "name": "Product recommendations"
       }
+    },
+    "product": {
+      "settings": {
+        "details_text": {
+          "label": "Details & care content"
+        },
+        "shipping_text": {
+          "label": "Shipping & returns content"
+        },
+        "size_guide_text": {
+          "label": "Size guide content",
+          "info": "Shown in a dialog from the size selector. Leave empty to hide the link."
+        },
+        "low_stock_threshold": {
+          "label": "Low stock alert threshold",
+          "info": "Shows \"Only X left\" at or below this quantity. Set to 0 to hide stock messaging."
+        }
+      },
+      "blocks": {
+        "trust": {
+          "name": "Trust badge",
+          "settings": {
+            "icon": {
+              "label": "Icon",
+              "options": {
+                "shipping": "Shipping",
+                "returns": "Returns",
+                "secure": "Secure checkout",
+                "quality": "Quality"
+              }
+            },
+            "text": {
+              "label": "Text"
+            }
+          }
+        }
+      }
     }
   },
   "info": {

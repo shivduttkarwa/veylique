@@ -1,6 +1,9 @@
 {% comment %}
-  Product detail page — gallery, variant-aware buy box (size/colour selectors,
-  quantity, AJAX add-to-cart), and details accordions.
+  Product detail page — editorial gallery (scroll-snap slides, vertical thumb
+  rail, lightbox zoom), variant-aware buy box (color dot swatches, size guide,
+  live stock indicator, quantity, AJAX add-to-cart), trust strip, share, and
+  details accordions. A sticky add-to-cart bar appears on mobile once the main
+  actions scroll out of view.
   https://shopify.dev/docs/storefronts/themes/architecture/templates/product
 {% endcomment %}
 
@@ -13,6 +16,22 @@
   assign has_media = false
   if product.media.size > 0
     assign has_media = true
+  endif
+
+  assign rating_value = 0
+  assign rating_count = 0
+  if product.metafields.reviews.rating != blank
+    assign rating_value = product.metafields.reviews.rating.value | round: 1
+    assign rating_count = product.metafields.reviews.rating_count | default: 0
+  endif
+
+  assign is_new = false
+  if product.available and on_sale == false
+    assign new_cutoff = 'now' | date: '%s' | minus: 2592000
+    assign published = product.published_at | date: '%s' | plus: 0
+    if published > new_cutoff
+      assign is_new = true
+    endif
   endif
 %}
 
@@ -31,32 +50,8 @@
     <div class="veylique-pdp-grid">
       {% comment %} ---------- Gallery ---------- {% endcomment %}
       <div class="veylique-pdp-gallery">
-        <div class="veylique-pdp-stage">
-          {% if on_sale %}
-            <span class="veylique-pdp-badge">{{ 'products.badge_sale' | t }}</span>
-          {% endif %}
-          <div class="veylique-pdp-main" data-pdp-main>
-            {% if has_media %}
-              {% assign main_media = current_variant.featured_media | default: product.featured_media %}
-              {{
-                main_media
-                | image_url: width: 1400
-                | image_tag:
-                  loading: 'eager',
-                  fetchpriority: 'high',
-                  sizes: '(min-width: 1000px) 46vw, 100vw',
-                  widths: '540, 720, 900, 1200, 1400, 1800',
-                  class: 'veylique-pdp-main-img',
-                  alt: main_media.alt | default: product.title
-              }}
-            {% else %}
-              {{ 'product-apparel-1' | placeholder_svg_tag: 'veylique-pdp-main-img' }}
-            {% endif %}
-          </div>
-        </div>
-
         {% if product.media.size > 1 %}
-          <div class="veylique-pdp-thumbs" role="list" data-pdp-thumbs>
+          <div class="veylique-pdp-rail" role="list" data-pdp-thumbs>
             {% for media in product.media %}
               <button
                 type="button"
@@ -64,8 +59,7 @@
                 role="listitem"
                 data-pdp-thumb
                 data-media-id="{{ media.id }}"
-                data-full="{{ media | image_url: width: 1400 }}"
-                data-alt="{{ media.alt | default: product.title | escape }}"
+                data-index="{{ forloop.index0 }}"
                 aria-label="{{ product.title | escape }} — {{ forloop.index }}"
               >
                 {{ media | image_url: width: 200 | image_tag: loading: 'lazy', alt: media.alt | default: product.title, widths: '100, 200, 300' }}
@@ -73,6 +67,84 @@
             {% endfor %}
           </div>
         {% endif %}
+
+        <div class="veylique-pdp-stage">
+          {% if product.available == false %}
+            <span class="veylique-pdp-badge veylique-pdp-badge--out">{{ 'products.sold_out' | t }}</span>
+          {% elsif on_sale %}
+            <span class="veylique-pdp-badge">{{ 'products.badge_sale' | t }}</span>
+          {% elsif is_new %}
+            <span class="veylique-pdp-badge veylique-pdp-badge--new">{{ 'products.badge_new' | t }}</span>
+          {% endif %}
+
+          <div class="veylique-pdp-track" data-pdp-track tabindex="0" aria-label="{{ product.title | escape }}">
+            {% if has_media %}
+              {% for media in product.media %}
+                <div
+                  class="veylique-pdp-slide"
+                  data-pdp-slide
+                  data-media-id="{{ media.id }}"
+                  data-index="{{ forloop.index0 }}"
+                  role="group"
+                  aria-roledescription="slide"
+                  aria-label="{{ forloop.index }} / {{ product.media.size }}"
+                >
+                  {% if media.media_type == 'image' %}
+                    {% liquid
+                      assign slide_loading = 'lazy'
+                      if forloop.first
+                        assign slide_loading = 'eager'
+                      endif
+                    %}
+                    {{
+                      media
+                      | image_url: width: 1600
+                      | image_tag:
+                        loading: slide_loading,
+                        sizes: '(min-width: 1000px) 46vw, 100vw',
+                        widths: '540, 720, 900, 1200, 1600, 2000',
+                        class: 'veylique-pdp-slide-img',
+                        alt: media.alt | default: product.title
+                    }}
+                    <button
+                      type="button"
+                      class="veylique-pdp-zoom"
+                      data-pdp-zoom
+                      data-zoom-src="{{ media | image_url: width: 2400 }}"
+                      data-index="{{ forloop.index0 }}"
+                      aria-label="{{ 'products.zoom_image' | t }}"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                    </button>
+                  {% else %}
+                    {{ media | media_tag: class: 'veylique-pdp-slide-media' }}
+                  {% endif %}
+                </div>
+              {% endfor %}
+            {% else %}
+              <div class="veylique-pdp-slide" data-pdp-slide data-index="0">
+                {{ 'product-apparel-1' | placeholder_svg_tag: 'veylique-pdp-slide-img' }}
+              </div>
+            {% endif %}
+          </div>
+
+          {% if product.media.size > 1 %}
+            <button type="button" class="veylique-pdp-arrow veylique-pdp-arrow--prev" data-pdp-prev aria-label="{{ 'products.previous_image' | t }}">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <button type="button" class="veylique-pdp-arrow veylique-pdp-arrow--next" data-pdp-next aria-label="{{ 'products.next_image' | t }}">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+
+            <span class="veylique-pdp-counter" data-pdp-counter aria-hidden="true">1 / {{ product.media.size }}</span>
+
+            <div class="veylique-pdp-dots" aria-hidden="true">
+              {% for media in product.media %}
+                <span class="veylique-pdp-dot{% if forloop.first %} is-active{% endif %}" data-pdp-dot data-index="{{ forloop.index0 }}"></span>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
       </div>
 
       {% comment %} ---------- Buy box ---------- {% endcomment %}
@@ -82,6 +154,18 @@
         {% endif %}
 
         <h1 class="veylique-pdp-title">{{ product.title }}</h1>
+
+        {% if rating_value > 0 %}
+          <div class="veylique-pdp-rating">
+            <span class="veylique-pdp-rating-stars" aria-hidden="true">
+              {% assign rating_rounded = rating_value | round %}
+              {% for i in (1..5) %}
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="{% if i <= rating_rounded %}currentColor{% else %}none{% endif %}" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              {% endfor %}
+            </span>
+            <span class="veylique-pdp-rating-text">{{ rating_value }}{% if rating_count > 0 %} · {{ rating_count }}{% endif %}</span>
+          </div>
+        {% endif %}
 
         <div class="veylique-pdp-price" data-pdp-price>
           <span class="veylique-pdp-price-current{% if on_sale %} is-sale{% endif %}" data-pdp-price-current>{{ current_variant.price | money }}</span>
@@ -105,11 +189,21 @@
                   if option_name contains 'color' or option_name contains 'colour'
                     assign is_color = true
                   endif
+                  assign is_size = false
+                  if option_name contains 'size'
+                    assign is_size = true
+                  endif
                 %}
                 <fieldset class="veylique-pdp-option" data-pdp-option data-option-position="{{ option.position }}">
                   <legend class="veylique-pdp-option-head">
                     <span class="veylique-pdp-option-name">{{ option.name }}</span>
                     <span class="veylique-pdp-option-value" data-pdp-option-selected="{{ option.position }}">{{ option.selected_value }}</span>
+                    {% if is_size and section.settings.size_guide_text != blank %}
+                      <button type="button" class="veylique-pdp-sizeguide-link" data-pdp-sizeguide-open>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.3 8.7l-6-6a1 1 0 0 0-1.4 0l-11.2 11.2a1 1 0 0 0 0 1.4l6 6a1 1 0 0 0 1.4 0l11.2-11.2a1 1 0 0 0 0-1.4z"/><path d="M7.5 10.5l1.5 1.5"/><path d="M10.5 7.5l1.5 1.5"/><path d="M13.5 4.5l1.5 1.5"/></svg>
+                        {{ 'products.size_guide' | t }}
+                      </button>
+                    {% endif %}
                   </legend>
                   <div class="veylique-pdp-swatches{% if is_color %} is-color{% endif %}">
                     {% for value in option.values %}
@@ -130,13 +224,30 @@
                         data-option-position="{{ option.position }}"
                         {% if is_checked %}checked{% endif %}
                       >
-                      <label class="veylique-pdp-swatch" for="{{ input_id }}">{{ value }}</label>
+                      {% if is_color %}
+                        <label class="veylique-pdp-swatch veylique-pdp-swatch--color" for="{{ input_id }}" title="{{ value | escape }}">
+                          <span
+                            class="veylique-pdp-swatch-chip"
+                            style="{% if value.swatch.image %}background-image: url({{ value.swatch.image | image_url: width: 80 }});{% elsif value.swatch.color %}background: {{ value.swatch.color }};{% else %}background: {{ value | handleize }};{% endif %}"
+                          ></span>
+                          <span class="visually-hidden">{{ value }}</span>
+                        </label>
+                      {% else %}
+                        <label class="veylique-pdp-swatch" for="{{ input_id }}">{{ value }}</label>
+                      {% endif %}
                     {% endfor %}
                   </div>
                 </fieldset>
               {% endfor %}
             </div>
           {% endunless %}
+
+          {% if section.settings.low_stock_threshold > 0 %}
+            <p class="veylique-pdp-stock" data-pdp-stock hidden>
+              <span class="veylique-pdp-stock-dot" aria-hidden="true"></span>
+              <span data-pdp-stock-text></span>
+            </p>
+          {% endif %}
 
           <div class="veylique-pdp-actions">
             <div class="veylique-pdp-qty" data-pdp-qty>
@@ -167,10 +278,43 @@
           {{ form | payment_button }}
         {% endform %}
 
+        {% assign has_trust = false %}
+        {% for block in section.blocks %}
+          {% if block.type == 'trust' and block.settings.text != blank %}
+            {% assign has_trust = true %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+        {% if has_trust %}
+          <ul class="veylique-pdp-trust">
+            {% for block in section.blocks %}
+              {% if block.type == 'trust' and block.settings.text != blank %}
+                <li class="veylique-pdp-trust-item" {{ block.shopify_attributes }}>
+                  {% case block.settings.icon %}
+                    {% when 'returns' %}
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                    {% when 'secure' %}
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                    {% when 'quality' %}
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5L17 22l-5-3-5 3 1.5-8.5"/></svg>
+                    {% else %}
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                  {% endcase %}
+                  <span>{{ block.settings.text | escape }}</span>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        {% endif %}
+
         <div class="veylique-pdp-meta">
           <button type="button" class="veylique-pdp-wish" data-veylique-wish aria-label="{{ 'products.add_to_wishlist' | t: title: product.title }}">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             <span>{{ 'products.add_to_wishlist' | t: title: '' | strip }}</span>
+          </button>
+          <button type="button" class="veylique-pdp-share" data-pdp-share data-share-title="{{ product.title | escape }}" data-share-url="{{ request.origin }}{{ product.url }}">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            <span>{{ 'products.share' | t }}</span>
           </button>
           {% if current_variant.sku != blank %}
             <span class="veylique-pdp-sku" data-pdp-sku>{{ 'products.sku' | t }}: {{ current_variant.sku }}</span>
@@ -205,6 +349,47 @@
     </div>
   </div>
 
+  {% comment %} ---------- Sticky mobile add-to-cart bar ---------- {% endcomment %}
+  <div class="veylique-pdp-stickybar" data-pdp-sticky aria-hidden="true">
+    {% if product.featured_image %}
+      {{ product.featured_image | image_url: width: 120 | image_tag: loading: 'lazy', class: 'veylique-pdp-stickybar-thumb', alt: product.title, widths: '60, 120' }}
+    {% endif %}
+    <div class="veylique-pdp-stickybar-meta">
+      <p class="veylique-pdp-stickybar-title">{{ product.title | escape }}</p>
+      <p class="veylique-pdp-stickybar-price" data-pdp-sticky-price>{{ current_variant.price | money }}</p>
+    </div>
+    <button type="button" class="veylique-pdp-stickybar-atc veylique-btn btn-black" data-pdp-sticky-atc>
+      <span data-pdp-sticky-atc-text>{% if current_variant.available %}{{ 'products.add_to_cart' | t }}{% else %}{{ 'products.sold_out' | t }}{% endif %}</span>
+    </button>
+  </div>
+
+  {% comment %} ---------- Lightbox ---------- {% endcomment %}
+  <dialog class="veylique-pdp-lightbox" data-pdp-lightbox aria-label="{{ product.title | escape }}">
+    <button type="button" class="veylique-pdp-lightbox-close" data-pdp-lightbox-close aria-label="{{ 'products.close_gallery' | t }}">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <button type="button" class="veylique-pdp-lightbox-nav veylique-pdp-lightbox-nav--prev" data-pdp-lightbox-prev aria-label="{{ 'products.previous_image' | t }}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <img class="veylique-pdp-lightbox-img" data-pdp-lightbox-img width="2400" height="3200" alt="{{ product.title | escape }}">
+    <button type="button" class="veylique-pdp-lightbox-nav veylique-pdp-lightbox-nav--next" data-pdp-lightbox-next aria-label="{{ 'products.next_image' | t }}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </dialog>
+
+  {% comment %} ---------- Size guide ---------- {% endcomment %}
+  {% if section.settings.size_guide_text != blank %}
+    <dialog class="veylique-pdp-sizeguide" data-pdp-sizeguide aria-label="{{ 'products.size_guide' | t }}">
+      <div class="veylique-pdp-sizeguide-head">
+        <h2 class="veylique-pdp-sizeguide-title">{{ 'products.size_guide' | t }}</h2>
+        <button type="button" class="veylique-pdp-lightbox-close veylique-pdp-sizeguide-close" data-pdp-sizeguide-close aria-label="{{ 'products.close_gallery' | t }}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="veylique-pdp-sizeguide-body rte">{{ section.settings.size_guide_text }}</div>
+    </dialog>
+  {% endif %}
+
   <script type="application/json" data-pdp-variants>
     [
       {%- for v in product.variants -%}
@@ -217,7 +402,10 @@
           "price_num": {{ v.price }},
           "compare_num": {{ v.compare_at_price | default: 0 }},
           "featured_media_id": {% if v.featured_media %}{{ v.featured_media.id }}{% else %}null{% endif %},
-          "sku": {{ v.sku | json }}
+          "sku": {{ v.sku | json }},
+          "inventory_managed": {% if v.inventory_management == 'shopify' %}true{% else %}false{% endif %},
+          "inventory_policy": {{ v.inventory_policy | json }},
+          "inventory_quantity": {{ v.inventory_quantity | default: 0 }}
         }{%- unless forloop.last -%},{%- endunless -%}
       {%- endfor -%}
     ]
@@ -226,13 +414,17 @@
   <script type="application/json" data-pdp-config>
     {
       "cartUrl": {{ routes.cart_url | json }},
+      "lowStockThreshold": {{ section.settings.low_stock_threshold | default: 0 }},
       "strings": {
         "soldOut": {{ 'products.sold_out' | t | json }},
         "unavailable": {{ 'products.unavailable' | t | json }},
         "adding": {{ 'products.adding' | t | json }},
         "added": {{ 'products.added' | t | json }},
         "viewCart": {{ 'products.view_cart' | t | json }},
-        "error": {{ 'products.quantity_error' | t | json }}
+        "error": {{ 'products.quantity_error' | t | json }},
+        "inStock": {{ 'products.in_stock' | t | json }},
+        "onlyLeft": {{ 'products.only_left' | t: count: '[COUNT]' | json }},
+        "shareCopied": {{ 'products.share_copied' | t | json }}
       }
     }
   </script>
@@ -274,19 +466,27 @@
     gap: clamp(1.5rem, 4vw, 3.5rem);
   }
 
-  /* Gallery */
+  /* ---- Gallery ---- */
+  .veylique-pdp-gallery {
+    display: grid;
+    gap: 0.75rem;
+    align-items: start;
+    min-width: 0;
+  }
+
   .veylique-pdp-stage {
     position: relative;
     overflow: hidden;
     border-radius: var(--veylique-radius-md, 0.75rem);
     background: var(--veylique-color-surface-alt, #faf6ec);
+    min-width: 0;
   }
 
   .veylique-pdp-badge {
     position: absolute;
     top: 1rem;
     left: 1rem;
-    z-index: 2;
+    z-index: 3;
     padding: 0.375rem 0.75rem;
     border-radius: 999px;
     background: var(--veylique-color-rose, #c58d80);
@@ -297,31 +497,140 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
+  .veylique-pdp-badge--out { background: var(--veylique-color-foreground, #241f1a); }
+  .veylique-pdp-badge--new { background: var(--veylique-color-secondary, #6f7d68); }
 
-  .veylique-pdp-main {
+  .veylique-pdp-track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .veylique-pdp-track::-webkit-scrollbar { display: none; }
+  .veylique-pdp-track:focus-visible {
+    outline: var(--veylique-focus-ring-width, 0.125rem) solid var(--veylique-focus-ring-color, currentColor);
+    outline-offset: -0.25rem;
+  }
+
+  .veylique-pdp-slide {
+    position: relative;
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
     aspect-ratio: 3 / 4;
   }
-  .veylique-pdp-main-img,
-  .veylique-pdp-main > svg {
+  .veylique-pdp-slide-img,
+  .veylique-pdp-slide > svg,
+  .veylique-pdp-slide-media {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
   }
 
-  .veylique-pdp-thumbs {
-    display: flex;
-    gap: 0.625rem;
-    margin-top: 0.75rem;
-    overflow-x: auto;
-    scrollbar-width: none;
-    scroll-snap-type: x proximity;
+  .veylique-pdp-zoom {
+    position: absolute;
+    right: 0.875rem;
+    bottom: 0.875rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.85);
+    -webkit-backdrop-filter: blur(0.375rem);
+    backdrop-filter: blur(0.375rem);
+    color: var(--veylique-color-foreground, #241f1a);
+    cursor: zoom-in;
+    opacity: 0;
+    transition: opacity 0.25s ease, background-color 0.2s ease;
   }
-  .veylique-pdp-thumbs::-webkit-scrollbar { display: none; }
+  .veylique-pdp-slide:hover .veylique-pdp-zoom,
+  .veylique-pdp-zoom:focus-visible { opacity: 1; }
+  @media (hover: none), (pointer: coarse) {
+    .veylique-pdp-zoom { opacity: 1; }
+  }
+  @media (hover: hover) { .veylique-pdp-zoom:hover { background: #fff; } }
 
+  .veylique-pdp-arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 3;
+    transform: translateY(-50%);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.88);
+    -webkit-backdrop-filter: blur(0.375rem);
+    backdrop-filter: blur(0.375rem);
+    color: var(--veylique-color-foreground, #241f1a);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.25s ease, background-color 0.2s ease, transform 0.2s ease;
+  }
+  .veylique-pdp-arrow--prev { left: 0.875rem; }
+  .veylique-pdp-arrow--next { right: 0.875rem; }
+  @media (hover: hover) and (pointer: fine) {
+    .veylique-pdp-arrow { display: inline-flex; }
+    .veylique-pdp-stage:hover .veylique-pdp-arrow,
+    .veylique-pdp-arrow:focus-visible { opacity: 1; }
+    .veylique-pdp-arrow:hover { background: #fff; transform: translateY(-50%) scale(1.05); }
+  }
+
+  .veylique-pdp-counter {
+    position: absolute;
+    right: 0.875rem;
+    top: 0.875rem;
+    z-index: 2;
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    -webkit-backdrop-filter: blur(0.375rem);
+    backdrop-filter: blur(0.375rem);
+    font-family: var(--veylique-font-body);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--veylique-color-foreground, #241f1a);
+  }
+
+  .veylique-pdp-dots {
+    position: absolute;
+    left: 50%;
+    bottom: 0.875rem;
+    z-index: 2;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.375rem;
+  }
+  .veylique-pdp-dot {
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.55);
+    box-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.15);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+  .veylique-pdp-dot.is-active {
+    background: #fff;
+    transform: scale(1.25);
+  }
+
+  /* Vertical thumb rail — desktop only */
+  .veylique-pdp-rail {
+    display: none;
+  }
   .veylique-pdp-thumb {
     flex: 0 0 auto;
-    width: 4.5rem;
+    width: 4.25rem;
     aspect-ratio: 3 / 4;
     padding: 0;
     border: 0.0625rem solid var(--veylique-color-border, rgba(36, 31, 26, 0.14));
@@ -329,15 +638,14 @@
     overflow: hidden;
     background: var(--veylique-color-surface-alt, #faf6ec);
     cursor: pointer;
-    scroll-snap-align: start;
     transition: border-color 0.2s ease, opacity 0.2s ease;
-    opacity: 0.72;
+    opacity: 0.65;
   }
   .veylique-pdp-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .veylique-pdp-thumb.is-active { border-color: var(--veylique-color-foreground, #241f1a); opacity: 1; }
   @media (hover: hover) { .veylique-pdp-thumb:hover { opacity: 1; } }
 
-  /* Buy box */
+  /* ---- Buy box ---- */
   .veylique-pdp-vendor {
     margin: 0 0 0.5rem;
     font-family: var(--veylique-font-body);
@@ -349,12 +657,29 @@
   }
 
   .veylique-pdp-title {
-    margin: 0 0 1rem;
+    margin: 0 0 0.75rem;
     font-family: var(--veylique-font-heading, serif);
     font-size: clamp(1.75rem, 3.5vw, 2.75rem);
     font-weight: 500;
     line-height: 1.05;
     letter-spacing: -0.02em;
+  }
+
+  .veylique-pdp-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.875rem;
+  }
+  .veylique-pdp-rating-stars {
+    display: inline-flex;
+    gap: 0.125rem;
+    color: var(--veylique-color-accent, #c89523);
+  }
+  .veylique-pdp-rating-text {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--veylique-color-muted, #756b60);
   }
 
   .veylique-pdp-price {
@@ -388,14 +713,13 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    margin-bottom: 1.75rem;
+    margin-bottom: 1.5rem;
   }
   .veylique-pdp-option { margin: 0; padding: 0; border: 0; }
   .veylique-pdp-option-head {
     display: flex;
     align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
+    gap: 0.625rem;
     width: 100%;
     padding: 0;
     margin-bottom: 0.75rem;
@@ -410,6 +734,23 @@
     font-size: 0.8125rem;
     color: var(--veylique-color-muted, #756b60);
   }
+  .veylique-pdp-sizeguide-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-left: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--veylique-color-muted, #756b60);
+    font-family: var(--veylique-font-body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+  }
+  @media (hover: hover) { .veylique-pdp-sizeguide-link:hover { color: var(--veylique-color-foreground, #241f1a); } }
 
   .veylique-pdp-swatches {
     display: flex;
@@ -437,11 +778,7 @@
     line-height: 1;
     cursor: pointer;
     user-select: none;
-    transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
-  }
-  .veylique-pdp-swatches.is-color .veylique-pdp-swatch {
-    min-width: 0;
-    border-radius: 999px;
+    transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
   }
   @media (hover: hover) {
     .veylique-pdp-swatch:hover { border-color: var(--veylique-color-foreground, #241f1a); }
@@ -455,11 +792,74 @@
     outline: var(--veylique-focus-ring-width, 0.125rem) solid var(--veylique-focus-ring-color, currentColor);
     outline-offset: var(--veylique-focus-ring-offset, 0.1875rem);
   }
-  /* Unavailable-for-current-selection value */
   .veylique-pdp-swatch-input[data-unavailable] + .veylique-pdp-swatch {
     color: var(--veylique-color-muted, #756b60);
     opacity: 0.55;
     text-decoration: line-through;
+  }
+
+  /* Color dot swatches */
+  .veylique-pdp-swatch--color {
+    min-width: 0;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0.25rem;
+    border-radius: 50%;
+    background: var(--veylique-color-surface, #fff);
+  }
+  .veylique-pdp-swatch-chip {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    border: 0.0625rem solid rgba(36, 31, 26, 0.12);
+  }
+  .veylique-pdp-swatch-input:checked + .veylique-pdp-swatch--color {
+    background: var(--veylique-color-surface, #fff);
+    border-color: var(--veylique-color-foreground, #241f1a);
+    border-width: 0.125rem;
+  }
+  .veylique-pdp-swatch-input[data-unavailable] + .veylique-pdp-swatch--color {
+    text-decoration: none;
+  }
+  .veylique-pdp-swatch-input[data-unavailable] + .veylique-pdp-swatch--color::after {
+    content: "";
+    position: absolute;
+    width: 2.75rem;
+    height: 0.0625rem;
+    background: rgba(36, 31, 26, 0.45);
+    transform: rotate(-45deg);
+  }
+  .veylique-pdp-swatch--color { position: relative; overflow: hidden; }
+
+  /* Stock indicator */
+  .veylique-pdp-stock {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 1.125rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--veylique-color-muted, #756b60);
+  }
+  .veylique-pdp-stock-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--veylique-color-secondary, #6f7d68);
+  }
+  .veylique-pdp-stock.is-low { color: var(--veylique-color-rose, #c58d80); }
+  .veylique-pdp-stock.is-low .veylique-pdp-stock-dot {
+    background: var(--veylique-color-rose, #c58d80);
+    animation: veylique-pdp-pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes veylique-pdp-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(197, 141, 128, 0.45); }
+    50% { box-shadow: 0 0 0 0.375rem rgba(197, 141, 128, 0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .veylique-pdp-stock.is-low .veylique-pdp-stock-dot { animation: none; }
   }
 
   .veylique-pdp-actions {
@@ -520,11 +920,35 @@
   .veylique-pdp-atc[disabled] { opacity: 0.45; cursor: not-allowed; }
   .veylique-pdp-atc.is-loading { opacity: 0.7; pointer-events: none; }
 
-  /* Shopify dynamic checkout button */
   .veylique-pdp-form .shopify-payment-button { margin-top: 0.25rem; }
   .veylique-pdp-form .shopify-payment-button__button {
     border-radius: var(--veylique-radius-sm, 0.5rem) !important;
     min-height: 3.25rem;
+  }
+
+  /* Trust strip */
+  .veylique-pdp-trust {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 0.625rem;
+    margin: 1.25rem 0 0;
+    padding: 1rem 1.125rem;
+    border: 0.0625rem solid var(--veylique-color-border, rgba(36, 31, 26, 0.14));
+    border-radius: var(--veylique-radius-md, 0.75rem);
+    background: var(--veylique-color-surface-alt, #faf6ec);
+    list-style: none;
+  }
+  .veylique-pdp-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--veylique-color-foreground, #241f1a);
+  }
+  .veylique-pdp-trust-item svg {
+    flex: 0 0 auto;
+    color: var(--veylique-color-accent, #c89523);
   }
 
   .veylique-pdp-meta {
@@ -538,7 +962,8 @@
     font-size: 0.8125rem;
     color: var(--veylique-color-muted, #756b60);
   }
-  .veylique-pdp-wish {
+  .veylique-pdp-wish,
+  .veylique-pdp-share {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -550,9 +975,13 @@
     font-size: 0.8125rem;
     cursor: pointer;
   }
-  @media (hover: hover) { .veylique-pdp-wish:hover { color: var(--veylique-color-foreground, #241f1a); } }
+  @media (hover: hover) {
+    .veylique-pdp-wish:hover,
+    .veylique-pdp-share:hover { color: var(--veylique-color-foreground, #241f1a); }
+  }
   .veylique-pdp-wish.is-wished { color: var(--veylique-color-rose, #c58d80); }
   .veylique-pdp-wish.is-wished svg { fill: currentColor; }
+  .veylique-pdp-sku { margin-left: auto; }
 
   .veylique-pdp-acc {
     border-bottom: 0.0625rem solid var(--veylique-color-border, rgba(36, 31, 26, 0.14));
@@ -597,6 +1026,165 @@
   .veylique-pdp-acc-body :first-child { margin-top: 0; }
   .veylique-pdp-acc-body :last-child { margin-bottom: 0; }
 
+  /* ---- Sticky mobile ATC bar ---- */
+  .veylique-pdp-stickybar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 1rem calc(0.625rem + env(safe-area-inset-bottom, 0));
+    background: var(--veylique-color-surface, #fff);
+    border-top: 0.0625rem solid var(--veylique-color-border, rgba(36, 31, 26, 0.14));
+    box-shadow: 0 -0.5rem 1.5rem rgba(36, 31, 26, 0.08);
+    transform: translateY(105%);
+    transition: transform 0.3s var(--veylique-ease-standard, ease);
+  }
+  .veylique-pdp-stickybar.is-visible { transform: translateY(0); }
+  .veylique-pdp-stickybar-thumb {
+    flex: 0 0 auto;
+    width: 2.75rem;
+    height: 3.25rem;
+    object-fit: cover;
+    border-radius: var(--veylique-radius-xs, 0.25rem);
+  }
+  .veylique-pdp-stickybar-meta { flex: 1 1 auto; min-width: 0; }
+  .veylique-pdp-stickybar-title {
+    margin: 0;
+    font-family: var(--veylique-font-heading, serif);
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .veylique-pdp-stickybar-price {
+    margin: 0.125rem 0 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--veylique-color-muted, #756b60);
+  }
+  .veylique-pdp-stickybar-atc {
+    flex: 0 0 auto;
+    height: 2.875rem;
+    min-width: 8rem;
+  }
+  @media (min-width: 1000px) {
+    .veylique-pdp-stickybar { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .veylique-pdp-stickybar { transition: none; }
+  }
+
+  /* ---- Lightbox & size guide dialogs ---- */
+  .veylique-pdp-lightbox,
+  .veylique-pdp-sizeguide {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    max-width: 100vw;
+    max-height: 100vh;
+  }
+  .veylique-pdp-lightbox::backdrop,
+  .veylique-pdp-sizeguide::backdrop {
+    background: rgba(20, 16, 12, 0.82);
+    -webkit-backdrop-filter: blur(0.25rem);
+    backdrop-filter: blur(0.25rem);
+  }
+  .veylique-pdp-lightbox {
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .veylique-pdp-lightbox[open] { display: flex; }
+  .veylique-pdp-lightbox-img {
+    max-width: min(92vw, 60rem);
+    max-height: 88vh;
+    object-fit: contain;
+    border-radius: var(--veylique-radius-sm, 0.5rem);
+  }
+  .veylique-pdp-lightbox-close {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--veylique-color-foreground, #241f1a);
+    cursor: pointer;
+  }
+  .veylique-pdp-lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--veylique-color-foreground, #241f1a);
+    cursor: pointer;
+  }
+  .veylique-pdp-lightbox-nav--prev { left: 1.25rem; }
+  .veylique-pdp-lightbox-nav--next { right: 1.25rem; }
+
+  .veylique-pdp-sizeguide {
+    margin: auto;
+    width: min(92vw, 34rem);
+    max-height: 84vh;
+    overflow: auto;
+    border-radius: var(--veylique-radius-lg, 1rem);
+    background: var(--veylique-color-surface, #fff);
+  }
+  .veylique-pdp-sizeguide-head {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem 1rem;
+    background: var(--veylique-color-surface, #fff);
+    border-bottom: 0.0625rem solid var(--veylique-color-border, rgba(36, 31, 26, 0.14));
+  }
+  .veylique-pdp-sizeguide-title {
+    margin: 0;
+    font-family: var(--veylique-font-heading, serif);
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+  .veylique-pdp-sizeguide-close { position: static; }
+  .veylique-pdp-sizeguide-body {
+    padding: 1.25rem 1.5rem 1.5rem;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+  .veylique-pdp-sizeguide-body table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .veylique-pdp-sizeguide-body td,
+  .veylique-pdp-sizeguide-body th {
+    padding: 0.5rem 0.75rem;
+    border: 0.0625rem solid var(--veylique-color-border, rgba(36, 31, 26, 0.14));
+    text-align: left;
+  }
+
   /* Toast */
   .veylique-pdp-toast {
     position: fixed;
@@ -632,10 +1220,21 @@
       top: 6rem;
       padding-top: 0.5rem;
     }
-    .veylique-pdp-thumbs {
-      flex-wrap: wrap;
-      overflow: visible;
+    .veylique-pdp-gallery {
+      grid-template-columns: 4.25rem minmax(0, 1fr);
     }
+    .veylique-pdp-rail {
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+      position: sticky;
+      top: 6rem;
+      max-height: calc(100vh - 8rem);
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .veylique-pdp-rail::-webkit-scrollbar { display: none; }
+    .veylique-pdp-dots { display: none; }
   }
 {% endstylesheet %}
 
@@ -663,10 +1262,16 @@
       var priceCompare = section.querySelector('[data-pdp-price-compare]');
       var priceSave = section.querySelector('[data-pdp-price-save]');
       var skuEl = section.querySelector('[data-pdp-sku]');
-      var mainImg = section.querySelector('.veylique-pdp-main-img');
-      var thumbs = Array.prototype.slice.call(section.querySelectorAll('[data-pdp-thumb]'));
       var swatches = Array.prototype.slice.call(section.querySelectorAll('[data-pdp-swatch]'));
       var toast = section.querySelector('[data-pdp-toast]');
+      var stockEl = section.querySelector('[data-pdp-stock]');
+      var stockText = section.querySelector('[data-pdp-stock-text]');
+
+      var track = section.querySelector('[data-pdp-track]');
+      var slides = Array.prototype.slice.call(section.querySelectorAll('[data-pdp-slide]'));
+      var thumbs = Array.prototype.slice.call(section.querySelectorAll('[data-pdp-thumb]'));
+      var dots = Array.prototype.slice.call(section.querySelectorAll('[data-pdp-dot]'));
+      var counter = section.querySelector('[data-pdp-counter]');
 
       var s = config.strings || {};
       var strings = {
@@ -676,10 +1281,120 @@
         adding: s.adding || 'Adding…',
         added: s.added || 'Added to cart',
         viewCart: s.viewCart || 'View cart',
-        error: s.error || 'Please try again.'
+        error: s.error || 'Please try again.',
+        inStock: s.inStock || 'In stock',
+        onlyLeft: s.onlyLeft || 'Only [COUNT] left',
+        shareCopied: s.shareCopied || 'Link copied'
       };
       var cartUrl = config.cartUrl || '/cart';
+      var lowStock = parseInt(config.lowStockThreshold, 10) || 0;
+      var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+      /* ---------- Gallery ---------- */
+      var activeIndex = 0;
+
+      function goToSlide(index, smooth) {
+        if (!track || !slides.length) return;
+        index = Math.max(0, Math.min(index, slides.length - 1));
+        var slide = slides[index];
+        track.scrollTo({
+          left: slide.offsetLeft,
+          behavior: smooth === false || reducedMotion ? 'auto' : 'smooth'
+        });
+      }
+
+      function setActive(index) {
+        activeIndex = index;
+        thumbs.forEach(function (t) { t.classList.toggle('is-active', parseInt(t.dataset.index, 10) === index); });
+        dots.forEach(function (d) { d.classList.toggle('is-active', parseInt(d.dataset.index, 10) === index); });
+        if (counter) counter.textContent = (index + 1) + ' / ' + slides.length;
+        var activeThumb = thumbs[index];
+        if (activeThumb && activeThumb.scrollIntoView) {
+          activeThumb.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: reducedMotion ? 'auto' : 'smooth' });
+        }
+      }
+
+      if (track && slides.length > 1 && 'IntersectionObserver' in window) {
+        var slideObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting && entry.intersectionRatio >= 0.55) {
+              setActive(parseInt(entry.target.dataset.index, 10));
+            }
+          });
+        }, { root: track, threshold: 0.55 });
+        slides.forEach(function (slide) { slideObserver.observe(slide); });
+      }
+
+      thumbs.forEach(function (thumb) {
+        thumb.addEventListener('click', function () { goToSlide(parseInt(thumb.dataset.index, 10)); });
+      });
+
+      var prevBtn = section.querySelector('[data-pdp-prev]');
+      var nextBtn = section.querySelector('[data-pdp-next]');
+      if (prevBtn) prevBtn.addEventListener('click', function () { goToSlide(activeIndex - 1); });
+      if (nextBtn) nextBtn.addEventListener('click', function () { goToSlide(activeIndex + 1); });
+
+      if (track) {
+        track.addEventListener('keydown', function (event) {
+          if (event.key === 'ArrowLeft') { event.preventDefault(); goToSlide(activeIndex - 1); }
+          if (event.key === 'ArrowRight') { event.preventDefault(); goToSlide(activeIndex + 1); }
+        });
+      }
+
+      /* ---------- Lightbox ---------- */
+      var lightbox = section.querySelector('[data-pdp-lightbox]');
+      var lightboxImg = section.querySelector('[data-pdp-lightbox-img]');
+      var zoomButtons = Array.prototype.slice.call(section.querySelectorAll('[data-pdp-zoom]'));
+      var zoomSources = zoomButtons.map(function (b) { return b.dataset.zoomSrc; });
+      var lightboxIndex = 0;
+
+      function openLightbox(index) {
+        if (!lightbox || !lightboxImg || typeof lightbox.showModal !== 'function' || !zoomSources.length) return;
+        lightboxIndex = Math.max(0, Math.min(index, zoomSources.length - 1));
+        lightboxImg.src = zoomSources[lightboxIndex];
+        lightbox.showModal();
+      }
+      function lightboxStep(delta) {
+        if (!zoomSources.length) return;
+        lightboxIndex = (lightboxIndex + delta + zoomSources.length) % zoomSources.length;
+        lightboxImg.src = zoomSources[lightboxIndex];
+      }
+
+      zoomButtons.forEach(function (btn, i) {
+        btn.addEventListener('click', function () { openLightbox(i); });
+      });
+      var lbClose = section.querySelector('[data-pdp-lightbox-close]');
+      var lbPrev = section.querySelector('[data-pdp-lightbox-prev]');
+      var lbNext = section.querySelector('[data-pdp-lightbox-next]');
+      if (lbClose) lbClose.addEventListener('click', function () { lightbox.close(); });
+      if (lbPrev) lbPrev.addEventListener('click', function () { lightboxStep(-1); });
+      if (lbNext) lbNext.addEventListener('click', function () { lightboxStep(1); });
+      if (lightbox) {
+        lightbox.addEventListener('click', function (event) {
+          if (event.target === lightbox) lightbox.close();
+        });
+        lightbox.addEventListener('keydown', function (event) {
+          if (event.key === 'ArrowLeft') lightboxStep(-1);
+          if (event.key === 'ArrowRight') lightboxStep(1);
+        });
+      }
+
+      /* ---------- Size guide ---------- */
+      var sizeGuide = section.querySelector('[data-pdp-sizeguide]');
+      section.querySelectorAll('[data-pdp-sizeguide-open]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (sizeGuide && typeof sizeGuide.showModal === 'function') sizeGuide.showModal();
+        });
+      });
+      var sgClose = section.querySelector('[data-pdp-sizeguide-close]');
+      if (sgClose) sgClose.addEventListener('click', function () { sizeGuide.close(); });
+      if (sizeGuide) {
+        sizeGuide.addEventListener('click', function (event) {
+          if (event.target === sizeGuide) sizeGuide.close();
+        });
+      }
+
+      /* ---------- Variant logic ---------- */
       function selectedOptions() {
         var checked = section.querySelectorAll('[data-pdp-swatch]:checked');
         var opts = [];
@@ -690,13 +1405,11 @@
       }
 
       function matchVariant(opts) {
-        if (!opts.length) return variants[0]; /* single / default-variant product */
+        if (!opts.length) return variants[0];
         return variants.find(function (v) {
           return v.options.every(function (opt, i) { return opts[i] === opt; });
         });
       }
-
-      function money(cents) { return cents; }
 
       function updateSelectedLabels() {
         section.querySelectorAll('[data-pdp-option-selected]').forEach(function (el) {
@@ -706,8 +1419,6 @@
         });
       }
 
-      /* Grey out option values that produce no available variant given the
-         other current selections. */
       function updateAvailability() {
         var current = selectedOptions();
         swatches.forEach(function (input) {
@@ -728,21 +1439,29 @@
         });
       }
 
-      function setMainImage(variant) {
-        if (!variant || variant.featured_media_id == null) return;
-        var thumb = thumbs.filter(function (t) {
-          return t.dataset.mediaId === String(variant.featured_media_id);
-        })[0];
-        if (thumb) activateThumb(thumb);
+      function updateStock(variant) {
+        if (!stockEl || !stockText || !lowStock) return;
+        if (!variant || !variant.available) { stockEl.hidden = true; return; }
+        if (variant.inventory_managed && variant.inventory_policy !== 'continue' && variant.inventory_quantity > 0 && variant.inventory_quantity <= lowStock) {
+          stockText.textContent = strings.onlyLeft.replace('[COUNT]', variant.inventory_quantity);
+          stockEl.classList.add('is-low');
+          stockEl.hidden = false;
+        } else {
+          stockText.textContent = strings.inStock;
+          stockEl.classList.remove('is-low');
+          stockEl.hidden = false;
+        }
       }
 
-      function activateThumb(thumb) {
-        thumbs.forEach(function (t) { t.classList.toggle('is-active', t === thumb); });
-        if (mainImg && thumb.dataset.full) {
-          mainImg.removeAttribute('srcset');
-          mainImg.src = thumb.dataset.full;
-          if (thumb.dataset.alt) mainImg.alt = thumb.dataset.alt;
-        }
+      var stickyPrice = section.querySelector('[data-pdp-sticky-price]');
+      var stickyAtcText = section.querySelector('[data-pdp-sticky-atc-text]');
+
+      function setMainImage(variant) {
+        if (!variant || variant.featured_media_id == null) return;
+        var slide = slides.filter(function (sl) {
+          return sl.dataset.mediaId === String(variant.featured_media_id);
+        })[0];
+        if (slide) goToSlide(parseInt(slide.dataset.index, 10));
       }
 
       function render() {
@@ -754,6 +1473,8 @@
           if (idInput) idInput.value = '';
           if (atc) { atc.disabled = true; }
           if (atcText) atcText.textContent = strings.unavailable;
+          if (stickyAtcText) stickyAtcText.textContent = strings.unavailable;
+          if (stockEl) stockEl.hidden = true;
           return;
         }
 
@@ -783,7 +1504,10 @@
           atc.disabled = !variant.available;
           if (atcText) atcText.textContent = variant.available ? strings.add : strings.soldOut;
         }
+        if (stickyPrice) stickyPrice.textContent = variant.price;
+        if (stickyAtcText) stickyAtcText.textContent = variant.available ? strings.add : strings.soldOut;
 
+        updateStock(variant);
         setMainImage(variant);
 
         if (window.history && window.history.replaceState) {
@@ -797,11 +1521,7 @@
         input.addEventListener('change', render);
       });
 
-      thumbs.forEach(function (thumb) {
-        thumb.addEventListener('click', function () { activateThumb(thumb); });
-      });
-
-      /* Quantity stepper */
+      /* ---------- Quantity stepper ---------- */
       var qtyInput = section.querySelector('[data-pdp-qty-input]');
       var qtyDown = section.querySelector('[data-pdp-qty-down]');
       var qtyUp = section.querySelector('[data-pdp-qty-up]');
@@ -815,7 +1535,7 @@
       if (qtyUp) qtyUp.addEventListener('click', function () { qtyInput.value = clampQty() + 1; });
       if (qtyInput) qtyInput.addEventListener('change', clampQty);
 
-      /* Toast */
+      /* ---------- Toast ---------- */
       var toastTimer;
       function showToast(html) {
         if (!toast) return;
@@ -837,9 +1557,9 @@
         }
       }
 
-      /* AJAX add-to-cart */
+      /* ---------- AJAX add-to-cart ---------- */
       form.addEventListener('submit', function (event) {
-        if (!window.fetch) return; /* let it POST normally */
+        if (!window.fetch) return;
         event.preventDefault();
         if (!idInput || !idInput.value || (atc && atc.disabled)) return;
 
@@ -863,6 +1583,42 @@
             if (atcText) atcText.textContent = strings.add;
           });
       });
+
+      /* ---------- Sticky mobile bar ---------- */
+      var stickyBar = section.querySelector('[data-pdp-sticky]');
+      var stickyAtc = section.querySelector('[data-pdp-sticky-atc]');
+      var actions = section.querySelector('.veylique-pdp-actions');
+      if (stickyBar && actions && 'IntersectionObserver' in window) {
+        var barObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            var show = !entry.isIntersecting && entry.boundingClientRect.top < 0;
+            stickyBar.classList.toggle('is-visible', show);
+            stickyBar.setAttribute('aria-hidden', String(!show));
+          });
+        }, { threshold: 0 });
+        barObserver.observe(actions);
+      }
+      if (stickyAtc) {
+        stickyAtc.addEventListener('click', function () {
+          if (atc && !atc.disabled) {
+            if (typeof form.requestSubmit === 'function') form.requestSubmit(atc);
+            else atc.click();
+          }
+        });
+      }
+
+      /* ---------- Share ---------- */
+      var shareBtn = section.querySelector('[data-pdp-share]');
+      if (shareBtn) {
+        shareBtn.addEventListener('click', function () {
+          var payload = { title: shareBtn.dataset.shareTitle, url: shareBtn.dataset.shareUrl };
+          if (navigator.share) {
+            navigator.share(payload).catch(function () {});
+          } else if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(payload.url).then(function () { showToast(strings.shareCopied); });
+          }
+        });
+      }
 
       render();
     }
@@ -890,14 +1646,57 @@
     {
       "type": "richtext",
       "id": "details_text",
-      "label": "Details & care content"
+      "label": "t:sections.product.settings.details_text.label"
     },
     {
       "type": "richtext",
       "id": "shipping_text",
-      "label": "Shipping & returns content"
+      "label": "t:sections.product.settings.shipping_text.label"
+    },
+    {
+      "type": "richtext",
+      "id": "size_guide_text",
+      "label": "t:sections.product.settings.size_guide_text.label",
+      "info": "t:sections.product.settings.size_guide_text.info"
+    },
+    {
+      "type": "range",
+      "id": "low_stock_threshold",
+      "label": "t:sections.product.settings.low_stock_threshold.label",
+      "info": "t:sections.product.settings.low_stock_threshold.info",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "default": 5
     }
   ],
+  "blocks": [
+    {
+      "type": "trust",
+      "name": "t:sections.product.blocks.trust.name",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "t:sections.product.blocks.trust.settings.icon.label",
+          "default": "shipping",
+          "options": [
+            { "value": "shipping", "label": "t:sections.product.blocks.trust.settings.icon.options.shipping" },
+            { "value": "returns", "label": "t:sections.product.blocks.trust.settings.icon.options.returns" },
+            { "value": "secure", "label": "t:sections.product.blocks.trust.settings.icon.options.secure" },
+            { "value": "quality", "label": "t:sections.product.blocks.trust.settings.icon.options.quality" }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:sections.product.blocks.trust.settings.text.label",
+          "default": "Free shipping over Rs. 2,000"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 4,
   "disabled_on": {
     "groups": ["header", "footer"]
   }

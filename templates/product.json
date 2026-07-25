@@ -11,6 +11,34 @@
   "sections": {
     "main": {
       "type": "product",
+      "blocks": {
+        "trust-shipping": {
+          "type": "trust",
+          "settings": {
+            "icon": "shipping",
+            "text": "Free shipping over Rs. 2,000"
+          }
+        },
+        "trust-returns": {
+          "type": "trust",
+          "settings": {
+            "icon": "returns",
+            "text": "Easy 14-day returns"
+          }
+        },
+        "trust-secure": {
+          "type": "trust",
+          "settings": {
+            "icon": "secure",
+            "text": "Secure checkout"
+          }
+        }
+      },
+      "block_order": [
+        "trust-shipping",
+        "trust-returns",
+        "trust-secure"
+      ],
       "settings": {}
     },
     "recommendations": {
