@@ -581,33 +581,15 @@
         .finally(function () { if (showBusy) el.classList.remove('is-busy'); });
     }
 
+    /* Network work is owned by window.VeyliqueCart: debounced, serialized, and
+       superseded replies discarded. Two quick clicks used to produce racing
+       requests whose replies could land out of order. */
     function setQuantity(line, quantity) {
       var el = drawer();
       if (!el) return;
-      if (!window.fetch) { window.location.href = '/cart'; return; }
+      if (!window.VeyliqueCart) { window.location.href = '/cart'; return; }
       el.classList.add('is-busy');
-
-      fetch('/cart/change.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ line: parseInt(line, 10), quantity: quantity })
-      })
-        .then(function (r) { if (!r.ok) throw new Error('change'); return r.json(); })
-        .then(function (cart) {
-          updateHeaderCount(cart.item_count);
-          /* Lets the cart page behind the drawer restate itself. */
-          document.dispatchEvent(new CustomEvent('veylique:cart:updated', {
-            detail: { open: false, source: 'drawer' }
-          }));
-          return refresh();
-        })
-        .catch(function () {
-          /* Never hard-navigate on a failed line change — that reads as a full
-             page reload. Re-read the cart from the server instead; whatever the
-             true state is, the drawer will show it. */
-          return refresh();
-        })
-        .finally(function () { el.classList.remove('is-busy'); });
+      window.VeyliqueCart.change(parseInt(line, 10), quantity);
     }
 
     /* Mirrors the badge logic used by the product-card quick add. */
@@ -690,15 +672,30 @@
     });
 
     /* Any successful AJAX add anywhere in the theme announces itself here. */
+    /* Single subscription for every cart mutation in the theme. The re-rendered
+       drawer usually rides along with the change response, so no second request
+       is needed. */
+    if (window.VeyliqueCart) {
+      window.VeyliqueCart.onUpdate(function (cart, sections) {
+        var el = drawer();
+        if (el) el.classList.remove('is-busy');
+        updateHeaderCount(cart.item_count);
+
+        var html = sections && sections[SECTION];
+        if (html) {
+          var doc = new DOMParser().parseFromString(html, 'text/html');
+          patch(doc.querySelector('[data-veylique-cart-drawer]'));
+        } else {
+          refresh();
+        }
+      });
+    }
+
+    /* Add-to-cart paths announce themselves so the drawer can slide out. */
     document.addEventListener('veylique:cart:updated', function (event) {
-      /* Ignore the drawer's own announcements — it has already refreshed. */
-      if (event.detail && event.detail.source === 'drawer') return;
       var shouldOpen = !event.detail || event.detail.open !== false;
-      /* Same here — slide out immediately and let the just-added line arrive a
-         moment later under the busy state, rather than making the shopper wait
-         on a second round trip after the add itself. */
       if (shouldOpen) open();
-      refresh(true);
+      refresh();
     });
   })();
 {% endjavascript %}

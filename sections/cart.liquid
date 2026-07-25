@@ -746,6 +746,8 @@
       });
     }
 
+    /* Fallback re-render for the rare paths that have no section HTML to hand
+       (an add elsewhere on the page, or a failed change). */
     function refresh() {
       var root = cartRoot();
       var sectionId = root && root.dataset.sectionId;
@@ -771,31 +773,14 @@
       });
     }
 
+    /* All network work is owned by window.VeyliqueCart, which debounces bursts,
+       serializes requests and discards superseded responses. Without that, two
+       quick clicks produced overlapping requests whose replies could land out
+       of order — the reason totals updated only sometimes. */
     function changeLine(line, quantity) {
-      if (!window.fetch) return;
+      if (!window.VeyliqueCart) return;
       setBusy(true);
-
-      fetch('/cart/change.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ line: parseInt(line, 10), quantity: quantity })
-      })
-        .then(function (r) { if (!r.ok) throw new Error('change'); return r.json(); })
-        .then(function (cart) {
-          updateHeaderCount(cart.item_count);
-          /* Keeps the drawer in step, without sliding it open over the page the
-             shopper is already using. */
-          document.dispatchEvent(new CustomEvent('veylique:cart:updated', {
-            detail: { open: false, source: 'cart-page' }
-          }));
-          return refresh();
-        })
-        .catch(function () {
-          /* Re-read the cart rather than reloading the page — a reload is the
-             exact behaviour this whole change set exists to remove. */
-          return refresh();
-        })
-        .finally(function () { setBusy(false); });
+      window.VeyliqueCart.change(parseInt(line, 10), quantity);
     }
 
     function saveNote(value) {
@@ -856,12 +841,26 @@
       noteTimer = window.setTimeout(function () { saveNote(note.value); }, 600);
     });
 
-    /* A change made in the drawer restates the page underneath it. */
-    document.addEventListener('veylique:cart:updated', function (event) {
-      if (event.detail && event.detail.source === 'cart-page') return;
-      if (!cartRoot()) return;
-      refresh();
-    });
+    /* One subscription handles every cart mutation, wherever it came from —
+       this page, the drawer, or an add elsewhere. The section HTML usually
+       arrives with the response, so no extra request is needed. */
+    if (window.VeyliqueCart) {
+      window.VeyliqueCart.onUpdate(function (cart, sections) {
+        setBusy(false);
+        updateHeaderCount(cart.item_count);
+
+        var root = cartRoot();
+        if (!root) return;
+
+        var html = sections && sections[root.dataset.sectionId];
+        if (html) {
+          var doc = new DOMParser().parseFromString(html, 'text/html');
+          patch(doc.querySelector('[data-veylique-cart]'));
+        } else {
+          refresh();
+        }
+      });
+    }
 
     if (document.readyState !== 'loading') markReady();
     else document.addEventListener('DOMContentLoaded', markReady);

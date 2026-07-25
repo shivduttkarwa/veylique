@@ -1,3 +1,94 @@
+/* ---------------------------------------------------------------------------
+   Cart API — one owner for every cart mutation in the theme.
+
+   Previously the cart page and the drawer each did their own fetching, which
+   raced: one click meant two round trips (change.js, then a section render),
+   and a burst of clicks let an older response land last and overwrite a newer
+   state. That is why totals updated "sometimes".
+
+   Three things fix it, and they are what production storefronts do:
+
+     1. Debounce a burst of clicks on a line into a single request.
+     2. Serialize requests, so the server applies them in the order pressed.
+     3. Stamp each request and discard superseded responses, so a slow reply can
+        never overwrite a newer one.
+
+   It also asks change.js to return the re-rendered sections in the SAME
+   response (`sections` parameter), halving the round trips: no separate
+   Section Rendering call is needed.
+--------------------------------------------------------------------------- */
+window.VeyliqueCart = (function () {
+  var DEBOUNCE_MS = 220;
+  var listeners = [];
+  var timers = {};
+  var chain = Promise.resolve();
+  var token = 0;
+
+  function sectionIds() {
+    var ids = ['veylique-cart-drawer'];
+    var page = document.querySelector('[data-veylique-cart][data-section-id]');
+    if (page && page.dataset.sectionId) ids.push(page.dataset.sectionId);
+    return ids.join(',');
+  }
+
+  function notify(cart, sections) {
+    listeners.forEach(function (fn) {
+      try { fn(cart, sections || {}); } catch (error) {}
+    });
+  }
+
+  function post(line, quantity, mine) {
+    return fetch('/cart/change.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        line: line,
+        quantity: quantity,
+        sections: sectionIds(),
+        sections_url: window.location.pathname
+      })
+    })
+      .then(function (r) { if (!r.ok) throw new Error('change'); return r.json(); })
+      .then(function (cart) {
+        /* A newer click is already queued — let it have the last word. */
+        if (mine !== token) return;
+        notify(cart, cart.sections);
+      })
+      .catch(function () {
+        /* Never navigate on failure. Re-read the cart so the UI settles on the
+           truth instead of on the optimistic guess. */
+        if (mine !== token) return;
+        return fetch('/cart.js', { headers: { 'Accept': 'application/json' } })
+          .then(function (r) { return r.json(); })
+          .then(function (cart) { notify(cart, {}); })
+          .catch(function () {});
+      });
+  }
+
+  return {
+    /* Callers update their own UI optimistically, then call this. */
+    change: function (line, quantity) {
+      if (!window.fetch) return;
+      var key = String(line);
+      window.clearTimeout(timers[key]);
+      timers[key] = window.setTimeout(function () {
+        var mine = ++token;
+        chain = chain.then(function () { return post(line, quantity, mine); });
+      }, DEBOUNCE_MS);
+    },
+
+    /* Fires with the authoritative cart and any re-rendered section HTML. */
+    onUpdate: function (fn) {
+      if (typeof fn === 'function') listeners.push(fn);
+    },
+
+    /* Used by add-to-cart paths that have already mutated the cart. */
+    announce: function (cart, sections) {
+      notify(cart, sections);
+    }
+  };
+})();
+
 (function () {
   function initFaq(root) {
     root.querySelectorAll('[data-veylique-faq-button]').forEach(function (button) {
