@@ -79,7 +79,10 @@
     "no_products_text": "Check back soon — new pieces are on their way.",
     "no_results_title": "No matches found",
     "no_results_text": "Try removing a filter or two to see more of the collection.",
-    "browse_all": "Browse all products"
+    "browse_all": "Browse all products",
+    "show_more": "Show more",
+    "show_less": "Show less",
+    "search_options": "Search"
   },
   "contact": {
     "form": {

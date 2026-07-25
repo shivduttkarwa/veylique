@@ -63,6 +63,8 @@
 <section
   class="veylique-collection veylique-page full-width"
   data-veylique-collection
+  data-section-id="{{ section.id }}"
+  data-collection-url="{{ collection.url }}"
   aria-labelledby="VeyliqueCollectionTitle-{{ section.id }}"
 >
   {%- if section.settings.show_hero -%}
@@ -112,7 +114,7 @@
     {%- endunless -%}
 
     {%- comment -%} Toolbar {%- endcomment -%}
-    <div class="veylique-collection__toolbar">
+    <div class="veylique-collection__toolbar" data-veylique-toolbar>
       <div class="veylique-collection__toolbar-start">
         {%- if has_filters -%}
           <button
@@ -135,6 +137,7 @@
             {{ 'collection.product_count' | t: count: collection.products_count }}
           </p>
         {%- endif -%}
+        <span class="veylique-collection__spinner" aria-hidden="true"></span>
       </div>
 
       <div class="veylique-collection__toolbar-end">
@@ -163,8 +166,8 @@
             {%- comment -%} Preserve active filters when sorting without JS {%- endcomment -%}
             {%- for filter in collection.filters -%}
               {%- if filter.type == 'price_range' -%}
-                {%- if filter.min_value.value != null -%}<input type="hidden" name="{{ filter.min_value.param_name }}" value="{{ filter.min_value.value }}">{%- endif -%}
-                {%- if filter.max_value.value != null -%}<input type="hidden" name="{{ filter.max_value.param_name }}" value="{{ filter.max_value.value }}">{%- endif -%}
+                {%- if filter.min_value.value != null -%}<input type="hidden" name="{{ filter.min_value.param_name }}" value="{{ filter.min_value.value | money_without_currency | remove: ',' }}">{%- endif -%}
+                {%- if filter.max_value.value != null -%}<input type="hidden" name="{{ filter.max_value.param_name }}" value="{{ filter.max_value.value | money_without_currency | remove: ',' }}">{%- endif -%}
               {%- else -%}
                 {%- for value in filter.active_values -%}
                   <input type="hidden" name="{{ value.param_name }}" value="{{ value.value }}">
@@ -198,14 +201,76 @@
             {%- endif -%}
 
             {%- for filter in collection.filters -%}
-              <details class="veylique-facet" {% if forloop.index <= section.settings.open_filters %}open{% endif %}>
+              {%- liquid
+                assign filter_label_down = filter.label | downcase
+                assign is_size_filter = false
+                if filter_label_down contains 'size'
+                  assign is_size_filter = true
+                endif
+                assign facet_active_count = 0
+                if filter.type == 'price_range'
+                  if filter.min_value.value != null or filter.max_value.value != null
+                    assign facet_active_count = 1
+                  endif
+                else
+                  assign facet_active_count = filter.active_values.size
+                endif
+              -%}
+              <details class="veylique-facet" {% if forloop.index <= section.settings.open_filters or facet_active_count > 0 %}open{% endif %}>
                 <summary class="veylique-facet__summary">
-                  <span>{{ filter.label | escape }}</span>
+                  <span class="veylique-facet__summary-label">
+                    {{ filter.label | escape }}
+                    {%- if facet_active_count > 0 -%}
+                      <span class="veylique-facet__active">{{ facet_active_count }}</span>
+                    {%- endif -%}
+                  </span>
                   <svg class="veylique-facet__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
                 </summary>
                 <div class="veylique-facet__body">
                   {%- case filter.type -%}
                     {%- when 'price_range' -%}
+                      {%- liquid
+                        assign price_max_units = filter.range_max | money_without_currency | remove: ','
+                        assign price_min_value = ''
+                        if filter.min_value.value != null
+                          assign price_min_value = filter.min_value.value | money_without_currency | remove: ','
+                        endif
+                        assign price_max_value = ''
+                        if filter.max_value.value != null
+                          assign price_max_value = filter.max_value.value | money_without_currency | remove: ','
+                        endif
+                      -%}
+                      <div
+                        class="veylique-price-slider"
+                        data-veylique-price-slider
+                        data-max="{{ price_max_units }}"
+                      >
+                        <div class="veylique-price-slider__track" aria-hidden="true">
+                          <span class="veylique-price-slider__fill" data-veylique-price-fill></span>
+                        </div>
+                        <input
+                          type="range"
+                          class="veylique-price-slider__range"
+                          min="0"
+                          max="{{ price_max_units }}"
+                          step="1"
+                          value="{{ price_min_value | default: 0 }}"
+                          data-veylique-price-range="min"
+                          aria-label="{{ 'collection.price_from' | t }}"
+                          tabindex="-1"
+                        >
+                        <input
+                          type="range"
+                          class="veylique-price-slider__range"
+                          min="0"
+                          max="{{ price_max_units }}"
+                          step="1"
+                          value="{{ price_max_value | default: price_max_units }}"
+                          data-veylique-price-range="max"
+                          aria-label="{{ 'collection.price_to' | t }}"
+                          tabindex="-1"
+                        >
+                      </div>
                       <div class="veylique-facet__price">
                         <div class="veylique-facet__price-field">
                           <span class="veylique-facet__price-currency">{{ cart.currency.symbol }}</span>
@@ -213,10 +278,11 @@
                             type="number"
                             inputmode="decimal"
                             name="{{ filter.min_value.param_name }}"
-                            value="{{ filter.min_value.value }}"
+                            value="{{ price_min_value }}"
                             placeholder="0"
                             min="0"
-                            max="{{ filter.range_max | money_without_currency | remove: ',' }}"
+                            max="{{ price_max_units }}"
+                            data-veylique-price-input="min"
                             aria-label="{{ 'collection.price_from' | t }}"
                           >
                         </div>
@@ -227,10 +293,11 @@
                             type="number"
                             inputmode="decimal"
                             name="{{ filter.max_value.param_name }}"
-                            value="{{ filter.max_value.value }}"
-                            placeholder="{{ filter.range_max | money_without_currency | remove: ',' }}"
+                            value="{{ price_max_value }}"
+                            placeholder="{{ price_max_units }}"
                             min="0"
-                            max="{{ filter.range_max | money_without_currency | remove: ',' }}"
+                            max="{{ price_max_units }}"
+                            data-veylique-price-input="max"
                             aria-label="{{ 'collection.price_to' | t }}"
                           >
                         </div>
@@ -256,15 +323,45 @@
                                   class="veylique-swatch__dot"
                                   style="{% if value.swatch.image %}background-image: url({{ value.swatch.image | image_url: width: 60 }});{% elsif value.swatch.color %}background: {{ value.swatch.color }};{% else %}background: {{ value.value | handleize }};{% endif %}"
                                 ></span>
-                                <span class="visually-hidden">{{ value.label | escape }}</span>
+                                <span class="veylique-swatch__name">{{ value.label | escape }}</span>
                               </label>
                             </li>
                           {%- endfor -%}
                         </ul>
-                      {%- else -%}
-                        <ul class="veylique-facet__list" role="list">
+                      {%- elsif is_size_filter -%}
+                        <div class="veylique-facet__chips">
                           {%- for value in filter.values -%}
-                            <li>
+                            <label class="veylique-facet__chip{% if value.count == 0 and value.active == false %} is-disabled{% endif %}">
+                              <input
+                                type="checkbox"
+                                name="{{ value.param_name }}"
+                                value="{{ value.value }}"
+                                {% if value.active %}checked{% endif %}
+                                {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                              >
+                              <span class="veylique-facet__chip-face">{{ value.label | escape }}</span>
+                            </label>
+                          {%- endfor -%}
+                        </div>
+                      {%- else -%}
+                        {%- if filter.values.size > 10 -%}
+                          <div class="veylique-facet__search">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input
+                              type="search"
+                              data-veylique-facet-search
+                              placeholder="{{ 'collection.search_options' | t }}"
+                              aria-label="{{ 'collection.search_options' | t }} — {{ filter.label | escape }}"
+                            >
+                          </div>
+                        {%- endif -%}
+                        <ul
+                          class="veylique-facet__list{% if filter.values.size > 8 %} is-collapsible is-collapsed{% endif %}"
+                          role="list"
+                          data-veylique-facet-list
+                        >
+                          {%- for value in filter.values -%}
+                            <li data-facet-text="{{ value.label | downcase | escape }}">
                               <label class="veylique-facet__option{% if value.count == 0 and value.active == false %} is-disabled{% endif %}">
                                 <input
                                   type="checkbox"
@@ -282,6 +379,11 @@
                             </li>
                           {%- endfor -%}
                         </ul>
+                        {%- if filter.values.size > 8 -%}
+                          <button type="button" class="veylique-facet__more" data-veylique-facet-more data-more-label="{{ 'collection.show_more' | t }}" data-less-label="{{ 'collection.show_less' | t }}">
+                            {{ 'collection.show_more' | t }}
+                          </button>
+                        {%- endif -%}
                       {%- endif -%}
                   {%- endcase -%}
                 </div>
@@ -298,7 +400,7 @@
         <div class="veylique-facets__overlay" data-veylique-drawer-close hidden></div>
       {%- endif -%}
 
-      <div class="veylique-collection__results">
+      <div class="veylique-collection__results" data-veylique-results>
         {%- if has_filters and active_filter_count > 0 -%}
           <div class="veylique-collection__applied">
             <ul class="veylique-collection__pills" role="list">
@@ -709,18 +811,33 @@
   }
   .veylique-collection__clear-all:hover { text-decoration: underline; }
 
-  /* Color swatches */
+  /* Color swatches — dot + name rows */
   .veylique-facet__swatches {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.625rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem 0.75rem;
     margin: 0;
     padding: 0;
     list-style: none;
   }
   .veylique-swatch {
     display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 100%;
     cursor: pointer;
+  }
+  .veylique-swatch__name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--veylique-font-body);
+    font-size: 0.8125rem;
+    color: var(--veylique-color-foreground);
+  }
+  .veylique-swatch input:checked ~ .veylique-swatch__name {
+    font-weight: 700;
   }
   .veylique-swatch.is-disabled {
     opacity: 0.35;
@@ -970,12 +1087,212 @@
     .veylique-facets__overlay { display: none; }
   }
 
+  /* Facet group active-count badge */
+  .veylique-facet__summary-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .veylique-facet__active {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.125rem;
+    height: 1.125rem;
+    padding: 0 0.3125rem;
+    border-radius: var(--veylique-radius-pill);
+    background: var(--veylique-color-foreground);
+    color: var(--veylique-color-background);
+    font-size: 0.625rem;
+    font-weight: 700;
+  }
+
+  /* Dual-thumb price slider */
+  .veylique-price-slider {
+    position: relative;
+    height: 1.5rem;
+    margin: 0.25rem 0.5rem 1rem 0.25rem;
+  }
+  .veylique-price-slider__track {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 0.1875rem;
+    transform: translateY(-50%);
+    border-radius: var(--veylique-radius-pill);
+    background: var(--veylique-color-border);
+  }
+  .veylique-price-slider__fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-radius: var(--veylique-radius-pill);
+    background: var(--veylique-color-foreground);
+  }
+  .veylique-price-slider__range {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    appearance: none;
+    -webkit-appearance: none;
+    background: none;
+    pointer-events: none;
+  }
+  .veylique-price-slider__range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    border: 0.125rem solid var(--veylique-color-foreground);
+    border-radius: 50%;
+    background: var(--veylique-color-background);
+    cursor: grab;
+    pointer-events: auto;
+    transition: transform var(--veylique-duration-fast) ease;
+  }
+  .veylique-price-slider__range::-moz-range-thumb {
+    width: 1.125rem;
+    height: 1.125rem;
+    border: 0.125rem solid var(--veylique-color-foreground);
+    border-radius: 50%;
+    background: var(--veylique-color-background);
+    cursor: grab;
+    pointer-events: auto;
+  }
+  .veylique-price-slider__range::-webkit-slider-thumb:hover { transform: scale(1.12); }
+  .veylique-price-slider__range:active::-webkit-slider-thumb { cursor: grabbing; }
+
+  /* Size chips */
+  .veylique-facet__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .veylique-facet__chip {
+    display: inline-flex;
+    cursor: pointer;
+  }
+  .veylique-facet__chip.is-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .veylique-facet__chip input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .veylique-facet__chip-face {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    padding: 0 0.75rem;
+    border: var(--veylique-border-width) solid var(--veylique-color-border);
+    border-radius: var(--veylique-radius-sm);
+    background: transparent;
+    font-family: var(--veylique-font-body);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--veylique-color-foreground);
+    transition: border-color var(--veylique-duration-fast) ease, background-color var(--veylique-duration-fast) ease, color var(--veylique-duration-fast) ease;
+  }
+  @media (hover: hover) {
+    .veylique-facet__chip:not(.is-disabled):hover .veylique-facet__chip-face {
+      border-color: var(--veylique-color-foreground);
+    }
+  }
+  .veylique-facet__chip input:checked ~ .veylique-facet__chip-face {
+    border-color: var(--veylique-color-foreground);
+    background: var(--veylique-color-foreground);
+    color: var(--veylique-color-background);
+  }
+  .veylique-facet__chip input:focus-visible ~ .veylique-facet__chip-face {
+    outline: var(--veylique-focus-ring-width) solid var(--veylique-focus-ring-color);
+    outline-offset: var(--veylique-focus-ring-offset);
+  }
+
+  /* Facet option search */
+  .veylique-facet__search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+  .veylique-facet__search svg {
+    position: absolute;
+    left: 0.625rem;
+    color: var(--veylique-color-muted);
+    pointer-events: none;
+  }
+  .veylique-facet__search input {
+    width: 100%;
+    padding: 0.5rem 0.625rem 0.5rem 1.875rem;
+    border: var(--veylique-border-width) solid var(--veylique-color-border);
+    border-radius: var(--veylique-radius-sm);
+    background: transparent;
+    color: var(--veylique-color-foreground);
+    font: inherit;
+    font-size: 0.8125rem;
+  }
+  .veylique-facet__search input:focus {
+    outline: none;
+    border-color: var(--veylique-color-foreground);
+  }
+
+  /* Show more / less for long lists */
+  .veylique-facet__list.is-collapsible.is-collapsed li:nth-child(n + 9) {
+    display: none;
+  }
+  .veylique-facet__list.is-searching li { display: none; }
+  .veylique-facet__list.is-searching li.is-match { display: block; }
+  .veylique-facet__more {
+    margin-top: 0.625rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--veylique-color-rose);
+    font-family: var(--veylique-font-body);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .veylique-facet__more:hover { text-decoration: underline; }
+
+  /* AJAX loading state */
+  .veylique-collection.is-filtering [data-veylique-grid],
+  .veylique-collection.is-filtering .veylique-collection__applied {
+    opacity: 0.4;
+    pointer-events: none;
+    transition: opacity var(--veylique-duration-fast) ease;
+  }
+  .veylique-collection__spinner {
+    display: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    border: 0.125rem solid var(--veylique-color-border);
+    border-top-color: var(--veylique-color-foreground);
+    border-radius: 50%;
+    animation: veylique-collection-spin 0.7s linear infinite;
+  }
+  .veylique-collection.is-filtering .veylique-collection__spinner { display: inline-block; }
+  @keyframes veylique-collection-spin {
+    to { transform: rotate(360deg); }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .veylique-facets,
     .veylique-facets__overlay,
     .veylique-facet__chevron {
       transition: none;
     }
+    .veylique-collection__spinner { animation-duration: 1.5s; }
   }
 {% endstylesheet %}
 
@@ -987,11 +1304,16 @@
         if (section.dataset.veyliqueCollectionReady === 'true') return;
         section.dataset.veyliqueCollectionReady = 'true';
 
-        var facets = section.querySelector('[data-veylique-facets]');
-        var overlay = section.querySelector('.veylique-facets__overlay');
-        var openBtn = section.querySelector('[data-veylique-drawer-open]');
+        var sectionId = section.dataset.sectionId;
+        var priceTimer = null;
 
+        function q(sel) { return section.querySelector(sel); }
+
+        /* ---------- Drawer ---------- */
         function openDrawer() {
+          var facets = q('[data-veylique-facets]');
+          var overlay = q('.veylique-facets__overlay');
+          var openBtn = q('[data-veylique-drawer-open]');
           if (!facets) return;
           facets.classList.add('is-open');
           if (overlay) {
@@ -1003,6 +1325,9 @@
         }
 
         function closeDrawer() {
+          var facets = q('[data-veylique-facets]');
+          var overlay = q('.veylique-facets__overlay');
+          var openBtn = q('[data-veylique-drawer-open]');
           if (!facets) return;
           facets.classList.remove('is-open');
           if (overlay) {
@@ -1014,50 +1339,216 @@
           document.body.style.overflow = '';
         }
 
-        if (openBtn) openBtn.addEventListener('click', openDrawer);
-        section.querySelectorAll('[data-veylique-drawer-close]').forEach(function (el) {
-          el.addEventListener('click', closeDrawer);
-        });
         document.addEventListener('keydown', function (event) {
+          var facets = q('[data-veylique-facets]');
           if (event.key === 'Escape' && facets && facets.classList.contains('is-open')) closeDrawer();
         });
 
-        /* Auto-submit sort on change */
-        var sortSelect = section.querySelector('[data-veylique-sort]');
-        if (sortSelect) {
-          sortSelect.addEventListener('change', function () {
-            var form = sortSelect.closest('form');
-            if (form) form.submit();
+        /* ---------- AJAX rendering (Section Rendering API) ---------- */
+        function buildUrl(base, params) {
+          var clean = [];
+          params.forEach(function (value, key) {
+            if (value !== '') clean.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+          });
+          return base.split('?')[0] + (clean.length ? '?' + clean.join('&') : '');
+        }
+
+        function openFacetIndexes() {
+          var open = [];
+          section.querySelectorAll('[data-veylique-facet-form] .veylique-facet').forEach(function (d, i) {
+            if (d.open) open.push(i);
+          });
+          return open;
+        }
+
+        function restoreFacetIndexes(open) {
+          section.querySelectorAll('[data-veylique-facet-form] .veylique-facet').forEach(function (d, i) {
+            d.open = open.indexOf(i) !== -1;
           });
         }
 
-        /* Auto-submit facets on desktop; on mobile wait for Apply */
-        var facetForm = section.querySelector('[data-veylique-facet-form]');
-        if (facetForm) {
-          facetForm.addEventListener('change', function (event) {
-            if (event.target.type === 'checkbox' && window.matchMedia('(min-width: 990px)').matches) {
-              facetForm.submit();
-            }
-          });
+        function refresh(url, push) {
+          if (!window.fetch || !sectionId) { window.location.href = url; return; }
+          section.classList.add('is-filtering');
+          var openState = openFacetIndexes();
+          var fetchUrl = url + (url.indexOf('?') === -1 ? '?' : '&') + 'section_id=' + sectionId;
+
+          fetch(fetchUrl)
+            .then(function (r) { if (!r.ok) throw new Error('render'); return r.text(); })
+            .then(function (text) {
+              var doc = new DOMParser().parseFromString(text, 'text/html');
+              var fresh = doc.querySelector('[data-veylique-collection]');
+              if (!fresh) throw new Error('parse');
+
+              ['[data-veylique-results]', '[data-veylique-facet-form]', '[data-veylique-toolbar]'].forEach(function (sel) {
+                var mine = q(sel);
+                var theirs = fresh.querySelector(sel);
+                if (mine && theirs) mine.innerHTML = theirs.innerHTML;
+              });
+
+              restoreFacetIndexes(openState);
+              applySavedCols();
+
+              if (push !== false && window.history && window.history.pushState) {
+                window.history.pushState({ veyliqueCollection: true }, '', url);
+              }
+
+              var results = q('[data-veylique-results]');
+              if (results) {
+                var top = results.getBoundingClientRect().top + window.pageYOffset - 120;
+                if (window.pageYOffset > top) window.scrollTo({ top: top, behavior: 'auto' });
+              }
+            })
+            .catch(function () { window.location.href = url; })
+            .finally(function () { section.classList.remove('is-filtering'); });
         }
 
-        /* Column switcher (desktop) */
-        var grid = section.querySelector('[data-veylique-grid]');
-        var colBtns = section.querySelectorAll('[data-veylique-cols]');
+        function submitFacets() {
+          var form = q('[data-veylique-facet-form]');
+          if (!form) return;
+          var url = buildUrl(section.dataset.collectionUrl || window.location.pathname, new FormData(form));
+          refresh(url);
+        }
+
+        window.addEventListener('popstate', function () {
+          refresh(window.location.href, false);
+        });
+
+        /* ---------- Column switcher ---------- */
         var storeKey = 'veylique:cols:' + (section.id || 'collection');
-        function applyCols(value, btn) {
-          if (grid) grid.style.setProperty('--cols-d', value);
-          colBtns.forEach(function (b) { b.classList.toggle('is-active', b === btn); });
-        }
-        var saved = null;
-        try { saved = window.localStorage.getItem(storeKey); } catch (e) {}
-        colBtns.forEach(function (btn) {
-          if (saved && btn.dataset.veyliqueCols === saved) applyCols(saved, btn);
-          btn.addEventListener('click', function () {
-            var value = btn.dataset.veyliqueCols;
-            applyCols(value, btn);
-            try { window.localStorage.setItem(storeKey, value); } catch (e) {}
+        function applyCols(value, activeBtn) {
+          var grid = q('[data-veylique-grid]');
+          if (grid && value) grid.style.setProperty('--cols-d', value);
+          section.querySelectorAll('[data-veylique-cols]').forEach(function (b) {
+            b.classList.toggle('is-active', activeBtn ? b === activeBtn : b.dataset.veyliqueCols === value);
           });
+        }
+        function applySavedCols() {
+          var saved = null;
+          try { saved = window.localStorage.getItem(storeKey); } catch (e) {}
+          if (saved) applyCols(saved, null);
+        }
+        applySavedCols();
+
+        /* ---------- Price slider sync ---------- */
+        function syncPriceSlider(slider, commit) {
+          var minRange = slider.querySelector('[data-veylique-price-range="min"]');
+          var maxRange = slider.querySelector('[data-veylique-price-range="max"]');
+          var fill = slider.querySelector('[data-veylique-price-fill]');
+          var body = slider.closest('.veylique-facet__body');
+          if (!minRange || !maxRange || !body) return;
+
+          var max = parseFloat(slider.dataset.max) || 100;
+          var lo = Math.min(parseFloat(minRange.value) || 0, parseFloat(maxRange.value) || max);
+          var hi = Math.max(parseFloat(minRange.value) || 0, parseFloat(maxRange.value) || max);
+
+          if (fill) {
+            fill.style.left = (lo / max * 100) + '%';
+            fill.style.right = (100 - hi / max * 100) + '%';
+          }
+
+          var minInput = body.querySelector('[data-veylique-price-input="min"]');
+          var maxInput = body.querySelector('[data-veylique-price-input="max"]');
+          if (minInput) minInput.value = lo > 0 ? Math.round(lo) : '';
+          if (maxInput) maxInput.value = hi < max ? Math.round(hi) : '';
+
+          if (commit) {
+            window.clearTimeout(priceTimer);
+            priceTimer = window.setTimeout(submitFacets, 350);
+          }
+        }
+
+        section.querySelectorAll('[data-veylique-price-slider]').forEach(function (slider) {
+          syncPriceSlider(slider, false);
+        });
+
+        /* ---------- Delegated events ---------- */
+        section.addEventListener('click', function (event) {
+          if (event.target.closest('[data-veylique-drawer-open]')) { openDrawer(); return; }
+          if (event.target.closest('[data-veylique-drawer-close]')) { closeDrawer(); return; }
+
+          var colBtn = event.target.closest('[data-veylique-cols]');
+          if (colBtn) {
+            applyCols(colBtn.dataset.veyliqueCols, colBtn);
+            try { window.localStorage.setItem(storeKey, colBtn.dataset.veyliqueCols); } catch (e) {}
+            return;
+          }
+
+          var moreBtn = event.target.closest('[data-veylique-facet-more]');
+          if (moreBtn) {
+            var list = moreBtn.parentElement.querySelector('[data-veylique-facet-list]');
+            if (list) {
+              var collapsed = list.classList.toggle('is-collapsed');
+              moreBtn.textContent = collapsed ? moreBtn.dataset.moreLabel : moreBtn.dataset.lessLabel;
+            }
+            return;
+          }
+
+          /* AJAX for pills, clear-all and pagination */
+          var ajaxLink = event.target.closest('.veylique-collection__pill, .veylique-collection__clear-all, .veylique-facets__actions a, .veylique-pagination a');
+          if (ajaxLink && ajaxLink.href) {
+            event.preventDefault();
+            refresh(ajaxLink.href);
+            if (ajaxLink.closest('.veylique-facets__actions')) closeDrawer();
+            return;
+          }
+        });
+
+        section.addEventListener('change', function (event) {
+          var sort = event.target.closest('[data-veylique-sort]');
+          if (sort) {
+            var sortForm = sort.closest('form');
+            if (sortForm) {
+              var url = buildUrl(section.dataset.collectionUrl || window.location.pathname, new FormData(sortForm));
+              refresh(url);
+            }
+            return;
+          }
+
+          var slider = event.target.closest('[data-veylique-price-slider]');
+          if (slider) { syncPriceSlider(slider, true); return; }
+
+          var facetForm = event.target.closest('[data-veylique-facet-form]');
+          if (facetForm) {
+            if (event.target.type === 'checkbox') {
+              submitFacets();
+              return;
+            }
+            if (event.target.hasAttribute('data-veylique-price-input')) {
+              window.clearTimeout(priceTimer);
+              priceTimer = window.setTimeout(submitFacets, 500);
+            }
+          }
+        });
+
+        section.addEventListener('input', function (event) {
+          var slider = event.target.closest('[data-veylique-price-slider]');
+          if (slider) { syncPriceSlider(slider, false); return; }
+
+          var search = event.target.closest('[data-veylique-facet-search]');
+          if (search) {
+            var body = search.closest('.veylique-facet__body');
+            var list = body && body.querySelector('[data-veylique-facet-list]');
+            if (!list) return;
+            var term = search.value.trim().toLowerCase();
+            list.classList.toggle('is-searching', term.length > 0);
+            if (term.length > 0) {
+              list.querySelectorAll('li').forEach(function (li) {
+                li.classList.toggle('is-match', (li.dataset.facetText || '').indexOf(term) !== -1);
+              });
+            }
+            var more = body.querySelector('[data-veylique-facet-more]');
+            if (more) more.hidden = term.length > 0;
+          }
+        });
+
+        section.addEventListener('submit', function (event) {
+          var form = event.target.closest('[data-veylique-facet-form]');
+          if (form && window.fetch && sectionId) {
+            event.preventDefault();
+            submitFacets();
+            closeDrawer();
+          }
         });
       });
     }
