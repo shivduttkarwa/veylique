@@ -638,9 +638,23 @@
           var doc = new DOMParser().parseFromString(html, 'text/html');
           var fresh = doc.querySelector('[data-veylique-cart]');
           var mine = cartRoot();
-          if (fresh && mine) {
-            mine.replaceWith(fresh);
-            markReady();
+          if (!fresh || !mine) return;
+
+          /* Preserve an in-progress note: the debounce may not have saved it
+             yet, and the server copy would overwrite what is being typed. */
+          var liveNote = mine.querySelector('#CartNote');
+          var noteValue = liveNote ? liveNote.value : null;
+          var noteFocused = liveNote && document.activeElement === liveNote;
+
+          mine.replaceWith(fresh);
+          markReady();
+
+          if (noteValue !== null) {
+            var newNote = document.querySelector('#CartNote');
+            if (newNote) {
+              newNote.value = noteValue;
+              if (noteFocused) newNote.focus();
+            }
           }
         })
         .catch(function () {});
@@ -670,10 +684,16 @@
           updateHeaderCount(cart.item_count);
           /* Keeps the drawer in step, without sliding it open over the page the
              shopper is already using. */
-          document.dispatchEvent(new CustomEvent('veylique:cart:updated', { detail: { open: false } }));
+          document.dispatchEvent(new CustomEvent('veylique:cart:updated', {
+            detail: { open: false, source: 'cart-page' }
+          }));
           return refresh();
         })
-        .catch(function () { window.location.reload(); })
+        .catch(function () {
+          /* Re-read the cart rather than reloading the page — a reload is the
+             exact behaviour this whole change set exists to remove. */
+          return refresh();
+        })
         .finally(function () { setBusy(false); });
     }
 
@@ -715,12 +735,30 @@
       }
     });
 
+    /* The quantity input sits inside the cart form, so Enter would submit it and
+       reload the page. Apply the change in place instead. */
+    document.addEventListener('keydown', function (event) {
+      if (event.key !== 'Enter') return;
+      var input = event.target.closest('[data-qty-input]');
+      var row = event.target.closest('[data-veylique-cart-row]');
+      if (!input || !row || !window.fetch) return;
+      event.preventDefault();
+      changeLine(row.dataset.line, Math.max(0, parseInt(input.value, 10) || 0));
+    });
+
     /* The note saves on its own; the shopper never has to press Update. */
     document.addEventListener('input', function (event) {
       var note = event.target.closest('#CartNote');
       if (!note) return;
       window.clearTimeout(noteTimer);
       noteTimer = window.setTimeout(function () { saveNote(note.value); }, 600);
+    });
+
+    /* A change made in the drawer restates the page underneath it. */
+    document.addEventListener('veylique:cart:updated', function (event) {
+      if (event.detail && event.detail.source === 'cart-page') return;
+      if (!cartRoot()) return;
+      refresh();
     });
 
     if (document.readyState !== 'loading') markReady();

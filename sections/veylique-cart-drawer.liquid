@@ -494,7 +494,8 @@
 
     function setQuantity(line, quantity) {
       var el = drawer();
-      if (!el || !window.fetch) return;
+      if (!el) return;
+      if (!window.fetch) { window.location.href = '/cart'; return; }
       el.classList.add('is-busy');
 
       fetch('/cart/change.js', {
@@ -505,9 +506,18 @@
         .then(function (r) { if (!r.ok) throw new Error('change'); return r.json(); })
         .then(function (cart) {
           updateHeaderCount(cart.item_count);
+          /* Lets the cart page behind the drawer restate itself. */
+          document.dispatchEvent(new CustomEvent('veylique:cart:updated', {
+            detail: { open: false, source: 'drawer' }
+          }));
           return refresh();
         })
-        .catch(function () { window.location.href = '/cart'; })
+        .catch(function () {
+          /* Never hard-navigate on a failed line change — that reads as a full
+             page reload. Re-read the cart from the server instead; whatever the
+             true state is, the drawer will show it. */
+          return refresh();
+        })
         .finally(function () { el.classList.remove('is-busy'); });
     }
 
@@ -540,6 +550,12 @@
         close();
         return;
       }
+
+      /* Everything below is drawer-only. The cart page uses the same
+         `data-veylique-cart-remove` hook, so without this guard a remove click
+         there fired BOTH handlers: two change.js calls for one line, the loser
+         422s, and the old catch navigated to /cart — a full page reload. */
+      if (!event.target.closest('[data-veylique-cart-drawer]')) return;
 
       var qtyBtn = event.target.closest('[data-veylique-qty-change]');
       if (qtyBtn) {
@@ -578,6 +594,8 @@
 
     /* Any successful AJAX add anywhere in the theme announces itself here. */
     document.addEventListener('veylique:cart:updated', function (event) {
+      /* Ignore the drawer's own announcements — it has already refreshed. */
+      if (event.detail && event.detail.source === 'drawer') return;
       var shouldOpen = !event.detail || event.detail.open !== false;
       /* Same here — slide out immediately and let the just-added line arrive a
          moment later under the busy state, rather than making the shopper wait
