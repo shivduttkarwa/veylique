@@ -1575,9 +1575,10 @@
           .then(function () { return fetch('/cart.js', { headers: { 'Accept': 'application/json' } }).then(function (r) { return r.json(); }); })
           .then(function (cart) {
             updateCartCount(cart.item_count);
-            /* The drawer slides open with the cart contents, so the toast would
-               only repeat what the shopper can already see. */
-            document.dispatchEvent(new CustomEvent('veylique:cart:updated', { detail: { open: true } }));
+            showToast(strings.added + ' &middot; <a href="' + cartUrl + '">' + strings.viewCart + '</a>');
+            /* Refresh the drawer but leave it closed — an add should not
+               interrupt browsing. The shopper opens it when they choose to. */
+            document.dispatchEvent(new CustomEvent('veylique:cart:updated', { detail: { open: false } }));
           })
           .catch(function () { showToast(strings.error); })
           .finally(function () {

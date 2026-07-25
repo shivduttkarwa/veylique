@@ -669,8 +669,10 @@
         .then(function (r) { return r.json(); })
         .then(function (cart) {
           updateCartCount(cart.item_count);
-          /* Tells the global cart drawer to refresh and slide open. */
-          document.dispatchEvent(new CustomEvent('veylique:cart:updated', { detail: { open: true } }));
+          /* Refresh the drawer, but leave it closed: interrupting a browsing
+             shopper with a panel is worse than the quiet "Added" state and the
+             header count they already get. */
+          document.dispatchEvent(new CustomEvent('veylique:cart:updated', { detail: { open: false } }));
           link.classList.add('is-added');
           var isTextButton = link.classList.contains('veylique-pcard__add');
           if (isTextButton && link.dataset.addedLabel) {

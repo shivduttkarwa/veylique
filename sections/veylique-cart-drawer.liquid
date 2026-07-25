@@ -2,8 +2,9 @@
   Global cart drawer.
 
   Rendered once from layout/theme.liquid so it is available on every template.
-  The header cart button opens it, and any successful AJAX add (product card
-  quick add, PDP add to bag) opens it via the `veylique:cart:updated` event.
+  The header cart button is the only thing that opens it. Adds refresh its
+  contents through the `veylique:cart:updated` event but leave it closed, so a
+  shopper adding items is never interrupted by a panel.
 
   Contents are re-rendered server-side through the Section Rendering API
   (`?sections=veylique-cart-drawer`) so money formatting, discounts and
@@ -26,7 +27,12 @@
   <div class="veylique-drawer-head">
     <h2 class="veylique-drawer-title">
       {{ 'cart.title' | t }}
-      <span class="veylique-drawer-count">{{ 'cart.item_count' | t: count: cart.item_count }}</span>
+      <span
+        class="veylique-drawer-count"
+        data-cart-count-text
+        data-count-one="{{ 'cart.item_count' | t: count: 1 | escape }}"
+        data-count-other="{{ 'cart.item_count' | t: count: 4242 | escape }}"
+      >{{ 'cart.item_count' | t: count: cart.item_count }}</span>
     </h2>
     <button
       type="button"
@@ -534,6 +540,23 @@
 
       var subtotalEl = el.querySelector('[data-cart-subtotal]');
       if (subtotalEl) subtotalEl.textContent = formatMoney(subtotal, format);
+
+      var units = 0;
+      el.querySelectorAll('.veylique-qty-num').forEach(function (numEl) {
+        units += parseInt(numEl.textContent, 10) || 0;
+      });
+      updateHeaderCount(units);
+      setCountText(el.querySelector('[data-cart-count-text]'), units);
+    }
+
+    /* Rewrite an "N items" label from the plural forms rendered beside it, so
+       the wording stays correct in any language. */
+    function setCountText(node, count) {
+      if (!node) return;
+      var one = node.getAttribute('data-count-one');
+      var other = node.getAttribute('data-count-other');
+      if (!one || !other) return;
+      node.textContent = count === 1 ? one : other.replace('4242', String(count));
     }
 
     /* Same reasoning as the cart page: patch the figures rather than rebuilding

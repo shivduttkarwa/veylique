@@ -27,7 +27,19 @@
     <div class="veylique-cart-hero">
       <div class="veylique-cart-hero-inner">
         <p class="veylique-cart-eyebrow">{{ 'cart.eyebrow' | t }}</p>
-        <h1 class="veylique-cart-title">{{ 'cart.title' | t }} · {{ 'cart.item_count' | t: count: cart.item_count }}</h1>
+        {%- comment -%}
+          Both plural forms ride along as data so the count can be rewritten at
+          click speed without JavaScript having to know the language's plural
+          rules. The sentinel in the plural form is swapped for the live number.
+        {%- endcomment -%}
+        <h1 class="veylique-cart-title">
+          {{- 'cart.title' | t }} ·
+          <span
+            data-cart-count-text
+            data-count-one="{{ 'cart.item_count' | t: count: 1 | escape }}"
+            data-count-other="{{ 'cart.item_count' | t: count: 4242 | escape }}"
+          >{{ 'cart.item_count' | t: count: cart.item_count }}</span>
+        </h1>
       </div>
     </div>
 
@@ -690,14 +702,23 @@
       if (subtotalEl) subtotalEl.textContent = formatMoney(subtotal, format);
       if (totalEl) totalEl.textContent = formatMoney(subtotal, format);
 
-      /* The header badge is a bare number, so it can move at click speed too.
-         The heading's "N items" wording is left to the server, which owns the
-         pluralisation. */
       var units = 0;
       root.querySelectorAll('[data-qty-input]').forEach(function (input) {
         units += parseInt(input.value, 10) || 0;
       });
       updateHeaderCount(units);
+      setCountText(root.querySelector('[data-cart-count-text]'), units);
+    }
+
+    /* Rewrite an "N items" label from the plural forms rendered alongside it,
+       so the wording stays correct in any language without JS knowing the
+       rules. The server's render still confirms it a moment later. */
+    function setCountText(el, count) {
+      if (!el) return;
+      var one = el.getAttribute('data-count-one');
+      var other = el.getAttribute('data-count-other');
+      if (!one || !other) return;
+      el.textContent = count === 1 ? one : other.replace('4242', String(count));
     }
 
     /* Patch the figures in place rather than swapping the section.
