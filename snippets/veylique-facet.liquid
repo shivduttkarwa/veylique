@@ -61,6 +61,10 @@
       {%- when 'price_range' -%}
         {%- liquid
           assign price_max_units = filter.range_max | money_without_currency | remove: ','
+          # Formatted up front: writing `| t: price: filter.range_max | money`
+          # inline applies `money` to the STRING returned by `t` rather than to
+          # the price, which rendered the note as "Rs. 0.00".
+          assign price_max_money = filter.range_max | money
           assign price_min_value = ''
           if filter.min_value.value != null
             assign price_min_value = filter.min_value.value | money_without_currency | remove: ','
@@ -130,7 +134,7 @@
             >
           </div>
         </div>
-        <p class="veylique-facet__price-note">{{ 'collection.max_price_html' | t: price: filter.range_max | money }}</p>
+        <p class="veylique-facet__price-note">{{ 'collection.max_price_html' | t: price: price_max_money }}</p>
 
       {%- else -%}
         {%- if is_color_filter or filter.presentation == 'swatch' -%}

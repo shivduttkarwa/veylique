@@ -1590,6 +1590,24 @@
           });
         }
 
+        /* Product cards ship with .veylique-reveal-js, which is
+           `visibility: hidden` until the GSAP reveal engine plays them. That
+           engine only scans the DOM present at page load, so cards injected by
+           a filter change stayed hidden forever — the grid looked empty even
+           though the server had returned products. Filter results should appear
+           at once anyway, so show them outright and mark them handled so the
+           engine won't re-hide them later. */
+        function revealFreshContent(scope) {
+          if (!scope) return;
+          scope.querySelectorAll('.veylique-reveal-js').forEach(function (el) {
+            el.dataset.veyliqueRevealReady = 'true';
+            el.style.visibility = 'visible';
+            el.style.opacity = '1';
+            el.style.transform = 'none';
+            el.classList.add('veylique-clip-done');
+          });
+        }
+
         function setBusy(busy) {
           var results = q('[data-veylique-results]');
           if (results) results.setAttribute('aria-busy', busy ? 'true' : 'false');
@@ -1612,7 +1630,10 @@
               ['[data-veylique-results]', '[data-veylique-facet-form]', '[data-veylique-toolbar]'].forEach(function (sel) {
                 var mine = q(sel);
                 var theirs = fresh.querySelector(sel);
-                if (mine && theirs) mine.innerHTML = theirs.innerHTML;
+                if (mine && theirs) {
+                  mine.innerHTML = theirs.innerHTML;
+                  revealFreshContent(mine);
+                }
               });
 
               restoreFacetIndexes(openState);
