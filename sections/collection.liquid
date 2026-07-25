@@ -835,9 +835,13 @@
       max-height: calc(100dvh - var(--veylique-collection-header-h) - 7rem);
       overflow-y: auto;
       overscroll-behavior: contain;
-      /* Room for the scrollbar so option counts aren't clipped. */
-      padding-right: 0.5rem;
-      margin-right: -0.5rem;
+      /* `overflow-y: auto` clips on BOTH axes, so anything drawn outside the
+         content box is cut off — focus rings, the swatch selection ring and
+         hover scale all sit hard against the left edge. Padding on both sides
+         (cancelled by equal negative margins) gives them room to paint without
+         shifting the sidebar or misaligning the divider lines. */
+      padding-inline: 0.5rem;
+      margin-inline: -0.5rem;
     }
     /* Thin, unobtrusive scrollbar for the sidebar. */
     .veylique-facets--sticky {
@@ -990,8 +994,10 @@
     gap: 0.5rem;
     max-height: 15rem;
     overflow-y: auto;
-    margin: 0;
-    padding: 0;
+    /* Same reason as the sidebar: this scroller would otherwise clip the
+       checkbox focus ring, which sits flush against the left edge. */
+    margin: 0 -0.375rem;
+    padding: 0 0.375rem;
     list-style: none;
   }
   .veylique-facet__option {
