@@ -140,10 +140,6 @@
         "columns_desktop": {
           "label": "Columns on desktop"
         },
-        "columns_switch_min": {
-          "label": "Compact column count",
-          "info": "The lower option shown in the desktop column switcher."
-        },
         "columns_tablet": {
           "label": "Columns on tablet"
         },

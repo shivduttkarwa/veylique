@@ -143,16 +143,27 @@
       <div class="veylique-collection__toolbar-end">
         {%- if section.settings.enable_column_switcher -%}
           <div class="veylique-collection__cols" role="group" aria-label="{{ 'collection.columns' | t }}">
-            <button type="button" class="veylique-collection__cols-btn" data-veylique-cols="{{ section.settings.columns_switch_min }}" aria-label="{{ 'collection.columns' | t }}: {{ section.settings.columns_switch_min }}">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="4" width="7.5" height="16" rx="1"/><rect x="13.5" y="4" width="7.5" height="16" rx="1"/></svg>
+            <button type="button" class="veylique-collection__cols-btn{% if cols_d == 2 %} is-active{% endif %}" data-veylique-cols="2" aria-label="{{ 'collection.columns' | t }}: 2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3.5" y="4" width="7.5" height="16" rx="1"/><rect x="13" y="4" width="7.5" height="16" rx="1"/></svg>
             </button>
-            <button type="button" class="veylique-collection__cols-btn is-active" data-veylique-cols="{{ cols_d }}" aria-label="{{ 'collection.columns' | t }}: {{ cols_d }}">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="4" width="3.5" height="16" rx="1"/><rect x="9" y="4" width="3.5" height="16" rx="1"/><rect x="15" y="4" width="3.5" height="16" rx="1"/></svg>
+            <button type="button" class="veylique-collection__cols-btn{% if cols_d == 3 %} is-active{% endif %}" data-veylique-cols="3" aria-label="{{ 'collection.columns' | t }}: 3">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="4" width="4.75" height="16" rx="1"/><rect x="9.6" y="4" width="4.75" height="16" rx="1"/><rect x="16.25" y="4" width="4.75" height="16" rx="1"/></svg>
+            </button>
+            <button type="button" class="veylique-collection__cols-btn{% if cols_d == 4 %} is-active{% endif %}" data-veylique-cols="4" aria-label="{{ 'collection.columns' | t }}: 4">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="2.5" y="4" width="3.5" height="16" rx="1"/><rect x="7.5" y="4" width="3.5" height="16" rx="1"/><rect x="12.5" y="4" width="3.5" height="16" rx="1"/><rect x="17.5" y="4" width="3.5" height="16" rx="1"/></svg>
             </button>
           </div>
         {%- endif -%}
 
         {%- if enable_sorting -%}
+          {%- liquid
+            assign sort_label = ''
+            for option in collection.sort_options
+              if option.value == sort_by
+                assign sort_label = option.name
+              endif
+            endfor
+          -%}
           <form method="get" class="veylique-collection__sort" data-veylique-sort-form>
             <label for="VeyliqueSort-{{ section.id }}" class="veylique-collection__sort-label">{{ 'collection.sort_by' | t }}</label>
             <div class="veylique-collection__select">
@@ -162,6 +173,35 @@
                 {%- endfor -%}
               </select>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+
+            <div class="veylique-sort-ui" data-veylique-sort-ui>
+              <button
+                type="button"
+                class="veylique-sort-ui__btn"
+                data-veylique-sort-btn
+                aria-expanded="false"
+                aria-haspopup="listbox"
+              >
+                <span data-veylique-sort-label>{{ sort_label | escape }}</span>
+                <svg class="veylique-sort-ui__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <ul class="veylique-sort-ui__list" role="listbox" aria-label="{{ 'collection.sort_by' | t }}">
+                {%- for option in collection.sort_options -%}
+                  <li role="presentation">
+                    <button
+                      type="button"
+                      class="veylique-sort-ui__option{% if option.value == sort_by %} is-selected{% endif %}"
+                      role="option"
+                      aria-selected="{% if option.value == sort_by %}true{% else %}false{% endif %}"
+                      data-veylique-sort-option="{{ option.value }}"
+                    >
+                      {{ option.name }}
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                    </button>
+                  </li>
+                {%- endfor -%}
+              </ul>
             </div>
             {%- comment -%} Preserve active filters when sorting without JS {%- endcomment -%}
             {%- for filter in collection.filters -%}
@@ -627,22 +667,27 @@
 
   .veylique-collection__cols {
     display: none;
-    gap: 0.25rem;
+    align-items: center;
+    gap: 0.125rem;
+    padding: 0.1875rem;
+    border: var(--veylique-border-width) solid var(--veylique-color-border);
+    border-radius: var(--veylique-radius-sm);
   }
   .veylique-collection__cols-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2.125rem;
+    height: 2.125rem;
     padding: 0;
-    border: var(--veylique-border-width) solid transparent;
-    border-radius: var(--veylique-radius-sm);
+    border: 0;
+    border-radius: calc(var(--veylique-radius-sm) - 0.1875rem);
     background: transparent;
     color: var(--veylique-color-muted);
     cursor: pointer;
     transition: color var(--veylique-duration-fast) ease, background-color var(--veylique-duration-fast) ease;
   }
+  .veylique-collection__cols-btn svg { display: block; }
   .veylique-collection__cols-btn:hover { color: var(--veylique-color-foreground); }
   .veylique-collection__cols-btn.is-active {
     color: var(--veylique-color-foreground);
@@ -687,6 +732,90 @@
     color: var(--veylique-color-muted);
   }
   .veylique-collection__sort-apply { margin-left: 0.5rem; }
+
+  /* Custom sort dropdown — desktop, JS-enhanced. The native select stays for
+     mobile and no-JS. */
+  .veylique-sort-ui { display: none; }
+  @media (min-width: 990px) {
+    .veylique-collection__sort.has-custom .veylique-collection__select { display: none; }
+    .veylique-collection__sort.has-custom .veylique-sort-ui {
+      display: block;
+      position: relative;
+    }
+  }
+  .veylique-sort-ui__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-width: 13rem;
+    justify-content: space-between;
+    padding: 0.55rem 0.875rem;
+    border: var(--veylique-border-width) solid var(--veylique-color-border);
+    border-radius: var(--veylique-radius-sm);
+    background: transparent;
+    color: var(--veylique-color-foreground);
+    font-family: var(--veylique-font-body);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color var(--veylique-duration-fast) ease;
+  }
+  .veylique-sort-ui__btn:hover { border-color: var(--veylique-color-foreground); }
+  .veylique-sort-ui__chevron {
+    color: var(--veylique-color-muted);
+    transition: transform var(--veylique-duration-base) var(--veylique-ease-standard);
+  }
+  .veylique-sort-ui.is-open .veylique-sort-ui__chevron { transform: rotate(180deg); }
+  .veylique-sort-ui.is-open .veylique-sort-ui__btn { border-color: var(--veylique-color-foreground); }
+
+  .veylique-sort-ui__list {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.375rem);
+    z-index: 30;
+    display: none;
+    min-width: 100%;
+    margin: 0;
+    padding: 0.375rem;
+    list-style: none;
+    background: var(--veylique-color-surface, #fff);
+    border: var(--veylique-border-width) solid var(--veylique-color-border);
+    border-radius: 0.75rem;
+    box-shadow: 0 1rem 2.5rem rgba(36, 31, 26, 0.14);
+  }
+  .veylique-sort-ui.is-open .veylique-sort-ui__list { display: block; }
+
+  .veylique-sort-ui__option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 0;
+    border-radius: 0.5rem;
+    background: transparent;
+    color: var(--veylique-color-foreground);
+    font-family: var(--veylique-font-body);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    text-align: left;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color var(--veylique-duration-fast) ease;
+  }
+  .veylique-sort-ui__option svg { opacity: 0; flex: 0 0 auto; }
+  .veylique-sort-ui__option:hover,
+  .veylique-sort-ui__option:focus-visible {
+    background: var(--veylique-color-surface-alt);
+    outline: none;
+  }
+  .veylique-sort-ui__option.is-selected {
+    background: var(--veylique-color-foreground);
+    color: var(--veylique-color-background);
+    font-weight: 600;
+  }
+  .veylique-sort-ui__option.is-selected svg { opacity: 1; }
 
   /* Layout: sidebar + results */
   .veylique-collection__layout {
@@ -1388,6 +1517,7 @@
 
               restoreFacetIndexes(openState);
               applySavedCols();
+              enhanceSort();
 
               if (push !== false && window.history && window.history.pushState) {
                 window.history.pushState({ veyliqueCollection: true }, '', url);
@@ -1430,6 +1560,27 @@
         }
         applySavedCols();
 
+        /* ---------- Custom sort dropdown (desktop) ---------- */
+        function enhanceSort() {
+          var sortForm = q('[data-veylique-sort-form]');
+          if (sortForm) sortForm.classList.add('has-custom');
+        }
+        enhanceSort();
+
+        function closeSortUI() {
+          var ui = q('[data-veylique-sort-ui]');
+          var btn = q('[data-veylique-sort-btn]');
+          if (ui) ui.classList.remove('is-open');
+          if (btn) btn.setAttribute('aria-expanded', 'false');
+        }
+
+        document.addEventListener('click', function (event) {
+          if (!event.target.closest('[data-veylique-sort-ui]')) closeSortUI();
+        });
+        document.addEventListener('keydown', function (event) {
+          if (event.key === 'Escape') closeSortUI();
+        });
+
         /* ---------- Price slider sync ---------- */
         function syncPriceSlider(slider, commit) {
           var minRange = slider.querySelector('[data-veylique-price-range="min"]');
@@ -1466,6 +1617,29 @@
         section.addEventListener('click', function (event) {
           if (event.target.closest('[data-veylique-drawer-open]')) { openDrawer(); return; }
           if (event.target.closest('[data-veylique-drawer-close]')) { closeDrawer(); return; }
+
+          var sortBtn = event.target.closest('[data-veylique-sort-btn]');
+          if (sortBtn) {
+            var ui = sortBtn.closest('[data-veylique-sort-ui]');
+            var open = ui.classList.toggle('is-open');
+            sortBtn.setAttribute('aria-expanded', String(open));
+            return;
+          }
+
+          var sortOption = event.target.closest('[data-veylique-sort-option]');
+          if (sortOption) {
+            var select = q('[data-veylique-sort]');
+            closeSortUI();
+            if (select && select.value !== sortOption.dataset.veyliqueSortOption) {
+              select.value = sortOption.dataset.veyliqueSortOption;
+              var sortForm = select.closest('form');
+              if (sortForm) {
+                var url = buildUrl(section.dataset.collectionUrl || window.location.pathname, new FormData(sortForm));
+                refresh(url);
+              }
+            }
+            return;
+          }
 
           var colBtn = event.target.closest('[data-veylique-cols]');
           if (colBtn) {
@@ -1643,16 +1817,6 @@
       "max": 5,
       "step": 1,
       "default": 4
-    },
-    {
-      "type": "range",
-      "id": "columns_switch_min",
-      "label": "t:sections.collection.settings.columns_switch_min.label",
-      "info": "t:sections.collection.settings.columns_switch_min.info",
-      "min": 1,
-      "max": 3,
-      "step": 1,
-      "default": 2
     },
     {
       "type": "select",
