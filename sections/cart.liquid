@@ -23,7 +23,7 @@
     </div>
   </div>
 {%- else -%}
-  <div class="veylique-cart-page full-width" data-veylique-cart data-section-id="{{ section.id }}">
+  <div class="veylique-cart-page full-width" data-veylique-cart data-section-id="{{ section.id }}" data-money-format="{{ shop.money_format | escape }}">
     <div class="veylique-cart-hero">
       <div class="veylique-cart-hero-inner">
         <p class="veylique-cart-eyebrow">{{ 'cart.eyebrow' | t }}</p>
@@ -44,7 +44,7 @@
             </div>
 
             {%- for item in cart.items -%}
-              <div class="veylique-cart-row" data-veylique-cart-row data-line="{{ forloop.index }}">
+              <div class="veylique-cart-row" data-veylique-cart-row data-line="{{ forloop.index }}" data-unit-price="{{ item.final_price }}">
                 <div class="veylique-cart-row-img">
                   <a href="{{ item.url }}">
                     {%- if item.image -%}
@@ -147,7 +147,7 @@
               <div class="veylique-cart-summary-rows">
                 <div class="veylique-cart-summary-row">
                   <span>{{ 'cart.subtotal' | t }}</span>
-                  <span>{{ cart.items_subtotal_price | money }}</span>
+                  <span data-cart-subtotal>{{ cart.items_subtotal_price | money }}</span>
                 </div>
 
                 {%- for discount in cart.cart_level_discount_applications -%}
@@ -159,7 +159,7 @@
 
                 <div class="veylique-cart-summary-row veylique-cart-summary-row--total">
                   <span>{{ 'cart.total' | t }}</span>
-                  <span>{{ cart.total_price | money }}</span>
+                  <span data-cart-total>{{ cart.total_price | money }}</span>
                 </div>
               </div>
 
@@ -412,22 +412,8 @@
   /* With AJAX quantity updates the manual Update button has nothing to do. */
   .veylique-js-ready .veylique-cart-update { display: none; }
 
-  /* No dimming while a change is in flight. The quantity updates instantly and
-     only the affected figures are repainted, so a fade would make an in-place
-     edit look like a page rebuild. Steppers are disabled for the moment the
-     request is out, which is enough to prevent double-clicks. */
-  .veylique-cart-page.is-updating .veylique-qty-btn {
-    pointer-events: none;
-  }
-
-  /* Brief highlight so a changed figure is noticeable without a flash. */
-  .veylique-cart-row-total,
-  .veylique-cart-summary-row span:last-child {
-    transition: color var(--veylique-duration-base) ease;
-  }
-  .veylique-value-changed {
-    color: var(--veylique-color-rose);
-  }
+  /* Nothing dims or animates during an update: figures are recomputed locally
+     on click, so any transition would only make an instant edit look slow. */
 
   .veylique-cart-note { margin-top: 1.75rem; max-width: 34rem; }
   .veylique-cart-note label {
@@ -639,23 +625,70 @@
       if (root) root.classList.add('veylique-js-ready');
     }
 
+    /* Announce the update to assistive tech only — there is no visual busy
+       state, because the figures have already changed on screen. */
     function setBusy(busy) {
       var root = cartRoot();
-      if (!root) return;
-      root.classList.toggle('is-updating', busy);
-      root.setAttribute('aria-busy', busy ? 'true' : 'false');
+      if (root) root.setAttribute('aria-busy', busy ? 'true' : 'false');
     }
 
     /* Re-render from Liquid rather than patching totals in JS — discounts and
        currency formatting have one source of truth that way. */
-    /* Copy one node's contents only when they actually differ, and flag the
-       change so it can be highlighted briefly. */
     function patchNode(mineEl, freshEl) {
       if (!mineEl || !freshEl) return;
       if (mineEl.innerHTML === freshEl.innerHTML) return;
       mineEl.innerHTML = freshEl.innerHTML;
-      mineEl.classList.add('veylique-value-changed');
-      window.setTimeout(function () { mineEl.classList.remove('veylique-value-changed'); }, 450);
+    }
+
+    /* Render cents using the shop's own money format, so locally computed
+       figures are indistinguishable from the ones Liquid renders. */
+    function formatMoney(cents, format) {
+      function grouped(value, decimals, thousands, decimalMark) {
+        var parts = (value / 100).toFixed(decimals).split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousands);
+        return parts.join(decimalMark);
+      }
+      return format
+        .replace(/\{\{\s*amount\s*\}\}/g, grouped(cents, 2, ',', '.'))
+        .replace(/\{\{\s*amount_no_decimals\s*\}\}/g, grouped(cents, 0, ',', '.'))
+        .replace(/\{\{\s*amount_with_comma_separator\s*\}\}/g, grouped(cents, 2, '.', ','))
+        .replace(/\{\{\s*amount_no_decimals_with_comma_separator\s*\}\}/g, grouped(cents, 0, '.', ','));
+    }
+
+    /* Repaint the figures from local arithmetic the moment a stepper is
+       pressed, so the cart responds at click speed instead of at network speed.
+       The server response then patches the same nodes; the values normally
+       match, so nothing visibly moves a second time.
+
+       Skipped when a cart-level discount is present, because the discounted
+       total cannot be derived from line prices alone — those carts simply wait
+       for the authoritative render. */
+    function repaintTotals() {
+      var root = cartRoot();
+      if (!root) return;
+
+      var format = root.getAttribute('data-money-format');
+      if (!format) return;
+      if (root.querySelector('.veylique-cart-summary-row--discount')) return;
+
+      var subtotal = 0;
+      root.querySelectorAll('[data-veylique-cart-row]').forEach(function (row) {
+        var unit = parseInt(row.getAttribute('data-unit-price'), 10);
+        var input = row.querySelector('[data-qty-input]');
+        var qty = parseInt(input && input.value, 10);
+        if (!(unit >= 0) || !(qty >= 0)) return;
+
+        var lineTotal = unit * qty;
+        subtotal += lineTotal;
+
+        var totalEl = row.querySelector('.veylique-cart-row-total');
+        if (totalEl) totalEl.textContent = formatMoney(lineTotal, format);
+      });
+
+      var subtotalEl = root.querySelector('[data-cart-subtotal]');
+      var totalEl = root.querySelector('[data-cart-total]');
+      if (subtotalEl) subtotalEl.textContent = formatMoney(subtotal, format);
+      if (totalEl) totalEl.textContent = formatMoney(subtotal, format);
     }
 
     /* Patch the figures in place rather than swapping the section.
@@ -784,6 +817,7 @@
         var current = parseInt(input && input.value, 10) || 0;
         var next = down ? Math.max(0, current - 1) : current + 1;
         if (input) input.value = next;
+        repaintTotals();
         changeLine(lineFor(row), next);
         return;
       }

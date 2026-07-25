@@ -21,6 +21,7 @@
   aria-label="{{ 'cart.title' | t }}"
   aria-hidden="true"
   data-veylique-cart-drawer
+  data-money-format="{{ shop.money_format | escape }}"
 >
   <div class="veylique-drawer-head">
     <h2 class="veylique-drawer-title">
@@ -49,7 +50,7 @@
     {%- else -%}
       <ul class="veylique-drawer-items" role="list">
         {%- for item in cart.items -%}
-          <li class="veylique-drawer-item" data-veylique-cart-item data-line="{{ forloop.index }}">
+          <li class="veylique-drawer-item" data-veylique-cart-item data-line="{{ forloop.index }}" data-unit-price="{{ item.final_price }}">
             <a href="{{ item.url }}" class="veylique-drawer-item-media" tabindex="-1" aria-hidden="true">
               {%- if item.image -%}
                 {{ item.image | image_url: width: 200 | image_tag: class: 'veylique-drawer-item-img', alt: item.title, loading: 'lazy', widths: '72, 144, 216' }}
@@ -119,7 +120,7 @@
     <div class="veylique-drawer-footer">
       <div class="veylique-drawer-subtotal">
         <span>{{ 'cart.subtotal' | t }}</span>
-        <span>{{ cart.total_price | money }}</span>
+        <span data-cart-subtotal>{{ cart.total_price | money }}</span>
       </div>
       <p class="veylique-drawer-note">{{ 'cart.tax_note' | t }}</p>
 
@@ -488,6 +489,53 @@
       mineEl.innerHTML = freshEl.innerHTML;
     }
 
+    /* Render cents with the shop's own money format so locally computed figures
+       match the ones Liquid renders. */
+    function formatMoney(cents, format) {
+      function grouped(value, decimals, thousands, decimalMark) {
+        var parts = (value / 100).toFixed(decimals).split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousands);
+        return parts.join(decimalMark);
+      }
+      return format
+        .replace(/\{\{\s*amount\s*\}\}/g, grouped(cents, 2, ',', '.'))
+        .replace(/\{\{\s*amount_no_decimals\s*\}\}/g, grouped(cents, 0, ',', '.'))
+        .replace(/\{\{\s*amount_with_comma_separator\s*\}\}/g, grouped(cents, 2, '.', ','))
+        .replace(/\{\{\s*amount_no_decimals_with_comma_separator\s*\}\}/g, grouped(cents, 0, '.', ','));
+    }
+
+    /* Recompute the line prices and subtotal locally the moment a stepper is
+       pressed, so the drawer answers at click speed. The server render patches
+       the same nodes afterwards and normally agrees, so nothing moves twice.
+
+       Skipped when a line carries a discount, since a discounted total cannot
+       be derived from the unit price alone. */
+    function repaintTotals() {
+      var el = drawer();
+      if (!el) return;
+
+      var format = el.getAttribute('data-money-format');
+      if (!format) return;
+      if (el.querySelector('.veylique-drawer-item-discount')) return;
+
+      var subtotal = 0;
+      el.querySelectorAll('[data-veylique-cart-item]').forEach(function (item) {
+        var unit = parseInt(item.getAttribute('data-unit-price'), 10);
+        var numEl = item.querySelector('.veylique-qty-num');
+        var qty = parseInt(numEl && numEl.textContent, 10);
+        if (!(unit >= 0) || !(qty >= 0)) return;
+
+        var lineTotal = unit * qty;
+        subtotal += lineTotal;
+
+        var priceEl = item.querySelector('.veylique-drawer-item-price');
+        if (priceEl) priceEl.textContent = formatMoney(lineTotal, format);
+      });
+
+      var subtotalEl = el.querySelector('[data-cart-subtotal]');
+      if (subtotalEl) subtotalEl.textContent = formatMoney(subtotal, format);
+    }
+
     /* Same reasoning as the cart page: patch the figures rather than rebuilding
        the drawer, so a quantity edit updates values instead of repainting the
        panel (which re-decoded every thumbnail and lost the scroll position). */
@@ -605,7 +653,10 @@
         /* Show the new number straight away; the server confirms it a moment
            later. Waiting on the round trip is what made this feel sluggish. */
         var numEl = qtyBtn.parentElement && qtyBtn.parentElement.querySelector('.veylique-qty-num');
-        if (numEl && next > 0) numEl.textContent = next;
+        if (numEl && next > 0) {
+          numEl.textContent = next;
+          repaintTotals();
+        }
         setQuantity(lineFor(qtyBtn), next);
         return;
       }
