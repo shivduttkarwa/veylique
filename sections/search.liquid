@@ -28,6 +28,8 @@
       </form>
     </header>
 
+    {%- comment -%} Paging swaps this container's contents instead of reloading. {%- endcomment -%}
+    <div data-veylique-ajax-list data-section-id="{{ section.id }}">
     {%- if search.performed -%}
       {%- if search.results_count == 0 -%}
         <div class="veylique-search-empty">
@@ -76,7 +78,7 @@
           </div>
 
           {%- if paginate.pages > 1 -%}
-            <nav class="veylique-search-pagination" role="navigation" aria-label="{{ 'search.pagination' | t }}">
+            <nav class="veylique-search-pagination" data-veylique-ajax-pagination role="navigation" aria-label="{{ 'search.pagination' | t }}">
               {%- if paginate.previous -%}
                 <a class="veylique-search-page-link" href="{{ paginate.previous.url }}" aria-label="{{ paginate.previous.title }}">‹</a>
               {%- endif -%}
@@ -97,6 +99,7 @@
         {%- endpaginate -%}
       {%- endif -%}
     {%- endif -%}
+    </div>
   </div>
 </section>
 

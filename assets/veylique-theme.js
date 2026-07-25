@@ -2062,6 +2062,78 @@
     });
   }
 
+  /* Generic AJAX pagination.
+
+     Any section can opt in by marking a container with
+     `data-veylique-ajax-list` + `data-section-id`, and its pagination nav with
+     `data-veylique-ajax-pagination`. Paging then swaps the container's contents
+     via the Section Rendering API instead of reloading the page.
+
+     Freshly injected nodes are revealed straight away: cards carry
+     `.veylique-reveal-js` (visibility: hidden until the GSAP engine plays them)
+     and that engine only scans the DOM present at page load, so injected
+     content would otherwise stay invisible. */
+  function initAjaxPagination(root) {
+    root.querySelectorAll('[data-veylique-ajax-list]').forEach(function (list) {
+      if (list.dataset.veyliqueAjaxReady === 'true') return;
+      list.dataset.veyliqueAjaxReady = 'true';
+
+      var sectionId = list.dataset.sectionId;
+      if (!sectionId || !window.fetch) return;
+
+      function reveal(scope) {
+        scope.querySelectorAll('.veylique-reveal-js').forEach(function (el) {
+          el.dataset.veyliqueRevealReady = 'true';
+          el.style.visibility = 'visible';
+          el.style.opacity = '1';
+          el.style.transform = 'none';
+          el.classList.add('veylique-clip-done');
+        });
+      }
+
+      function load(url, push) {
+        list.classList.add('is-loading');
+        list.setAttribute('aria-busy', 'true');
+
+        var fetchUrl = url + (url.indexOf('?') === -1 ? '?' : '&') + 'section_id=' + encodeURIComponent(sectionId);
+
+        fetch(fetchUrl)
+          .then(function (r) { if (!r.ok) throw new Error('render'); return r.text(); })
+          .then(function (text) {
+            var doc = new DOMParser().parseFromString(text, 'text/html');
+            var fresh = doc.querySelector('[data-veylique-ajax-list]');
+            if (!fresh) throw new Error('parse');
+
+            list.innerHTML = fresh.innerHTML;
+            reveal(list);
+
+            if (push !== false && window.history && window.history.pushState) {
+              window.history.pushState({ veyliqueAjaxList: true }, '', url);
+            }
+
+            var top = list.getBoundingClientRect().top + window.pageYOffset - 120;
+            if (window.pageYOffset > top) window.scrollTo({ top: top, behavior: 'auto' });
+          })
+          .catch(function () { window.location.href = url; })
+          .finally(function () {
+            list.classList.remove('is-loading');
+            list.setAttribute('aria-busy', 'false');
+          });
+      }
+
+      list.addEventListener('click', function (event) {
+        var link = event.target.closest('[data-veylique-ajax-pagination] a[href]');
+        if (!link) return;
+        event.preventDefault();
+        load(link.href);
+      });
+
+      window.addEventListener('popstate', function () {
+        load(window.location.href, false);
+      });
+    });
+  }
+
   function initHomeFaqs(root) {
     root.querySelectorAll('[data-veylique-home-faq]').forEach(function (section) {
       if (section.dataset.veyliqueHomeFaqReady === 'true') return;
@@ -2545,6 +2617,7 @@
     initServiceCards(document);
     initServiceMethod(document);
     initBlogs(document);
+    initAjaxPagination(document);
   }
 
   if (document.readyState === 'loading') {
@@ -2573,5 +2646,6 @@
     initServiceCards(event.target);
     initServiceMethod(event.target);
     initBlogs(event.target);
+    initAjaxPagination(event.target);
   });
 })();

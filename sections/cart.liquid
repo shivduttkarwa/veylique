@@ -7,7 +7,7 @@
 {% endcomment %}
 
 {%- if cart == empty -%}
-  <div class="veylique-cart-empty full-width" data-veylique-cart>
+  <div class="veylique-cart-empty full-width" data-veylique-cart data-section-id="{{ section.id }}">
     <div class="veylique-cart-empty-stage">
       <div class="veylique-cart-empty-copy">
         <span class="veylique-cart-empty-icon" aria-hidden="true">
@@ -23,7 +23,7 @@
     </div>
   </div>
 {%- else -%}
-  <div class="veylique-cart-page full-width" data-veylique-cart>
+  <div class="veylique-cart-page full-width" data-veylique-cart data-section-id="{{ section.id }}">
     <div class="veylique-cart-hero">
       <div class="veylique-cart-hero-inner">
         <p class="veylique-cart-eyebrow">{{ 'cart.eyebrow' | t }}</p>
@@ -44,7 +44,7 @@
             </div>
 
             {%- for item in cart.items -%}
-              <div class="veylique-cart-row" data-veylique-cart-row>
+              <div class="veylique-cart-row" data-veylique-cart-row data-line="{{ forloop.index }}">
                 <div class="veylique-cart-row-img">
                   <a href="{{ item.url }}">
                     {%- if item.image -%}
@@ -409,7 +409,17 @@
     padding-top: 1.5rem;
   }
   .veylique-cart-continue { margin-right: auto; }
+  /* With AJAX quantity updates the manual Update button has nothing to do. */
   .veylique-js-ready .veylique-cart-update { display: none; }
+
+  /* Rows dim while a quantity change is in flight; the layout is untouched so
+     nothing jumps when the fresh markup swaps in. */
+  .veylique-cart-page.is-updating .veylique-cart-items,
+  .veylique-cart-page.is-updating .veylique-cart-summary {
+    opacity: 0.55;
+    pointer-events: none;
+    transition: opacity var(--veylique-duration-fast) ease;
+  }
 
   .veylique-cart-note { margin-top: 1.75rem; max-width: 34rem; }
   .veylique-cart-note label {
@@ -590,46 +600,132 @@
 {% endstylesheet %}
 
 {% javascript %}
+  /* Cart page behaviour. Quantity, remove and the order note all go through the
+     cart AJAX API and re-render this section server-side, so the page never
+     reloads and the money formatting stays in Liquid.
+
+     Listeners are delegated from `document` because the section element itself
+     is swapped out on every update. Without JS the form still POSTs and the
+     remove links are ordinary hrefs, so the cart keeps working. */
   (function () {
-    function init(root) {
-      var carts = root.querySelectorAll('[data-veylique-cart]');
-      carts.forEach(function (cart) {
-        if (cart.dataset.veyliqueCartReady === 'true') return;
-        cart.dataset.veyliqueCartReady = 'true';
-        cart.classList.add('veylique-js-ready');
+    var noteTimer = null;
 
-        var form = cart.querySelector('[data-veylique-cart-form]');
+    function cartRoot() { return document.querySelector('[data-veylique-cart]'); }
 
-        function commit() {
-          if (!form) return;
-          if (typeof form.requestSubmit === 'function') form.requestSubmit();
-          else form.submit();
+    function markReady() {
+      var root = cartRoot();
+      if (root) root.classList.add('veylique-js-ready');
+    }
+
+    function setBusy(busy) {
+      var root = cartRoot();
+      if (!root) return;
+      root.classList.toggle('is-updating', busy);
+      root.setAttribute('aria-busy', busy ? 'true' : 'false');
+    }
+
+    /* Re-render from Liquid rather than patching totals in JS — discounts and
+       currency formatting have one source of truth that way. */
+    function refresh() {
+      var root = cartRoot();
+      var sectionId = root && root.dataset.sectionId;
+      if (!root || !sectionId || !window.fetch) return Promise.resolve();
+
+      var url = window.location.pathname + '?section_id=' + encodeURIComponent(sectionId);
+      return fetch(url, { headers: { 'Accept': 'text/html' } })
+        .then(function (r) { return r.text(); })
+        .then(function (html) {
+          var doc = new DOMParser().parseFromString(html, 'text/html');
+          var fresh = doc.querySelector('[data-veylique-cart]');
+          var mine = cartRoot();
+          if (fresh && mine) {
+            mine.replaceWith(fresh);
+            markReady();
+          }
+        })
+        .catch(function () {});
+    }
+
+    function updateHeaderCount(count) {
+      document.querySelectorAll('.veylique-cart-trigger').forEach(function (trigger) {
+        var badge = trigger.querySelector('.veylique-cart-count');
+        if (badge) {
+          badge.textContent = count;
+          badge.hidden = count === 0;
         }
-
-        cart.querySelectorAll('[data-veylique-qty]').forEach(function (stepper) {
-          var input = stepper.querySelector('[data-qty-input]');
-          var down = stepper.querySelector('[data-qty-down]');
-          var up = stepper.querySelector('[data-qty-up]');
-          if (!input) return;
-
-          if (down) down.addEventListener('click', function () {
-            var v = parseInt(input.value, 10) || 0;
-            input.value = Math.max(0, v - 1);
-            commit();
-          });
-          if (up) up.addEventListener('click', function () {
-            var v = parseInt(input.value, 10) || 0;
-            input.value = v + 1;
-            commit();
-          });
-          input.addEventListener('change', commit);
-        });
       });
     }
 
-    if (document.readyState !== 'loading') init(document);
-    else document.addEventListener('DOMContentLoaded', function () { init(document); });
-    document.addEventListener('shopify:section:load', function (event) { init(event.target); });
+    function changeLine(line, quantity) {
+      if (!window.fetch) return;
+      setBusy(true);
+
+      fetch('/cart/change.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ line: parseInt(line, 10), quantity: quantity })
+      })
+        .then(function (r) { if (!r.ok) throw new Error('change'); return r.json(); })
+        .then(function (cart) {
+          updateHeaderCount(cart.item_count);
+          /* Keeps the drawer in step, without sliding it open over the page the
+             shopper is already using. */
+          document.dispatchEvent(new CustomEvent('veylique:cart:updated', { detail: { open: false } }));
+          return refresh();
+        })
+        .catch(function () { window.location.reload(); })
+        .finally(function () { setBusy(false); });
+    }
+
+    function saveNote(value) {
+      if (!window.fetch) return;
+      fetch('/cart/update.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ note: value })
+      }).catch(function () {});
+    }
+
+    document.addEventListener('click', function (event) {
+      var row = event.target.closest('[data-veylique-cart-row]');
+
+      var down = event.target.closest('[data-qty-down]');
+      var up = event.target.closest('[data-qty-up]');
+      if ((down || up) && row) {
+        var input = row.querySelector('[data-qty-input]');
+        var current = parseInt(input && input.value, 10) || 0;
+        var next = down ? Math.max(0, current - 1) : current + 1;
+        if (input) input.value = next;
+        changeLine(row.dataset.line, next);
+        return;
+      }
+
+      var remove = event.target.closest('[data-veylique-cart-remove]');
+      if (remove && row && window.fetch) {
+        event.preventDefault();
+        changeLine(row.dataset.line, 0);
+      }
+    });
+
+    document.addEventListener('change', function (event) {
+      var input = event.target.closest('[data-qty-input]');
+      var row = event.target.closest('[data-veylique-cart-row]');
+      if (input && row) {
+        changeLine(row.dataset.line, Math.max(0, parseInt(input.value, 10) || 0));
+      }
+    });
+
+    /* The note saves on its own; the shopper never has to press Update. */
+    document.addEventListener('input', function (event) {
+      var note = event.target.closest('#CartNote');
+      if (!note) return;
+      window.clearTimeout(noteTimer);
+      noteTimer = window.setTimeout(function () { saveNote(note.value); }, 600);
+    });
+
+    if (document.readyState !== 'loading') markReady();
+    else document.addEventListener('DOMContentLoaded', markReady);
+    document.addEventListener('shopify:section:load', markReady);
   })();
 {% endjavascript %}
 
