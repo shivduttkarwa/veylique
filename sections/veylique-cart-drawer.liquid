@@ -81,10 +81,15 @@
               {%- endif -%}
 
               <div class="veylique-drawer-item-qty" data-veylique-qty>
+                {%- comment -%}
+                  A step, not an absolute target: baking "{{ item.quantity }} + 1"
+                  into the button meant a second fast click re-sent the same
+                  number, so the counter could not be driven quickly.
+                {%- endcomment -%}
                 <button
                   type="button"
                   class="veylique-drawer-qty-btn"
-                  data-veylique-qty-change="{{ item.quantity | minus: 1 }}"
+                  data-veylique-qty-step="-1"
                   data-line="{{ forloop.index }}"
                   aria-label="{{ 'cart.decrease_quantity' | t }}"
                 >−</button>
@@ -92,7 +97,7 @@
                 <button
                   type="button"
                   class="veylique-drawer-qty-btn"
-                  data-veylique-qty-change="{{ item.quantity | plus: 1 }}"
+                  data-veylique-qty-step="1"
                   data-line="{{ forloop.index }}"
                   aria-label="{{ 'cart.increase_quantity' | t }}"
                 >+</button>
@@ -489,6 +494,11 @@
 
     /* Re-render from Liquid rather than rebuilding line items in JS, so money
        formatting, discounts and translations stay server-side. */
+    var lastQtyClick = 0;
+    function nowMs() {
+      return (window.performance && window.performance.now) ? window.performance.now() : Date.now();
+    }
+
     function patchNode(mineEl, freshEl) {
       if (!mineEl || !freshEl) return;
       if (mineEl.innerHTML === freshEl.innerHTML) return;
@@ -578,11 +588,18 @@
       patchNode(mine.querySelector('.veylique-drawer-count'), fresh.querySelector('.veylique-drawer-count'));
       patchNode(mine.querySelector('.veylique-drawer-subtotal'), fresh.querySelector('.veylique-drawer-subtotal'));
 
+      /* While the shopper is still tapping, the number on screen is ahead of
+         any response in flight. Leave it alone rather than letting a late reply
+         snap it backwards mid-burst; the final response settles it. */
+      var stillTapping = (nowMs() - lastQtyClick) < 500;
+
       Array.prototype.forEach.call(mineItems, function (item, index) {
         var freshItem = freshItems[index];
         if (!freshItem) return;
         patchNode(item.querySelector('.veylique-drawer-item-price'), freshItem.querySelector('.veylique-drawer-item-price'));
-        patchNode(item.querySelector('.veylique-drawer-item-qty'), freshItem.querySelector('.veylique-drawer-item-qty'));
+        if (!stillTapping) {
+          patchNode(item.querySelector('.veylique-drawer-item-qty'), freshItem.querySelector('.veylique-drawer-item-qty'));
+        }
       });
     }
 
@@ -651,13 +668,22 @@
          422s, and the old catch navigated to /cart — a full page reload. */
       if (!event.target.closest('[data-veylique-cart-drawer]')) return;
 
-      var qtyBtn = event.target.closest('[data-veylique-qty-change]');
+      var qtyBtn = event.target.closest('[data-veylique-qty-step]');
       if (qtyBtn) {
         event.preventDefault();
-        var next = parseInt(qtyBtn.dataset.veyliqueQtyChange, 10);
-        /* Show the new number straight away; the server confirms it a moment
-           later. Waiting on the round trip is what made this feel sluggish. */
+
+        /* Step from what is on screen, so a rapid burst accumulates: click five
+           times and the count climbs by five. Reading a target baked into the
+           button meant every click after the first re-sent the same value. */
         var numEl = qtyBtn.parentElement && qtyBtn.parentElement.querySelector('.veylique-qty-num');
+        var current = parseInt(numEl && numEl.textContent, 10);
+        if (!(current >= 0)) return;
+
+        var step = parseInt(qtyBtn.dataset.veyliqueQtyStep, 10) || 0;
+        var next = Math.max(0, current + step);
+        if (next === current) return;
+        lastQtyClick = nowMs();
+
         if (numEl && next > 0) {
           numEl.textContent = next;
           repaintTotals();
