@@ -689,6 +689,15 @@
       var totalEl = root.querySelector('[data-cart-total]');
       if (subtotalEl) subtotalEl.textContent = formatMoney(subtotal, format);
       if (totalEl) totalEl.textContent = formatMoney(subtotal, format);
+
+      /* The header badge is a bare number, so it can move at click speed too.
+         The heading's "N items" wording is left to the server, which owns the
+         pluralisation. */
+      var units = 0;
+      root.querySelectorAll('[data-qty-input]').forEach(function (input) {
+        units += parseInt(input.value, 10) || 0;
+      });
+      updateHeaderCount(units);
     }
 
     /* Patch the figures in place rather than swapping the section.
@@ -841,11 +850,24 @@
       noteTimer = window.setTimeout(function () { saveNote(note.value); }, 600);
     });
 
+    /* Section scripts are deferred in the head and therefore execute BEFORE
+       veylique-theme.js, which is deferred at the end of the body. Registering
+       behind a bare `if (window.VeyliqueCart)` silently registered nothing, so
+       server responses were never applied — quantities moved optimistically
+       while the title and badge stayed frozen. Deferred scripts all run before
+       DOMContentLoaded, so waiting for it is enough. */
+    function whenCartReady(fn) {
+      if (window.VeyliqueCart) { fn(window.VeyliqueCart); return; }
+      document.addEventListener('DOMContentLoaded', function () {
+        if (window.VeyliqueCart) fn(window.VeyliqueCart);
+      });
+    }
+
     /* One subscription handles every cart mutation, wherever it came from —
        this page, the drawer, or an add elsewhere. The section HTML usually
        arrives with the response, so no extra request is needed. */
-    if (window.VeyliqueCart) {
-      window.VeyliqueCart.onUpdate(function (cart, sections) {
+    whenCartReady(function (VeyliqueCart) {
+      VeyliqueCart.onUpdate(function (cart, sections) {
         setBusy(false);
         updateHeaderCount(cart.item_count);
 
@@ -860,7 +882,7 @@
           refresh();
         }
       });
-    }
+    });
 
     if (document.readyState !== 'loading') markReady();
     else document.addEventListener('DOMContentLoaded', markReady);

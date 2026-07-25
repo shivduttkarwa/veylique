@@ -672,11 +672,22 @@
     });
 
     /* Any successful AJAX add anywhere in the theme announces itself here. */
+    /* Section scripts are deferred in the head and run BEFORE veylique-theme.js
+       (deferred at the end of the body), so `window.VeyliqueCart` does not exist
+       yet at this point. Guarding on it registered nothing at all. Deferred
+       scripts all execute before DOMContentLoaded, so waiting for it is enough. */
+    function whenCartReady(fn) {
+      if (window.VeyliqueCart) { fn(window.VeyliqueCart); return; }
+      document.addEventListener('DOMContentLoaded', function () {
+        if (window.VeyliqueCart) fn(window.VeyliqueCart);
+      });
+    }
+
     /* Single subscription for every cart mutation in the theme. The re-rendered
        drawer usually rides along with the change response, so no second request
        is needed. */
-    if (window.VeyliqueCart) {
-      window.VeyliqueCart.onUpdate(function (cart, sections) {
+    whenCartReady(function (VeyliqueCart) {
+      VeyliqueCart.onUpdate(function (cart, sections) {
         var el = drawer();
         if (el) el.classList.remove('is-busy');
         updateHeaderCount(cart.item_count);
@@ -689,7 +700,7 @@
           refresh();
         }
       });
-    }
+    });
 
     /* Add-to-cart paths announce themselves so the drawer can slide out. */
     document.addEventListener('veylique:cart:updated', function (event) {
