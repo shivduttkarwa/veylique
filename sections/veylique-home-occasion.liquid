@@ -35,14 +35,17 @@
             width: 1200,
             height: 1500
           %}
-          <span class="veylique-occ-tag">
-            <span class="veylique-occ-tag-name">{{ block.settings.tag_1_name }}</span>
-            <span class="veylique-occ-tag-price">{{ block.settings.tag_1_price }}</span>
-          </span>
-          <span class="veylique-occ-tag">
-            <span class="veylique-occ-tag-name">{{ block.settings.tag_2_name }}</span>
-            <span class="veylique-occ-tag-price">{{ block.settings.tag_2_price }}</span>
-          </span>
+          {% render 'veylique-occasion-tag',
+            name: block.settings.tag_1_name,
+            price: block.settings.tag_1_price,
+            url: block.settings.tag_1_link,
+            stacked: true
+          %}
+          {% render 'veylique-occasion-tag',
+            name: block.settings.tag_2_name,
+            price: block.settings.tag_2_price,
+            url: block.settings.tag_2_link
+          %}
         </div>
       {% endfor %}
     </div>
@@ -73,6 +76,7 @@
       "default": "Occasions"
     }
   ],
+  "max_blocks": 5,
   "blocks": [
     {
       "type": "occasion",
@@ -120,6 +124,11 @@
           "default": "$128.00"
         },
         {
+          "type": "url",
+          "id": "tag_1_link",
+          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_1_link.label"
+        },
+        {
           "type": "text",
           "id": "tag_2_name",
           "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_2_name.label",
@@ -130,6 +139,11 @@
           "id": "tag_2_price",
           "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_2_price.label",
           "default": "$86.00"
+        },
+        {
+          "type": "url",
+          "id": "tag_2_link",
+          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_2_link.label"
         }
       ]
     }

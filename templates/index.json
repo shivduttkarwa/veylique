@@ -301,19 +301,6 @@
             "tag_2_name": "Ribbed Tank",
             "tag_2_price": "$36.00"
           }
-        },
-        "occasion_6": {
-          "type": "occasion",
-          "settings": {
-            "heading": "Travel mode",
-            "text": "Low-maintenance layers built to move through airports and time zones alike.",
-            "fallback": "cta.webp",
-            "alt": "Travel mode outfit",
-            "tag_1_name": "Oversized Trench",
-            "tag_1_price": "$148.00",
-            "tag_2_name": "Jogger Pants",
-            "tag_2_price": "$68.00"
-          }
         }
       },
       "block_order": [
@@ -321,8 +308,7 @@
         "occasion_2",
         "occasion_3",
         "occasion_4",
-        "occasion_5",
-        "occasion_6"
+        "occasion_5"
       ],
       "settings": {
         "heading": "Shop by Occasion",

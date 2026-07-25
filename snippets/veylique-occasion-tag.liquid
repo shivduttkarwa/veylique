@@ -1,0 +1,46 @@
+{% doc %}
+  Renders a product tag pinned over an occasion slide image. The tag becomes a
+  link when a URL is set, and stays a plain label when it isn't.
+
+  Renders nothing when both the name and the price are blank.
+
+  @param {string} [name] - Product name shown on the tag.
+  @param {string} [price] - Formatted price shown under the name.
+  @param {string} [url] - Product URL. When set, the tag becomes clickable.
+  @param {boolean} [stacked] - When true, the tag sits above the bottom tag.
+
+  @example
+  {% render 'veylique-occasion-tag',
+    name: block.settings.tag_1_name,
+    price: block.settings.tag_1_price,
+    url: block.settings.tag_1_link,
+    stacked: true
+  %}
+{% enddoc %}
+
+{% liquid
+  assign tag_class = 'veylique-occ-tag'
+
+  if stacked
+    assign tag_class = tag_class | append: ' veylique-occ-tag--stacked'
+  endif
+
+  if url != blank
+    assign tag_wrapper = 'a'
+    assign tag_class = tag_class | append: ' veylique-occ-tag--link'
+  else
+    assign tag_wrapper = 'span'
+  endif
+%}
+
+{% if name != blank or price != blank %}
+  <{{ tag_wrapper }}
+    class="{{ tag_class }}"
+    {% if url != blank %}
+      href="{{ url }}"
+    {% endif %}
+  >
+    <span class="veylique-occ-tag-name">{{ name }}</span>
+    <span class="veylique-occ-tag-price">{{ price }}</span>
+  </{{ tag_wrapper }}>
+{% endif %}

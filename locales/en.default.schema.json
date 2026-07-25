@@ -1100,11 +1100,17 @@
             "tag_1_price": {
               "label": "Tag 1 price"
             },
+            "tag_1_link": {
+              "label": "Tag 1 link"
+            },
             "tag_2_name": {
               "label": "Tag 2 name"
             },
             "tag_2_price": {
               "label": "Tag 2 price"
+            },
+            "tag_2_link": {
+              "label": "Tag 2 link"
             }
           }
         }
