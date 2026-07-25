@@ -173,6 +173,7 @@
   "general": {
     "breadcrumb": {
       "home": "Home"
-    }
+    },
+    "back_to_top": "Back to top"
   }
 }

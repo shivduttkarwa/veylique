@@ -54,6 +54,8 @@
 
     {% comment %} Global cart drawer — opened by the header cart button and by any AJAX add to cart. {% endcomment %}
     {% section 'veylique-cart-drawer' %}
+
+    {% render 'veylique-back-to-top' %}
     {% comment %} GSAP powers the scroll-driven ritual/hero/reveal animations; Swiper powers the carousels. Deferred scripts run in order, so all libraries are ready before veylique-theme.js initializes. {% endcomment %}
     <script src="{{ 'gsap.min.js' | asset_url }}" defer></script>
     <script src="{{ 'ScrollTrigger.min.js' | asset_url }}" defer></script>
