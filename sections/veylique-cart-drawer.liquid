@@ -1,0 +1,584 @@
+{% comment %}
+  Global cart drawer.
+
+  Rendered once from layout/theme.liquid so it is available on every template.
+  The header cart button opens it, and any successful AJAX add (product card
+  quick add, PDP add to bag) opens it via the `veylique:cart:updated` event.
+
+  Contents are re-rendered server-side through the Section Rendering API
+  (`?sections=veylique-cart-drawer`) so money formatting, discounts and
+  translations stay in Liquid rather than being rebuilt in JavaScript.
+
+  Progressive enhancement: without JS the header button is a plain link to the
+  cart page and the remove links are ordinary hrefs, so the cart stays usable.
+{% endcomment %}
+
+<div class="veylique-cart-overlay" data-veylique-cart-overlay hidden></div>
+
+<aside
+  class="veylique-cart-drawer"
+  id="veyliqueCartDrawer"
+  aria-label="{{ 'cart.title' | t }}"
+  aria-hidden="true"
+  data-veylique-cart-drawer
+>
+  <div class="veylique-drawer-head">
+    <h2 class="veylique-drawer-title">
+      {{ 'cart.title' | t }}
+      <span class="veylique-drawer-count">{{ 'cart.item_count' | t: count: cart.item_count }}</span>
+    </h2>
+    <button
+      type="button"
+      class="veylique-drawer-close"
+      aria-label="{{ 'cart.close' | t }}"
+      data-veylique-cart-close
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <div class="veylique-drawer-body">
+    {%- if cart.item_count == 0 -%}
+      <div class="veylique-drawer-empty-state">
+        <p class="veylique-drawer-empty-title">{{ 'cart.empty_title' | t }}</p>
+        <p class="veylique-drawer-empty">{{ 'cart.empty_text' | t }}</p>
+        <a href="{{ routes.all_products_collection_url }}" class="veylique-button veylique-button--solid veylique-drawer-empty-btn">
+          {{ 'cart.continue_shopping' | t }}
+        </a>
+      </div>
+    {%- else -%}
+      <ul class="veylique-drawer-items" role="list">
+        {%- for item in cart.items -%}
+          <li class="veylique-drawer-item" data-veylique-cart-item data-line="{{ forloop.index }}">
+            <a href="{{ item.url }}" class="veylique-drawer-item-media" tabindex="-1" aria-hidden="true">
+              {%- if item.image -%}
+                {{ item.image | image_url: width: 200 | image_tag: class: 'veylique-drawer-item-img', alt: item.title, loading: 'lazy', widths: '72, 144, 216' }}
+              {%- else -%}
+                <span class="veylique-media-placeholder veylique-drawer-item-img"></span>
+              {%- endif -%}
+            </a>
+
+            <div class="veylique-drawer-item-info">
+              <p class="veylique-drawer-item-name">
+                <a href="{{ item.url }}">{{ item.product.title | escape }}</a>
+              </p>
+
+              {%- unless item.product.has_only_default_variant -%}
+                <p class="veylique-drawer-item-meta">{{ item.variant.title | escape }}</p>
+              {%- endunless -%}
+
+              {%- if item.line_level_discount_allocations.size > 0 -%}
+                {%- for allocation in item.line_level_discount_allocations -%}
+                  <p class="veylique-drawer-item-discount">{{ allocation.discount_application.title | escape }} (−{{ allocation.amount | money }})</p>
+                {%- endfor -%}
+              {%- endif -%}
+
+              <div class="veylique-drawer-item-qty" data-veylique-qty>
+                <button
+                  type="button"
+                  class="veylique-drawer-qty-btn"
+                  data-veylique-qty-change="{{ item.quantity | minus: 1 }}"
+                  data-line="{{ forloop.index }}"
+                  aria-label="{{ 'cart.decrease_quantity' | t }}"
+                >−</button>
+                <span class="veylique-qty-num" aria-label="{{ 'cart.quantity_for' | t: title: item.product.title }}">{{ item.quantity }}</span>
+                <button
+                  type="button"
+                  class="veylique-drawer-qty-btn"
+                  data-veylique-qty-change="{{ item.quantity | plus: 1 }}"
+                  data-line="{{ forloop.index }}"
+                  aria-label="{{ 'cart.increase_quantity' | t }}"
+                >+</button>
+              </div>
+            </div>
+
+            <div class="veylique-drawer-item-side">
+              <p class="veylique-drawer-item-price">
+                {%- if item.original_line_price > item.final_line_price -%}
+                  <s class="veylique-drawer-item-price-was">{{ item.original_line_price | money }}</s>
+                {%- endif -%}
+                {{ item.final_line_price | money }}
+              </p>
+              <a
+                href="{{ item.url_to_remove }}"
+                class="veylique-drawer-item-remove"
+                aria-label="{{ 'cart.remove_title' | t: title: item.product.title }}"
+                data-veylique-cart-remove
+                data-line="{{ forloop.index }}"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </a>
+            </div>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+
+  {%- if cart.item_count > 0 -%}
+    <div class="veylique-drawer-footer">
+      <div class="veylique-drawer-subtotal">
+        <span>{{ 'cart.subtotal' | t }}</span>
+        <span>{{ cart.total_price | money }}</span>
+      </div>
+      <p class="veylique-drawer-note">{{ 'cart.tax_note' | t }}</p>
+
+      <form action="{{ routes.cart_url }}" method="post" novalidate>
+        <button type="submit" name="checkout" class="veylique-button veylique-button--solid veylique-drawer-checkout-btn">
+          {{ 'cart.checkout' | t }}
+        </button>
+      </form>
+      <a href="{{ routes.cart_url }}" class="veylique-button veylique-button--outline veylique-drawer-cart-btn">
+        {{ 'cart.view_cart' | t }}
+      </a>
+    </div>
+  {%- endif -%}
+</aside>
+
+{% stylesheet %}
+  .veylique-cart-overlay {
+    position: fixed;
+    inset: 0;
+    /* Above the fixed site header (900). */
+    z-index: 960;
+    background: rgba(10, 10, 8, 0.45);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+  .veylique-cart-overlay.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .veylique-cart-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 961;
+    display: flex;
+    flex-direction: column;
+    width: 26.25rem;
+    max-width: 100vw;
+    height: 100dvh;
+    background: var(--veylique-color-surface, #ffffff);
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.76, 0, 0.24, 1);
+    box-shadow: -0.5rem 0 2.5rem rgba(0, 0, 0, 0.12);
+    visibility: hidden;
+  }
+  .veylique-cart-drawer.is-open {
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  .veylique-drawer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    gap: 1rem;
+    padding: 1.5rem 1.75rem 1.125rem;
+    border-bottom: var(--veylique-border-width) solid var(--veylique-color-border);
+  }
+  .veylique-drawer-title {
+    display: flex;
+    align-items: baseline;
+    gap: 0.625rem;
+    margin: 0;
+    font-family: var(--veylique-font-heading);
+    font-size: 1.375rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--veylique-color-foreground);
+  }
+  .veylique-drawer-count {
+    font-family: var(--veylique-font-body);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--veylique-color-muted);
+  }
+  .veylique-drawer-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-right: -0.75rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: var(--veylique-color-foreground);
+    cursor: pointer;
+    transition: background-color var(--veylique-duration-fast) ease;
+  }
+  .veylique-drawer-close:hover { background: var(--veylique-color-surface-alt); }
+
+  .veylique-drawer-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ---- Empty state ---- */
+  .veylique-drawer-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 3rem 1.75rem;
+    text-align: center;
+  }
+  .veylique-drawer-empty-title {
+    margin: 0;
+    font-family: var(--veylique-font-heading);
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--veylique-color-foreground);
+  }
+  .veylique-drawer-empty {
+    margin: 0 0 0.5rem;
+    font-family: var(--veylique-font-body);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--veylique-color-muted);
+  }
+
+  /* ---- Line items ---- */
+  .veylique-drawer-items {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .veylique-drawer-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.125rem 1.75rem;
+    border-bottom: var(--veylique-border-width) solid var(--veylique-color-border);
+  }
+  .veylique-drawer-item-media {
+    flex-shrink: 0;
+    display: block;
+    width: 4.5rem;
+  }
+  .veylique-drawer-item-img {
+    display: block;
+    width: 4.5rem;
+    height: 5.625rem;
+    object-fit: cover;
+    background: var(--veylique-color-surface-alt);
+  }
+  .veylique-drawer-item-info {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .veylique-drawer-item-name {
+    margin: 0 0 0.25rem;
+    font-family: var(--veylique-font-body);
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--veylique-color-foreground);
+  }
+  .veylique-drawer-item-name a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .veylique-drawer-item-name a:hover { text-decoration: underline; }
+  .veylique-drawer-item-meta {
+    margin: 0 0 0.25rem;
+    font-size: 0.75rem;
+    color: var(--veylique-color-muted);
+  }
+  .veylique-drawer-item-discount {
+    margin: 0 0 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--veylique-color-rose);
+  }
+
+  .veylique-drawer-item-qty {
+    display: flex;
+    align-items: stretch;
+    width: fit-content;
+    height: 2rem;
+    margin-top: 0.625rem;
+    border: var(--veylique-border-width) solid var(--veylique-color-border);
+    border-radius: var(--veylique-radius-xs);
+  }
+  .veylique-drawer-qty-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--veylique-color-foreground);
+    font-size: 0.9375rem;
+    line-height: 1;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color var(--veylique-duration-fast) ease;
+  }
+  .veylique-drawer-qty-btn:hover { background: var(--veylique-color-surface-alt); }
+  .veylique-drawer-item-qty .veylique-qty-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 100%;
+    border-inline: var(--veylique-border-width) solid var(--veylique-color-border);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--veylique-color-foreground);
+  }
+
+  .veylique-drawer-item-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+  .veylique-drawer-item-price {
+    margin: 0;
+    font-family: var(--veylique-font-body);
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-align: right;
+    color: var(--veylique-color-foreground);
+  }
+  .veylique-drawer-item-price-was {
+    display: block;
+    color: var(--veylique-color-muted);
+    font-weight: 500;
+    font-size: 0.75rem;
+  }
+  .veylique-drawer-item-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    color: var(--veylique-color-muted);
+    transition: color var(--veylique-duration-fast) ease;
+  }
+  .veylique-drawer-item-remove:hover { color: var(--veylique-color-foreground); }
+
+  /* ---- Footer ---- */
+  .veylique-drawer-footer {
+    flex-shrink: 0;
+    padding: 1.25rem 1.75rem calc(1.5rem + env(safe-area-inset-bottom));
+    border-top: var(--veylique-border-width) solid var(--veylique-color-border);
+    background: var(--veylique-color-surface, #ffffff);
+  }
+  .veylique-drawer-subtotal {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.375rem;
+    font-family: var(--veylique-font-body);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--veylique-color-foreground);
+  }
+  .veylique-drawer-note {
+    margin: 0 0 1rem;
+    font-size: 0.75rem;
+    color: var(--veylique-color-muted);
+  }
+  .veylique-drawer-checkout-btn,
+  .veylique-drawer-cart-btn {
+    width: 100%;
+  }
+  .veylique-drawer-cart-btn { margin-top: 0.625rem; }
+
+  /* Dim while a quantity change is in flight. */
+  .veylique-cart-drawer.is-busy .veylique-drawer-body,
+  .veylique-cart-drawer.is-busy .veylique-drawer-footer {
+    opacity: 0.5;
+    pointer-events: none;
+    transition: opacity var(--veylique-duration-fast) ease;
+  }
+
+  @media (max-width: 480px) {
+    .veylique-cart-drawer { width: 100vw; }
+    .veylique-drawer-head { padding: 1.25rem 1.25rem 1rem; }
+    .veylique-drawer-item { padding: 1rem 1.25rem; }
+    .veylique-drawer-footer { padding: 1.125rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom)); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .veylique-cart-drawer,
+    .veylique-cart-overlay { transition: none; }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    var SECTION = 'veylique-cart-drawer';
+    var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    var lastFocused = null;
+
+    function drawer() { return document.querySelector('[data-veylique-cart-drawer]'); }
+    function overlay() { return document.querySelector('[data-veylique-cart-overlay]'); }
+
+    function isOpen() {
+      var el = drawer();
+      return !!el && el.classList.contains('is-open');
+    }
+
+    function open() {
+      var el = drawer();
+      var ov = overlay();
+      if (!el || isOpen()) return;
+      lastFocused = document.activeElement;
+      el.classList.add('is-open');
+      el.setAttribute('aria-hidden', 'false');
+      if (ov) {
+        ov.hidden = false;
+        requestAnimationFrame(function () { ov.classList.add('is-open'); });
+      }
+      document.body.style.overflow = 'hidden';
+      var close = el.querySelector('[data-veylique-cart-close]');
+      if (close) close.focus();
+    }
+
+    function close() {
+      var el = drawer();
+      var ov = overlay();
+      if (!el || !isOpen()) return;
+      el.classList.remove('is-open');
+      el.setAttribute('aria-hidden', 'true');
+      if (ov) {
+        ov.classList.remove('is-open');
+        var hide = function () { ov.hidden = true; ov.removeEventListener('transitionend', hide); };
+        ov.addEventListener('transitionend', hide);
+      }
+      document.body.style.overflow = '';
+      if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+      lastFocused = null;
+    }
+
+    /* Re-render from Liquid rather than rebuilding line items in JS, so money
+       formatting, discounts and translations stay server-side. */
+    function refresh() {
+      var el = drawer();
+      if (!el || !window.fetch) return Promise.resolve();
+      var root = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+
+      return fetch(root + '?sections=' + SECTION, { headers: { 'Accept': 'application/json' } })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var html = data[SECTION];
+          if (!html) return;
+          var doc = new DOMParser().parseFromString(html, 'text/html');
+          var fresh = doc.querySelector('[data-veylique-cart-drawer]');
+          var mine = drawer();
+          /* Replace the contents, never the element — the open state and the
+             focus/scroll lock live on the element itself. */
+          if (fresh && mine) mine.innerHTML = fresh.innerHTML;
+        })
+        .catch(function () {});
+    }
+
+    function setQuantity(line, quantity) {
+      var el = drawer();
+      if (!el || !window.fetch) return;
+      el.classList.add('is-busy');
+
+      fetch('/cart/change.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ line: parseInt(line, 10), quantity: quantity })
+      })
+        .then(function (r) { if (!r.ok) throw new Error('change'); return r.json(); })
+        .then(function (cart) {
+          updateHeaderCount(cart.item_count);
+          return refresh();
+        })
+        .catch(function () { window.location.href = '/cart'; })
+        .finally(function () { el.classList.remove('is-busy'); });
+    }
+
+    /* Mirrors the badge logic used by the product-card quick add. */
+    function updateHeaderCount(count) {
+      document.querySelectorAll('.veylique-cart-trigger').forEach(function (trigger) {
+        var badge = trigger.querySelector('.veylique-cart-count');
+        if (badge) {
+          badge.textContent = count;
+          badge.hidden = count === 0;
+        }
+      });
+    }
+
+    document.addEventListener('click', function (event) {
+      var opener = event.target.closest('[data-veylique-cart-open], .veylique-cart-trigger');
+      if (opener && window.fetch) {
+        event.preventDefault();
+        refresh().then(open);
+        return;
+      }
+
+      if (event.target.closest('[data-veylique-cart-close], [data-veylique-cart-overlay]')) {
+        event.preventDefault();
+        close();
+        return;
+      }
+
+      var qtyBtn = event.target.closest('[data-veylique-qty-change]');
+      if (qtyBtn) {
+        event.preventDefault();
+        setQuantity(qtyBtn.dataset.line, parseInt(qtyBtn.dataset.veyliqueQtyChange, 10));
+        return;
+      }
+
+      var remove = event.target.closest('[data-veylique-cart-remove]');
+      if (remove && window.fetch) {
+        event.preventDefault();
+        setQuantity(remove.dataset.line, 0);
+      }
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (!isOpen()) return;
+      if (event.key === 'Escape') { close(); return; }
+      if (event.key !== 'Tab') return;
+
+      var el = drawer();
+      var items = Array.prototype.slice.call(el.querySelectorAll(FOCUSABLE))
+        .filter(function (node) { return node.offsetParent !== null; });
+      if (!items.length) return;
+
+      var first = items[0];
+      var last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+
+    /* Any successful AJAX add anywhere in the theme announces itself here. */
+    document.addEventListener('veylique:cart:updated', function (event) {
+      var shouldOpen = !event.detail || event.detail.open !== false;
+      refresh().then(function () { if (shouldOpen) open(); });
+    });
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.veylique-cart-drawer.name"
+}
+{% endschema %}

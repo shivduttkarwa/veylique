@@ -43,7 +43,9 @@
     "trust_secure": "Secure checkout, encrypted end to end",
     "trust_returns": "Easy returns within 14 days",
     "empty_title": "Your cart is empty",
-    "empty_text": "Once you add pieces you love, they'll appear here — ready whenever you are."
+    "empty_text": "Once you add pieces you love, they'll appear here — ready whenever you are.",
+    "close": "Close cart",
+    "view_cart": "View cart"
   },
   "customers": {
     "login": {

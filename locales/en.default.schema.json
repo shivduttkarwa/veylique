@@ -1686,6 +1686,9 @@
           }
         }
       }
+    },
+    "veylique-cart-drawer": {
+      "name": "Veylique cart drawer"
     }
   },
   "info": {

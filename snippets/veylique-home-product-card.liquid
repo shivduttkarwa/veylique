@@ -669,6 +669,8 @@
         .then(function (r) { return r.json(); })
         .then(function (cart) {
           updateCartCount(cart.item_count);
+          /* Tells the global cart drawer to refresh and slide open. */
+          document.dispatchEvent(new CustomEvent('veylique:cart:updated', { detail: { open: true } }));
           link.classList.add('is-added');
           var isTextButton = link.classList.contains('veylique-pcard__add');
           if (isTextButton && link.dataset.addedLabel) {
