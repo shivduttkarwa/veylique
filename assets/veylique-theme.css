@@ -1813,11 +1813,6 @@ body {
     background: rgba(17, 17, 17, 0.9);
     transform: translateY(-0.125rem);
   }
-
-  .veylique-occ-tag--link:hover .veylique-occ-tag-name {
-    text-decoration: underline;
-    text-underline-offset: 0.125rem;
-  }
 }
 
 .veylique-occ-slide.is-active .veylique-occ-tag {
