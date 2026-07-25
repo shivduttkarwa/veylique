@@ -470,10 +470,11 @@
 
     /* Re-render from Liquid rather than rebuilding line items in JS, so money
        formatting, discounts and translations stay server-side. */
-    function refresh() {
+    function refresh(showBusy) {
       var el = drawer();
       if (!el || !window.fetch) return Promise.resolve();
       var root = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+      if (showBusy) el.classList.add('is-busy');
 
       return fetch(root + '?sections=' + SECTION, { headers: { 'Accept': 'application/json' } })
         .then(function (r) { return r.json(); })
@@ -487,7 +488,8 @@
              focus/scroll lock live on the element itself. */
           if (fresh && mine) mine.innerHTML = fresh.innerHTML;
         })
-        .catch(function () {});
+        .catch(function () {})
+        .finally(function () { if (showBusy) el.classList.remove('is-busy'); });
     }
 
     function setQuantity(line, quantity) {
@@ -524,7 +526,12 @@
       var opener = event.target.closest('[data-veylique-cart-open], .veylique-cart-trigger');
       if (opener && window.fetch) {
         event.preventDefault();
-        refresh().then(open);
+        /* Open first, sync after. The drawer already holds server-rendered
+           contents, so waiting on the network before sliding it out just reads
+           as lag. The background refresh only guards against a stale render
+           from a cached page. */
+        open();
+        refresh();
         return;
       }
 
@@ -572,7 +579,11 @@
     /* Any successful AJAX add anywhere in the theme announces itself here. */
     document.addEventListener('veylique:cart:updated', function (event) {
       var shouldOpen = !event.detail || event.detail.open !== false;
-      refresh().then(function () { if (shouldOpen) open(); });
+      /* Same here — slide out immediately and let the just-added line arrive a
+         moment later under the busy state, rather than making the shopper wait
+         on a second round trip after the add itself. */
+      if (shouldOpen) open();
+      refresh(true);
     });
   })();
 {% endjavascript %}
