@@ -2,10 +2,21 @@
   {
     "name": "theme_info",
     "theme_name": "Veylique",
-    "theme_version": "0.1.0",
+    "theme_version": "1.0.0",
     "theme_author": "Veylique",
     "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
     "theme_support_url": "https://support.shopify.com/"
+  },
+  {
+    "name": "t:general.favicon",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "t:labels.favicon",
+        "info": "t:info.favicon"
+      }
+    ]
   },
   {
     "name": "t:general.typography",
@@ -18,13 +29,13 @@
         "type": "font_picker",
         "id": "type_heading_font",
         "default": "inter_n6",
-        "label": "Heading"
+        "label": "t:labels.heading_font"
       },
       {
         "type": "font_picker",
         "id": "type_body_font",
         "default": "inter_n4",
-        "label": "Body"
+        "label": "t:labels.body_font"
       }
     ]
   },
@@ -78,25 +89,25 @@
         "type": "color",
         "id": "accent_color",
         "default": "#C89523",
-        "label": "Accent"
+        "label": "t:labels.accent"
       },
       {
         "type": "color",
         "id": "accent_foreground_color",
         "default": "#FFFFFF",
-        "label": "Accent foreground"
+        "label": "t:labels.accent_foreground"
       },
       {
         "type": "color",
         "id": "secondary_accent_color",
         "default": "#6F7D68",
-        "label": "Secondary accent"
+        "label": "t:labels.secondary_accent"
       },
       {
         "type": "color",
         "id": "secondary_accent_foreground_color",
         "default": "#FFFFFF",
-        "label": "Secondary accent foreground"
+        "label": "t:labels.secondary_accent_foreground"
       },
       {
         "type": "range",

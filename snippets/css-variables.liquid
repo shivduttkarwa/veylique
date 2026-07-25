@@ -1,3 +1,12 @@
+{% doc %}
+  Maps merchant theme settings into the Veylique design-token CSS variables
+  (fonts, colors, spacing, radii, layout widths, timing, focus rings, z-index)
+  and declares the theme font faces. Rendered once in the document head.
+
+  @example
+  {% render 'css-variables' %}
+{% enddoc %}
+
 {% style %}
   {% # Loads the Shopify font picker variants used by the theme with display: swap %}
   {{ settings.type_heading_font | font_face: font_display: 'swap' }}

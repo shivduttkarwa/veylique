@@ -12,9 +12,14 @@
     "main": {
       "type": "product",
       "settings": {}
+    },
+    "recommendations": {
+      "type": "veylique-product-recommendations",
+      "settings": {}
     }
   },
   "order": [
-    "main"
+    "main",
+    "recommendations"
   ]
 }

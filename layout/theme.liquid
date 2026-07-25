@@ -28,6 +28,11 @@
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
     {{ 'veylique-theme.css' | asset_url | stylesheet_tag }}
 
+    {% if settings.favicon != blank %}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+      <link rel="apple-touch-icon" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
+    {% endif %}
+
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
 

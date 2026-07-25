@@ -31,7 +31,8 @@
     "sidebar": "Sidebar",
     "text": "Text",
     "theme": "Theme",
-    "typography": "Typography"
+    "typography": "Typography",
+    "favicon": "Favicon"
   },
   "labels": {
     "alignment": "Alignment",
@@ -48,7 +49,14 @@
     "page_width": "Page width",
     "show_payment_icons": "Show payment icons",
     "text_style": "Text style",
-    "text": "Text"
+    "text": "Text",
+    "favicon": "Favicon image",
+    "heading_font": "Heading",
+    "body_font": "Body",
+    "accent": "Accent",
+    "accent_foreground": "Accent foreground",
+    "secondary_accent": "Secondary accent",
+    "secondary_accent_foreground": "Secondary accent foreground"
   },
   "options": {
     "alignment": {
@@ -184,23 +192,45 @@
     "veylique-about-hero": {
       "name": "About hero",
       "settings": {
-        "image": { "label": "Background image" },
-        "fallback": { "label": "Fallback asset" },
-        "label": { "label": "Label" },
-        "heading_line_1": { "label": "Heading line 1" },
-        "heading_line_2": { "label": "Heading line 2 (soft)" },
-        "sub": { "label": "Subtext" },
-        "show_scroll": { "label": "Show scroll indicator" }
+        "image": {
+          "label": "Background image"
+        },
+        "fallback": {
+          "label": "Fallback asset"
+        },
+        "label": {
+          "label": "Label"
+        },
+        "heading_line_1": {
+          "label": "Heading line 1"
+        },
+        "heading_line_2": {
+          "label": "Heading line 2 (soft)"
+        },
+        "sub": {
+          "label": "Subtext"
+        },
+        "show_scroll": {
+          "label": "Show scroll indicator"
+        }
       },
-      "presets": { "name": "About hero" }
+      "presets": {
+        "name": "About hero"
+      }
     },
     "veylique-about-manifesto": {
       "name": "About manifesto",
       "settings": {
-        "quote": { "label": "Quote" },
-        "cite": { "label": "Citation" }
+        "quote": {
+          "label": "Quote"
+        },
+        "cite": {
+          "label": "Citation"
+        }
       },
-      "presets": { "name": "About manifesto" }
+      "presets": {
+        "name": "About manifesto"
+      }
     },
     "veylique-about-stats": {
       "name": "About stats",
@@ -208,148 +238,272 @@
         "stat": {
           "name": "Stat",
           "settings": {
-            "tag": { "label": "Tag" },
-            "number": { "label": "Number" },
-            "stroke": { "label": "Outlined number" }
+            "tag": {
+              "label": "Tag"
+            },
+            "number": {
+              "label": "Number"
+            },
+            "stroke": {
+              "label": "Outlined number"
+            }
           }
         }
       },
-      "presets": { "name": "About stats" }
+      "presets": {
+        "name": "About stats"
+      }
     },
     "veylique-about-story": {
       "name": "About story",
       "settings": {
-        "image": { "label": "Founder image" },
-        "fallback": { "label": "Fallback asset" },
-        "badge_text": { "label": "Orbit badge text" },
-        "founder_kicker": { "label": "Founder kicker" },
-        "founder_name": { "label": "Founder name" },
-        "founder_role": { "label": "Founder role" }
+        "image": {
+          "label": "Founder image"
+        },
+        "fallback": {
+          "label": "Fallback asset"
+        },
+        "badge_text": {
+          "label": "Orbit badge text"
+        },
+        "founder_kicker": {
+          "label": "Founder kicker"
+        },
+        "founder_name": {
+          "label": "Founder name"
+        },
+        "founder_role": {
+          "label": "Founder role"
+        }
       },
       "blocks": {
         "panel": {
           "name": "Chapter",
           "settings": {
-            "number": { "label": "Number" },
-            "label": { "label": "Label" },
-            "heading": { "label": "Heading" },
-            "lead": { "label": "Lead paragraph" },
-            "body": { "label": "Body paragraph" },
-            "link_label": { "label": "Link label" },
-            "link": { "label": "Link" },
-            "alt": { "label": "Alternate background" }
+            "number": {
+              "label": "Number"
+            },
+            "label": {
+              "label": "Label"
+            },
+            "heading": {
+              "label": "Heading"
+            },
+            "lead": {
+              "label": "Lead paragraph"
+            },
+            "body": {
+              "label": "Body paragraph"
+            },
+            "link_label": {
+              "label": "Link label"
+            },
+            "link": {
+              "label": "Link"
+            },
+            "alt": {
+              "label": "Alternate background"
+            }
           }
         }
       },
-      "presets": { "name": "About story" }
+      "presets": {
+        "name": "About story"
+      }
     },
     "veylique-about-values": {
       "name": "About values",
       "settings": {
-        "eyebrow": { "label": "Eyebrow" },
-        "heading": { "label": "Heading" },
-        "image": { "label": "Background image" },
-        "fallback": { "label": "Fallback asset" }
+        "eyebrow": {
+          "label": "Eyebrow"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "image": {
+          "label": "Background image"
+        },
+        "fallback": {
+          "label": "Fallback asset"
+        }
       },
       "blocks": {
         "value": {
           "name": "Value",
           "settings": {
-            "watermark": { "label": "Watermark" },
-            "index": { "label": "Index" },
-            "heading": { "label": "Heading" },
-            "text": { "label": "Text" }
+            "watermark": {
+              "label": "Watermark"
+            },
+            "index": {
+              "label": "Index"
+            },
+            "heading": {
+              "label": "Heading"
+            },
+            "text": {
+              "label": "Text"
+            }
           }
         }
       },
-      "presets": { "name": "About values" }
+      "presets": {
+        "name": "About values"
+      }
     },
     "veylique-about-materials": {
       "name": "About materials",
       "settings": {
-        "eyebrow": { "label": "Eyebrow" },
-        "heading": { "label": "Heading" },
-        "text": { "label": "Description" }
+        "eyebrow": {
+          "label": "Eyebrow"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Description"
+        }
       },
       "blocks": {
         "material": {
           "name": "Material",
           "settings": {
-            "image": { "label": "Image" },
-            "fallback": { "label": "Fallback asset" },
-            "tag": { "label": "Tag" },
-            "name": { "label": "Name" },
-            "desc": { "label": "Description" }
+            "image": {
+              "label": "Image"
+            },
+            "fallback": {
+              "label": "Fallback asset"
+            },
+            "tag": {
+              "label": "Tag"
+            },
+            "name": {
+              "label": "Name"
+            },
+            "desc": {
+              "label": "Description"
+            }
           }
         },
         "check": {
           "name": "Standard",
           "settings": {
-            "text": { "label": "Text" }
+            "text": {
+              "label": "Text"
+            }
           }
         }
       },
-      "presets": { "name": "About materials" }
+      "presets": {
+        "name": "About materials"
+      }
     },
     "veylique-about-press": {
       "name": "About press",
       "settings": {
-        "label": { "label": "Label" }
+        "label": {
+          "label": "Label"
+        }
       },
       "blocks": {
         "press": {
           "name": "Press name",
           "settings": {
-            "name": { "label": "Name" }
+            "name": {
+              "label": "Name"
+            }
           }
         }
       },
-      "presets": { "name": "About press" }
+      "presets": {
+        "name": "About press"
+      }
     },
     "veylique-svc-section": {
       "name": "Services cards",
       "settings": {
-        "eyebrow": { "label": "Eyebrow" },
-        "heading": { "label": "Heading" },
-        "text": { "label": "Description" },
-        "more_label": { "label": "Card link label" }
+        "eyebrow": {
+          "label": "Eyebrow"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Description"
+        },
+        "more_label": {
+          "label": "Card link label"
+        }
       },
       "blocks": {
         "service": {
           "name": "Service",
           "settings": {
-            "icon": { "label": "Icon" },
-            "meta": { "label": "Meta (duration / price)" },
-            "title": { "label": "Title" },
-            "desc": { "label": "Description" },
-            "link": { "label": "Link" },
-            "image_1": { "label": "Photo 1" },
-            "fallback_1": { "label": "Photo 1 fallback asset" },
-            "image_2": { "label": "Photo 2" },
-            "fallback_2": { "label": "Photo 2 fallback asset" }
+            "icon": {
+              "label": "Icon"
+            },
+            "meta": {
+              "label": "Meta (duration / price)"
+            },
+            "title": {
+              "label": "Title"
+            },
+            "desc": {
+              "label": "Description"
+            },
+            "link": {
+              "label": "Link"
+            },
+            "image_1": {
+              "label": "Photo 1"
+            },
+            "fallback_1": {
+              "label": "Photo 1 fallback asset"
+            },
+            "image_2": {
+              "label": "Photo 2"
+            },
+            "fallback_2": {
+              "label": "Photo 2 fallback asset"
+            }
           }
         }
       },
-      "presets": { "name": "Services cards" }
+      "presets": {
+        "name": "Services cards"
+      }
     },
     "veylique-svc-method": {
       "name": "Services method",
       "settings": {
-        "eyebrow": { "label": "Eyebrow" },
-        "heading": { "label": "Heading" }
+        "eyebrow": {
+          "label": "Eyebrow"
+        },
+        "heading": {
+          "label": "Heading"
+        }
       },
       "blocks": {
         "step": {
           "name": "Step",
           "settings": {
-            "name": { "label": "Step name" },
-            "desc": { "label": "Description" },
-            "image": { "label": "Image" },
-            "fallback": { "label": "Fallback asset" }
+            "name": {
+              "label": "Step name"
+            },
+            "desc": {
+              "label": "Description"
+            },
+            "image": {
+              "label": "Image"
+            },
+            "fallback": {
+              "label": "Fallback asset"
+            }
           }
         }
       },
-      "presets": { "name": "Services method" }
+      "presets": {
+        "name": "Services method"
+      }
     },
     "veylique-blog-posts": {
       "name": "Blog posts",
@@ -1468,6 +1622,26 @@
       "presets": {
         "name": "Services method"
       }
+    },
+    "veylique-product-recommendations": {
+      "name": "Product recommendations",
+      "settings": {
+        "kicker": {
+          "label": "Kicker"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "max_products": {
+          "label": "Maximum products"
+        }
+      },
+      "presets": {
+        "name": "Product recommendations"
+      }
     }
+  },
+  "info": {
+    "favicon": "Will be scaled down to 32 x 32 px"
   }
 }
