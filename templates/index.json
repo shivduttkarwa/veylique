@@ -15,14 +15,14 @@
         "slide_BnnDTU": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/hero-4.webp",
+            "image": "shopify://shop_images/cta.webp",
             "label": "test"
           }
         },
         "slide_HDyD9Q": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/cta.webp",
+            "image": "shopify://shop_images/veylique-mustard-field-hero-4k.jpg",
             "label": "test-2"
           }
         },
@@ -245,7 +245,13 @@
             "fallback": "shop-hero.jpg",
             "alt": "Office day outfit",
             "tag_1_product": "poplin-oversized-shirt",
-            "tag_2_product": "straight-leg-jeans"
+            "tag_1_name": "",
+            "tag_1_price": "",
+            "tag_1_link": "",
+            "tag_2_product": "straight-leg-jeans",
+            "tag_2_name": "",
+            "tag_2_price": "",
+            "tag_2_link": ""
           }
         },
         "occasion_2": {
@@ -256,7 +262,13 @@
             "fallback": "hero-5.webp",
             "alt": "Coffee run outfit",
             "tag_1_product": "ribbed-knit-sweater",
-            "tag_2_product": "knit-lounge-co-ord"
+            "tag_1_name": "",
+            "tag_1_price": "",
+            "tag_1_link": "",
+            "tag_2_product": "knit-lounge-co-ord",
+            "tag_2_name": "",
+            "tag_2_price": "",
+            "tag_2_link": ""
           }
         },
         "occasion_3": {
@@ -267,7 +279,13 @@
             "fallback": "hero-3.webp",
             "alt": "Date night outfit",
             "tag_1_product": "satin-slip-dress",
-            "tag_2_product": "satin-cami-trouser-set"
+            "tag_1_name": "",
+            "tag_1_price": "",
+            "tag_1_link": "",
+            "tag_2_product": "satin-cami-trouser-set",
+            "tag_2_name": "",
+            "tag_2_price": "",
+            "tag_2_link": ""
           }
         },
         "occasion_4": {
@@ -278,7 +296,13 @@
             "fallback": "hero-1.webp",
             "alt": "Sunday picnic outfit",
             "tag_1_product": "tiered-cotton-maxi-dress",
-            "tag_2_product": "puff-sleeve-blouse"
+            "tag_1_name": "",
+            "tag_1_price": "",
+            "tag_1_link": "",
+            "tag_2_product": "puff-sleeve-blouse",
+            "tag_2_name": "",
+            "tag_2_price": "",
+            "tag_2_link": ""
           }
         },
         "occasion_5": {
@@ -289,7 +313,13 @@
             "fallback": "hero-4.webp",
             "alt": "Tennis session outfit",
             "tag_1_product": "ribbed-tank-top",
-            "tag_2_product": "linen-shirt-shorts-co-ord"
+            "tag_1_name": "",
+            "tag_1_price": "",
+            "tag_1_link": "",
+            "tag_2_product": "linen-shirt-shorts-co-ord",
+            "tag_2_name": "",
+            "tag_2_price": "",
+            "tag_2_link": ""
           }
         }
       },
