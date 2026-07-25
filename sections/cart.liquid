@@ -612,6 +612,20 @@
 
     function cartRoot() { return document.querySelector('[data-veylique-cart]'); }
 
+    /* Resolve the cart line for a row.
+
+       `data-line` is authoritative, but a page served from Shopify's HTML cache
+       can predate that attribute; parsing it blind yields NaN, which the cart
+       API rejects with a 422 and used to surface as a page reload with the
+       quantity unchanged. Falling back to DOM order keeps the row addressable
+       whatever markup version the shopper happens to be running. */
+    function lineFor(row) {
+      var explicit = parseInt(row.getAttribute('data-line'), 10);
+      if (explicit > 0) return explicit;
+      var rows = Array.prototype.slice.call(document.querySelectorAll('[data-veylique-cart-row]'));
+      return rows.indexOf(row) + 1;
+    }
+
     function markReady() {
       var root = cartRoot();
       if (root) root.classList.add('veylique-js-ready');
@@ -716,14 +730,14 @@
         var current = parseInt(input && input.value, 10) || 0;
         var next = down ? Math.max(0, current - 1) : current + 1;
         if (input) input.value = next;
-        changeLine(row.dataset.line, next);
+        changeLine(lineFor(row), next);
         return;
       }
 
       var remove = event.target.closest('[data-veylique-cart-remove]');
       if (remove && row && window.fetch) {
         event.preventDefault();
-        changeLine(row.dataset.line, 0);
+        changeLine(lineFor(row), 0);
       }
     });
 
@@ -731,7 +745,7 @@
       var input = event.target.closest('[data-qty-input]');
       var row = event.target.closest('[data-veylique-cart-row]');
       if (input && row) {
-        changeLine(row.dataset.line, Math.max(0, parseInt(input.value, 10) || 0));
+        changeLine(lineFor(row), Math.max(0, parseInt(input.value, 10) || 0));
       }
     });
 
@@ -743,7 +757,7 @@
       var row = event.target.closest('[data-veylique-cart-row]');
       if (!input || !row || !window.fetch) return;
       event.preventDefault();
-      changeLine(row.dataset.line, Math.max(0, parseInt(input.value, 10) || 0));
+      changeLine(lineFor(row), Math.max(0, parseInt(input.value, 10) || 0));
     });
 
     /* The note saves on its own; the shopper never has to press Update. */

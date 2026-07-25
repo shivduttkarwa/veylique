@@ -436,6 +436,19 @@
       return !!el && el.classList.contains('is-open');
     }
 
+    /* `data-line` is authoritative, but a cached page can predate it. Parsing it
+       blind gives NaN, which the cart API rejects — so fall back to the item's
+       position in the list. */
+    function lineFor(node) {
+      var row = node.closest('[data-veylique-cart-item]') || node;
+      var explicit = parseInt(row.getAttribute('data-line'), 10);
+      if (explicit > 0) return explicit;
+      var el = drawer();
+      if (!el) return 0;
+      var items = Array.prototype.slice.call(el.querySelectorAll('[data-veylique-cart-item]'));
+      return items.indexOf(row) + 1;
+    }
+
     function open() {
       var el = drawer();
       var ov = overlay();
@@ -560,14 +573,14 @@
       var qtyBtn = event.target.closest('[data-veylique-qty-change]');
       if (qtyBtn) {
         event.preventDefault();
-        setQuantity(qtyBtn.dataset.line, parseInt(qtyBtn.dataset.veyliqueQtyChange, 10));
+        setQuantity(lineFor(qtyBtn), parseInt(qtyBtn.dataset.veyliqueQtyChange, 10));
         return;
       }
 
       var remove = event.target.closest('[data-veylique-cart-remove]');
       if (remove && window.fetch) {
         event.preventDefault();
-        setQuantity(remove.dataset.line, 0);
+        setQuantity(lineFor(remove), 0);
       }
     });
 
