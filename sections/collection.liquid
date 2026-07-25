@@ -142,15 +142,34 @@
 
       <div class="veylique-collection__toolbar-end">
         {%- if section.settings.enable_column_switcher -%}
-          <div class="veylique-collection__cols" role="group" aria-label="{{ 'collection.columns' | t }}">
-            <button type="button" class="veylique-collection__cols-btn{% if cols_d == 2 %} is-active{% endif %}" data-veylique-cols="2" aria-label="{{ 'collection.columns' | t }}: 2">
+          {%- comment -%} Desktop: 2 / 3 / 4 columns {%- endcomment -%}
+          <div class="veylique-collection__cols veylique-collection__cols--desktop" role="group" aria-label="{{ 'collection.columns' | t }}">
+            <button type="button" class="veylique-collection__cols-btn{% if cols_d == 2 %} is-active{% endif %}" data-veylique-cols="2" data-veylique-cols-scope="d" aria-label="{{ 'collection.columns' | t }}: 2">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3.5" y="4" width="7.5" height="16" rx="1"/><rect x="13" y="4" width="7.5" height="16" rx="1"/></svg>
             </button>
-            <button type="button" class="veylique-collection__cols-btn{% if cols_d == 3 %} is-active{% endif %}" data-veylique-cols="3" aria-label="{{ 'collection.columns' | t }}: 3">
+            <button type="button" class="veylique-collection__cols-btn{% if cols_d == 3 %} is-active{% endif %}" data-veylique-cols="3" data-veylique-cols-scope="d" aria-label="{{ 'collection.columns' | t }}: 3">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="4" width="4.75" height="16" rx="1"/><rect x="9.6" y="4" width="4.75" height="16" rx="1"/><rect x="16.25" y="4" width="4.75" height="16" rx="1"/></svg>
             </button>
-            <button type="button" class="veylique-collection__cols-btn{% if cols_d == 4 %} is-active{% endif %}" data-veylique-cols="4" aria-label="{{ 'collection.columns' | t }}: 4">
+            <button type="button" class="veylique-collection__cols-btn{% if cols_d == 4 %} is-active{% endif %}" data-veylique-cols="4" data-veylique-cols-scope="d" aria-label="{{ 'collection.columns' | t }}: 4">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="2.5" y="4" width="3.5" height="16" rx="1"/><rect x="7.5" y="4" width="3.5" height="16" rx="1"/><rect x="12.5" y="4" width="3.5" height="16" rx="1"/><rect x="17.5" y="4" width="3.5" height="16" rx="1"/></svg>
+            </button>
+          </div>
+
+          {%- comment -%}
+            Mobile: 1 / 2 columns. Small screens previously had no way to switch
+            density at all — one-up is what shoppers reach for to judge fabric
+            and fit on a phone.
+          {%- endcomment -%}
+          <div class="veylique-collection__cols veylique-collection__cols--mobile" role="group" aria-label="{{ 'collection.columns' | t }}">
+            {%- comment -%}
+              columns_mobile is a select, so its value is the STRING "1"/"2" —
+              comparing against a number would silently never match.
+            {%- endcomment -%}
+            <button type="button" class="veylique-collection__cols-btn{% if cols_m == '1' %} is-active{% endif %}" data-veylique-cols="1" data-veylique-cols-scope="m" aria-label="{{ 'collection.columns' | t }}: 1">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="1"/></svg>
+            </button>
+            <button type="button" class="veylique-collection__cols-btn{% if cols_m == '2' %} is-active{% endif %}" data-veylique-cols="2" data-veylique-cols-scope="m" aria-label="{{ 'collection.columns' | t }}: 2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3.5" y="4" width="7.5" height="16" rx="1"/><rect x="13" y="4" width="7.5" height="16" rx="1"/></svg>
             </button>
           </div>
         {%- endif -%}
@@ -536,7 +555,12 @@
 
 {% stylesheet %}
   .veylique-collection {
-    --veylique-collection-gap: clamp(1rem, 2.4vw, 1.75rem);
+    --veylique-collection-gap: clamp(0.75rem, 2.4vw, 1.75rem);
+    /* Matches the fixed site header so sticky UI parks just below it. */
+    --veylique-collection-header-h: 4.5rem;
+  }
+  @media (max-width: 640px) {
+    .veylique-collection { --veylique-collection-header-h: 4.25rem; }
   }
 
   /* Hero — reuses the shared .veylique-sale banner (same as page hero) */
@@ -607,29 +631,57 @@
   .veylique-collection__description > *:first-child { margin-top: 0; }
   .veylique-collection__description > *:last-child { margin-bottom: 0; }
 
-  /* Toolbar */
+  /* Toolbar — sticks under the site header so filter + sort stay reachable
+     through a long grid, which is the whole point of the control bar. */
   .veylique-collection__toolbar {
+    position: sticky;
+    top: calc(var(--veylique-collection-header-h) - 0.0625rem);
+    z-index: 20;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    padding: 1rem 0;
+    gap: 0.75rem 1rem;
+    padding: 0.875rem 0;
     border-top: var(--veylique-border-width) solid var(--veylique-color-border);
     border-bottom: var(--veylique-border-width) solid var(--veylique-color-border);
+    background: var(--veylique-color-background);
+    /* Bleed the background to the viewport edges so content scrolling under
+       the bar is never visible in the container gutters. */
+    box-shadow: -100vw 0 0 var(--veylique-color-background), 100vw 0 0 var(--veylique-color-background);
   }
   .veylique-collection__toolbar-start,
   .veylique-collection__toolbar-end {
     display: flex;
     align-items: center;
-    gap: clamp(0.75rem, 2vw, 1.25rem);
+    gap: clamp(0.625rem, 2vw, 1.25rem);
+  }
+
+  /* Phone: two full-width rows — meta above, controls below — instead of four
+     controls fighting over ~360px. */
+  @media (max-width: 749.98px) {
+    .veylique-collection__toolbar {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.625rem;
+    }
+    .veylique-collection__toolbar-start,
+    .veylique-collection__toolbar-end {
+      justify-content: space-between;
+      gap: 0.625rem;
+    }
+    .veylique-collection__toolbar-end .veylique-collection__sort { flex: 1 1 auto; }
+    .veylique-collection__toolbar-end .veylique-collection__select { flex: 1 1 auto; }
+    .veylique-collection__toolbar-end .veylique-collection__select select { width: 100%; }
   }
 
   .veylique-collection__filter-toggle {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
-    padding: 0.55rem 1rem;
+    min-height: 2.75rem;
+    padding: 0.55rem 1.125rem;
     border: var(--veylique-border-width) solid var(--veylique-color-border);
     border-radius: var(--veylique-radius-pill);
     background: transparent;
@@ -677,8 +729,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.125rem;
-    height: 2.125rem;
+    width: 2.375rem;
+    height: 2.375rem;
     padding: 0;
     border: 0;
     border-radius: calc(var(--veylique-radius-sm) - 0.1875rem);
@@ -715,7 +767,8 @@
   .veylique-collection__select select {
     appearance: none;
     -webkit-appearance: none;
-    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    min-height: 2.75rem;
+    padding: 0.5rem 2rem 0.5rem 0.875rem;
     border: var(--veylique-border-width) solid var(--veylique-color-border);
     border-radius: var(--veylique-radius-sm);
     background: transparent;
@@ -856,7 +909,9 @@
   .veylique-facets__overlay {
     position: fixed;
     inset: 0;
-    z-index: var(--veylique-z-overlay);
+    /* Above the fixed site header (z-index 900) — otherwise the drawer and its
+       scrim slide underneath it and the close button is unreachable. */
+    z-index: 950;
     background: rgba(29, 25, 21, 0.5);
     opacity: 0;
     transition: opacity var(--veylique-duration-base) ease;
@@ -880,12 +935,21 @@
   }
   .veylique-facets__close {
     display: inline-flex;
-    padding: 0.25rem;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    /* Optical alignment: pull the icon back out to the drawer's padding edge. */
+    margin-right: -0.625rem;
+    padding: 0;
     border: 0;
+    border-radius: 50%;
     background: transparent;
     color: var(--veylique-color-foreground);
     cursor: pointer;
+    transition: background-color var(--veylique-duration-fast) ease;
   }
+  .veylique-facets__close:hover { background: var(--veylique-color-surface-alt); }
 
   .veylique-facets--sticky {
     align-self: start;
@@ -893,9 +957,25 @@
   @media (min-width: 990px) {
     .veylique-facets--sticky {
       position: sticky;
-      top: 1.5rem;
-      max-height: calc(100vh - 3rem);
+      /* Parks below the fixed header AND the sticky toolbar, so the sidebar
+         never slides underneath either. */
+      top: calc(var(--veylique-collection-header-h) + 5.5rem);
+      max-height: calc(100dvh - var(--veylique-collection-header-h) - 7rem);
       overflow-y: auto;
+      overscroll-behavior: contain;
+      /* Room for the scrollbar so option counts aren't clipped. */
+      padding-right: 0.5rem;
+      margin-right: -0.5rem;
+    }
+    /* Thin, unobtrusive scrollbar for the sidebar. */
+    .veylique-facets--sticky {
+      scrollbar-width: thin;
+      scrollbar-color: var(--veylique-color-border) transparent;
+    }
+    .veylique-facets--sticky::-webkit-scrollbar { width: 0.375rem; }
+    .veylique-facets--sticky::-webkit-scrollbar-thumb {
+      border-radius: var(--veylique-radius-pill);
+      background: var(--veylique-color-border);
     }
   }
 
@@ -1162,8 +1242,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 2.5rem;
-    height: 2.5rem;
+    min-width: 2.75rem;
+    height: 2.75rem;
     padding: 0 0.5rem;
     border-radius: var(--veylique-radius-sm);
     color: var(--veylique-color-foreground);
@@ -1187,18 +1267,23 @@
 
   /* Mobile drawer for facets */
   @media (max-width: 989.98px) {
-    .veylique-collection__cols { display: none !important; }
+    .veylique-collection__cols--desktop { display: none !important; }
 
     .veylique-facets {
       position: fixed;
       top: 0;
       right: 0;
       bottom: 0;
-      z-index: calc(var(--veylique-z-overlay) + 1);
-      width: min(88vw, 24rem);
-      padding: 1.25rem;
+      z-index: 951;
+      /* Flex column so the option list is the only thing that scrolls, with the
+         title and the apply/clear buttons pinned in view. */
+      display: flex;
+      flex-direction: column;
+      width: min(92vw, 26rem);
+      height: 100dvh;
+      padding: 0;
       background: var(--veylique-color-background);
-      overflow-y: auto;
+      overflow: hidden;
       transform: translateX(100%);
       transition: transform var(--veylique-duration-base) var(--veylique-ease-standard);
       box-shadow: -1rem 0 3rem rgba(29, 25, 21, 0.15);
@@ -1206,14 +1291,56 @@
     .veylique-facets.is-open {
       transform: translateX(0);
     }
-    .veylique-facets__header { display: flex; }
-    .veylique-facets__actions { display: flex; }
+    .veylique-facets__header {
+      display: flex;
+      flex: 0 0 auto;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0;
+    }
+    .veylique-facets__form {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      padding: 0 1.25rem;
+    }
+    .veylique-facets__actions {
+      display: flex;
+      position: sticky;
+      bottom: 0;
+      margin-top: auto;
+      /* Clears the iOS home indicator. */
+      padding: 1rem 0 calc(1rem + env(safe-area-inset-bottom));
+      background: var(--veylique-color-background);
+      box-shadow: 0 -0.0625rem 0 var(--veylique-color-border);
+    }
+
+    /* The drawer already scrolls — a second scroller inside it traps the
+       gesture, so long option lists run their full height here. */
+    .veylique-facet__list {
+      max-height: none;
+      overflow-y: visible;
+    }
+
+    /* Comfortable touch targets throughout the drawer. */
+    .veylique-facet__summary { padding: 1.125rem 0; }
+    .veylique-facet__option { padding: 0.375rem 0; }
+    .veylique-facet__chip-face { min-width: 2.75rem; height: 2.75rem; }
+    .veylique-swatch { padding: 0.25rem 0; }
   }
 
   @media (min-width: 990px) {
     .veylique-collection__filter-toggle { display: none; }
-    .veylique-collection__cols { display: inline-flex; }
+    .veylique-collection__cols--desktop { display: inline-flex; }
+    .veylique-collection__cols--mobile { display: none !important; }
     .veylique-facets__overlay { display: none; }
+  }
+
+  @media (max-width: 989.98px) {
+    .veylique-collection__cols--mobile { display: inline-flex; }
   }
 
   /* Facet group active-count badge */
@@ -1394,12 +1521,42 @@
   }
   .veylique-facet__more:hover { text-decoration: underline; }
 
-  /* AJAX loading state */
+  /* AJAX loading state — the grid keeps its size so the page never jumps, and a
+     progress line runs across the results so the wait is legible on mobile
+     where the toolbar spinner may be scrolled out of view. */
+  .veylique-collection__results { position: relative; }
   .veylique-collection.is-filtering [data-veylique-grid],
   .veylique-collection.is-filtering .veylique-collection__applied {
     opacity: 0.4;
     pointer-events: none;
     transition: opacity var(--veylique-duration-fast) ease;
+  }
+  .veylique-collection__results::before {
+    content: "";
+    position: absolute;
+    top: -0.5rem;
+    left: 0;
+    right: 0;
+    height: 0.125rem;
+    z-index: 5;
+    border-radius: var(--veylique-radius-pill);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--veylique-color-foreground),
+      transparent
+    );
+    opacity: 0;
+    transition: opacity var(--veylique-duration-fast) ease;
+    pointer-events: none;
+  }
+  .veylique-collection.is-filtering .veylique-collection__results::before {
+    opacity: 1;
+    animation: veylique-collection-sweep 1.1s var(--veylique-ease-standard) infinite;
+  }
+  @keyframes veylique-collection-sweep {
+    0% { transform: translateX(-100%) scaleX(0.4); }
+    100% { transform: translateX(100%) scaleX(0.4); }
   }
   .veylique-collection__spinner {
     display: none;
@@ -1422,6 +1579,28 @@
       transition: none;
     }
     .veylique-collection__spinner { animation-duration: 1.5s; }
+    .veylique-collection.is-filtering .veylique-collection__results::before {
+      animation: none;
+    }
+  }
+
+  /* Very small phones: the grid gets its own breathing room and the size chips
+     stop wrapping into ragged rows. */
+  @media (max-width: 400px) {
+    .veylique-collection__grid { row-gap: 1.75rem; }
+    .veylique-collection__filter-toggle,
+    .veylique-collection__select select { font-size: 0.75rem; }
+    .veylique-collection__count { font-size: 0.75rem; }
+  }
+
+  /* Large desktops: let the grid breathe rather than stretching cards. */
+  @media (min-width: 1600px) {
+    .veylique-collection__layout {
+      grid-template-columns: 19rem minmax(0, 1fr);
+    }
+    .veylique-collection__layout--full {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 {% endstylesheet %}
 
@@ -1439,11 +1618,20 @@
         function q(sel) { return section.querySelector(sel); }
 
         /* ---------- Drawer ---------- */
+        var lastFocused = null;
+        var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+        function drawerIsOpen() {
+          var facets = q('[data-veylique-facets]');
+          return !!facets && facets.classList.contains('is-open');
+        }
+
         function openDrawer() {
           var facets = q('[data-veylique-facets]');
           var overlay = q('.veylique-facets__overlay');
           var openBtn = q('[data-veylique-drawer-open]');
           if (!facets) return;
+          lastFocused = document.activeElement;
           facets.classList.add('is-open');
           if (overlay) {
             overlay.hidden = false;
@@ -1451,6 +1639,11 @@
           }
           if (openBtn) openBtn.setAttribute('aria-expanded', 'true');
           document.body.style.overflow = 'hidden';
+
+          /* Move focus into the panel so keyboard and screen-reader users land
+             inside it rather than continuing through the page behind. */
+          var closeBtn = facets.querySelector('[data-veylique-drawer-close]');
+          if (closeBtn) closeBtn.focus();
         }
 
         function closeDrawer() {
@@ -1458,6 +1651,7 @@
           var overlay = q('.veylique-facets__overlay');
           var openBtn = q('[data-veylique-drawer-open]');
           if (!facets) return;
+          var wasOpen = facets.classList.contains('is-open');
           facets.classList.remove('is-open');
           if (overlay) {
             overlay.classList.remove('is-open');
@@ -1466,11 +1660,35 @@
           }
           if (openBtn) openBtn.setAttribute('aria-expanded', 'false');
           document.body.style.overflow = '';
+
+          if (wasOpen && lastFocused && typeof lastFocused.focus === 'function') {
+            lastFocused.focus();
+          }
+          lastFocused = null;
         }
 
         document.addEventListener('keydown', function (event) {
+          if (!drawerIsOpen()) return;
+
+          if (event.key === 'Escape') { closeDrawer(); return; }
+          if (event.key !== 'Tab') return;
+
+          /* Keep Tab inside the open drawer. */
           var facets = q('[data-veylique-facets]');
-          if (event.key === 'Escape' && facets && facets.classList.contains('is-open')) closeDrawer();
+          var items = Array.prototype.slice.call(facets.querySelectorAll(FOCUSABLE))
+            .filter(function (el) { return el.offsetParent !== null; });
+          if (!items.length) return;
+
+          var first = items[0];
+          var last = items[items.length - 1];
+
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+          }
         });
 
         /* ---------- AJAX rendering (Section Rendering API) ---------- */
@@ -1496,9 +1714,15 @@
           });
         }
 
+        function setBusy(busy) {
+          var results = q('[data-veylique-results]');
+          if (results) results.setAttribute('aria-busy', busy ? 'true' : 'false');
+        }
+
         function refresh(url, push) {
           if (!window.fetch || !sectionId) { window.location.href = url; return; }
           section.classList.add('is-filtering');
+          setBusy(true);
           var openState = openFacetIndexes();
           var fetchUrl = url + (url.indexOf('?') === -1 ? '?' : '&') + 'section_id=' + sectionId;
 
@@ -1530,7 +1754,10 @@
               }
             })
             .catch(function () { window.location.href = url; })
-            .finally(function () { section.classList.remove('is-filtering'); });
+            .finally(function () {
+              section.classList.remove('is-filtering');
+              setBusy(false);
+            });
         }
 
         function submitFacets() {
@@ -1544,19 +1771,30 @@
           refresh(window.location.href, false);
         });
 
-        /* ---------- Column switcher ---------- */
-        var storeKey = 'veylique:cols:' + (section.id || 'collection');
-        function applyCols(value, activeBtn) {
+        /* ---------- Column switcher ----------
+           Desktop and mobile keep independent densities: a shopper who wants
+           4-up on a monitor still wants 1- or 2-up on a phone, so each scope
+           writes its own custom property and remembers its own choice. */
+        var storeKeyBase = 'veylique:cols:' + (section.id || 'collection');
+        function storeKeyFor(scope) {
+          return scope === 'm' ? storeKeyBase + ':m' : storeKeyBase;
+        }
+
+        function applyCols(scope, value) {
           var grid = q('[data-veylique-grid]');
-          if (grid && value) grid.style.setProperty('--cols-d', value);
-          section.querySelectorAll('[data-veylique-cols]').forEach(function (b) {
-            b.classList.toggle('is-active', activeBtn ? b === activeBtn : b.dataset.veyliqueCols === value);
+          if (!value) return;
+          if (grid) grid.style.setProperty(scope === 'm' ? '--cols-m' : '--cols-d', value);
+          section.querySelectorAll('[data-veylique-cols-scope="' + scope + '"]').forEach(function (b) {
+            b.classList.toggle('is-active', b.dataset.veyliqueCols === value);
           });
         }
+
         function applySavedCols() {
-          var saved = null;
-          try { saved = window.localStorage.getItem(storeKey); } catch (e) {}
-          if (saved) applyCols(saved, null);
+          ['d', 'm'].forEach(function (scope) {
+            var saved = null;
+            try { saved = window.localStorage.getItem(storeKeyFor(scope)); } catch (e) {}
+            if (saved) applyCols(scope, saved);
+          });
         }
         applySavedCols();
 
@@ -1643,8 +1881,9 @@
 
           var colBtn = event.target.closest('[data-veylique-cols]');
           if (colBtn) {
-            applyCols(colBtn.dataset.veyliqueCols, colBtn);
-            try { window.localStorage.setItem(storeKey, colBtn.dataset.veyliqueCols); } catch (e) {}
+            var colScope = colBtn.dataset.veyliqueColsScope || 'd';
+            applyCols(colScope, colBtn.dataset.veyliqueCols);
+            try { window.localStorage.setItem(storeKeyFor(colScope), colBtn.dataset.veyliqueCols); } catch (e) {}
             return;
           }
 
