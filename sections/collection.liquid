@@ -259,194 +259,66 @@
               <input type="hidden" name="sort_by" value="{{ collection.sort_by }}">
             {%- endif -%}
 
+            {%- comment -%}
+              Ordered passes rather than one loop: shoppers reach for size
+              first, then colour, then price. Availability is skipped entirely —
+              every variant is stocked, so an in/out of stock control is noise.
+            {%- endcomment -%}
             {%- for filter in collection.filters -%}
               {%- liquid
-                assign filter_label_down = filter.label | downcase
-                assign is_size_filter = false
-                if filter_label_down contains 'size'
-                  assign is_size_filter = true
-                endif
-                assign facet_active_count = 0
-                if filter.type == 'price_range'
-                  if filter.min_value.value != null or filter.max_value.value != null
-                    assign facet_active_count = 1
-                  endif
-                else
-                  assign facet_active_count = filter.active_values.size
+                assign facet_label_down = filter.label | downcase
+                assign facet_is_size = false
+                if facet_label_down contains 'size'
+                  assign facet_is_size = true
                 endif
               -%}
-              <details class="veylique-facet" {% if forloop.index <= section.settings.open_filters or facet_active_count > 0 %}open{% endif %}>
-                <summary class="veylique-facet__summary">
-                  <span class="veylique-facet__summary-label">
-                    {{ filter.label | escape }}
-                    {%- if facet_active_count > 0 -%}
-                      <span class="veylique-facet__active">{{ facet_active_count }}</span>
-                    {%- endif -%}
-                  </span>
-                  <svg class="veylique-facet__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-                </summary>
-                <div class="veylique-facet__body">
-                  {%- case filter.type -%}
-                    {%- when 'price_range' -%}
-                      {%- liquid
-                        assign price_max_units = filter.range_max | money_without_currency | remove: ','
-                        assign price_min_value = ''
-                        if filter.min_value.value != null
-                          assign price_min_value = filter.min_value.value | money_without_currency | remove: ','
-                        endif
-                        assign price_max_value = ''
-                        if filter.max_value.value != null
-                          assign price_max_value = filter.max_value.value | money_without_currency | remove: ','
-                        endif
-                      -%}
-                      <div
-                        class="veylique-price-slider"
-                        data-veylique-price-slider
-                        data-max="{{ price_max_units }}"
-                      >
-                        <div class="veylique-price-slider__track" aria-hidden="true">
-                          <span class="veylique-price-slider__fill" data-veylique-price-fill></span>
-                        </div>
-                        <input
-                          type="range"
-                          class="veylique-price-slider__range"
-                          min="0"
-                          max="{{ price_max_units }}"
-                          step="1"
-                          value="{{ price_min_value | default: 0 }}"
-                          data-veylique-price-range="min"
-                          aria-label="{{ 'collection.price_from' | t }}"
-                          tabindex="-1"
-                        >
-                        <input
-                          type="range"
-                          class="veylique-price-slider__range"
-                          min="0"
-                          max="{{ price_max_units }}"
-                          step="1"
-                          value="{{ price_max_value | default: price_max_units }}"
-                          data-veylique-price-range="max"
-                          aria-label="{{ 'collection.price_to' | t }}"
-                          tabindex="-1"
-                        >
-                      </div>
-                      <div class="veylique-facet__price">
-                        <div class="veylique-facet__price-field">
-                          <span class="veylique-facet__price-currency">{{ cart.currency.symbol }}</span>
-                          <input
-                            type="number"
-                            inputmode="decimal"
-                            name="{{ filter.min_value.param_name }}"
-                            value="{{ price_min_value }}"
-                            placeholder="0"
-                            min="0"
-                            max="{{ price_max_units }}"
-                            data-veylique-price-input="min"
-                            aria-label="{{ 'collection.price_from' | t }}"
-                          >
-                        </div>
-                        <span class="veylique-facet__price-sep" aria-hidden="true">–</span>
-                        <div class="veylique-facet__price-field">
-                          <span class="veylique-facet__price-currency">{{ cart.currency.symbol }}</span>
-                          <input
-                            type="number"
-                            inputmode="decimal"
-                            name="{{ filter.max_value.param_name }}"
-                            value="{{ price_max_value }}"
-                            placeholder="{{ price_max_units }}"
-                            min="0"
-                            max="{{ price_max_units }}"
-                            data-veylique-price-input="max"
-                            aria-label="{{ 'collection.price_to' | t }}"
-                          >
-                        </div>
-                      </div>
-                      <p class="veylique-facet__price-note">{{ 'collection.max_price_html' | t: price: filter.range_max | money }}</p>
-                    {%- else -%}
-                      {%- if filter.presentation == 'swatch' -%}
-                        <ul class="veylique-facet__swatches" role="list">
-                          {%- for value in filter.values -%}
-                            <li>
-                              <label
-                                class="veylique-swatch{% if value.active %} is-active{% endif %}{% if value.count == 0 and value.active == false %} is-disabled{% endif %}"
-                                title="{{ value.label | escape }} ({{ value.count }})"
-                              >
-                                <input
-                                  type="checkbox"
-                                  name="{{ value.param_name }}"
-                                  value="{{ value.value }}"
-                                  {% if value.active %}checked{% endif %}
-                                  {% if value.count == 0 and value.active == false %}disabled{% endif %}
-                                >
-                                <span
-                                  class="veylique-swatch__dot"
-                                  style="{% if value.swatch.image %}background-image: url({{ value.swatch.image | image_url: width: 60 }});{% elsif value.swatch.color %}background: {{ value.swatch.color }};{% else %}background: {{ value.value | handleize }};{% endif %}"
-                                ></span>
-                                <span class="veylique-swatch__name">{{ value.label | escape }}</span>
-                              </label>
-                            </li>
-                          {%- endfor -%}
-                        </ul>
-                      {%- elsif is_size_filter -%}
-                        <div class="veylique-facet__chips">
-                          {%- for value in filter.values -%}
-                            <label class="veylique-facet__chip{% if value.count == 0 and value.active == false %} is-disabled{% endif %}">
-                              <input
-                                type="checkbox"
-                                name="{{ value.param_name }}"
-                                value="{{ value.value }}"
-                                {% if value.active %}checked{% endif %}
-                                {% if value.count == 0 and value.active == false %}disabled{% endif %}
-                              >
-                              <span class="veylique-facet__chip-face">{{ value.label | escape }}</span>
-                            </label>
-                          {%- endfor -%}
-                        </div>
-                      {%- else -%}
-                        {%- if filter.values.size > 10 -%}
-                          <div class="veylique-facet__search">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                            <input
-                              type="search"
-                              data-veylique-facet-search
-                              placeholder="{{ 'collection.search_options' | t }}"
-                              aria-label="{{ 'collection.search_options' | t }} — {{ filter.label | escape }}"
-                            >
-                          </div>
-                        {%- endif -%}
-                        <ul
-                          class="veylique-facet__list{% if filter.values.size > 8 %} is-collapsible is-collapsed{% endif %}"
-                          role="list"
-                          data-veylique-facet-list
-                        >
-                          {%- for value in filter.values -%}
-                            <li data-facet-text="{{ value.label | downcase | escape }}">
-                              <label class="veylique-facet__option{% if value.count == 0 and value.active == false %} is-disabled{% endif %}">
-                                <input
-                                  type="checkbox"
-                                  name="{{ value.param_name }}"
-                                  value="{{ value.value }}"
-                                  {% if value.active %}checked{% endif %}
-                                  {% if value.count == 0 and value.active == false %}disabled{% endif %}
-                                >
-                                <span class="veylique-facet__checkbox" aria-hidden="true">
-                                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                </span>
-                                <span class="veylique-facet__option-label">{{ value.label | escape }}</span>
-                                <span class="veylique-facet__option-count">{{ value.count }}</span>
-                              </label>
-                            </li>
-                          {%- endfor -%}
-                        </ul>
-                        {%- if filter.values.size > 8 -%}
-                          <button type="button" class="veylique-facet__more" data-veylique-facet-more data-more-label="{{ 'collection.show_more' | t }}" data-less-label="{{ 'collection.show_less' | t }}">
-                            {{ 'collection.show_more' | t }}
-                          </button>
-                        {%- endif -%}
-                      {%- endif -%}
-                  {%- endcase -%}
-                </div>
-              </details>
+              {%- if facet_is_size -%}
+                {% render 'veylique-facet', filter: filter, force_open: true %}
+              {%- endif -%}
+            {%- endfor -%}
+
+            {%- for filter in collection.filters -%}
+              {%- liquid
+                assign facet_label_down = filter.label | downcase
+                assign facet_is_color = false
+                if facet_label_down contains 'color' or facet_label_down contains 'colour'
+                  assign facet_is_color = true
+                endif
+              -%}
+              {%- if facet_is_color -%}
+                {% render 'veylique-facet', filter: filter, force_open: true %}
+              {%- endif -%}
+            {%- endfor -%}
+
+            {%- for filter in collection.filters -%}
+              {%- if filter.type == 'price_range' -%}
+                {% render 'veylique-facet', filter: filter, force_open: true %}
+              {%- endif -%}
+            {%- endfor -%}
+
+            {%- for filter in collection.filters -%}
+              {%- liquid
+                assign facet_label_down = filter.label | downcase
+                assign facet_is_other = true
+                if filter.type == 'price_range'
+                  assign facet_is_other = false
+                endif
+                if facet_label_down contains 'size'
+                  assign facet_is_other = false
+                endif
+                if facet_label_down contains 'color' or facet_label_down contains 'colour'
+                  assign facet_is_other = false
+                endif
+                if facet_label_down contains 'availability'
+                  assign facet_is_other = false
+                endif
+                if filter.param_name contains 'availability'
+                  assign facet_is_other = false
+                endif
+              -%}
+              {%- if facet_is_other -%}
+                {% render 'veylique-facet', filter: filter %}
+              {%- endif -%}
             {%- endfor -%}
 
             <div class="veylique-facets__actions">
@@ -1020,11 +892,12 @@
   }
   .veylique-collection__clear-all:hover { text-decoration: underline; }
 
-  /* Color swatches — dot + name rows */
+  /* Colour swatches — a wrapping row of dots. Reading a colour is instant;
+     reading a list of colour names inside a scroller is not. */
   .veylique-facet__swatches {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.5rem 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -1032,21 +905,24 @@
   .veylique-swatch {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    max-width: 100%;
+    justify-content: center;
+    /* 2.75rem tap target around a 1.75rem dot. */
+    width: 2.75rem;
+    height: 2.75rem;
     cursor: pointer;
   }
+  /* The colour name stays for screen readers and hover tooltips only. */
   .veylique-swatch__name {
-    min-width: 0;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
     overflow: hidden;
-    text-overflow: ellipsis;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
     white-space: nowrap;
-    font-family: var(--veylique-font-body);
-    font-size: 0.8125rem;
-    color: var(--veylique-color-foreground);
-  }
-  .veylique-swatch input:checked ~ .veylique-swatch__name {
-    font-weight: 700;
+    border: 0;
   }
   .veylique-swatch.is-disabled {
     opacity: 0.35;
@@ -1061,6 +937,7 @@
   }
   .veylique-swatch__dot {
     display: inline-block;
+    flex: 0 0 auto;
     width: 1.75rem;
     height: 1.75rem;
     border-radius: 50%;
@@ -1329,7 +1206,6 @@
     .veylique-facet__summary { padding: 1.125rem 0; }
     .veylique-facet__option { padding: 0.375rem 0; }
     .veylique-facet__chip-face { min-width: 2.75rem; height: 2.75rem; }
-    .veylique-swatch { padding: 0.25rem 0; }
   }
 
   @media (min-width: 990px) {
@@ -1742,6 +1618,11 @@
               restoreFacetIndexes(openState);
               applySavedCols();
               enhanceSort();
+              /* The facet form was replaced wholesale, so the slider's fill and
+                 thumb positions are inline styles that no longer exist. Without
+                 this the price slider renders as an empty track after any
+                 filter change and looks broken. */
+              syncAllPriceSliders();
 
               if (push !== false && window.history && window.history.pushState) {
                 window.history.pushState({ veyliqueCollection: true }, '', url);
@@ -1836,6 +1717,13 @@
             fill.style.right = (100 - hi / max * 100) + '%';
           }
 
+          /* Whichever thumb the shopper is nearer must sit on top, otherwise the
+             two overlapping range inputs make one thumb ungrabbable once they
+             meet at either end. */
+          var mid = max / 2;
+          minRange.style.zIndex = lo > mid ? '4' : '3';
+          maxRange.style.zIndex = lo > mid ? '3' : '4';
+
           var minInput = body.querySelector('[data-veylique-price-input="min"]');
           var maxInput = body.querySelector('[data-veylique-price-input="max"]');
           if (minInput) minInput.value = lo > 0 ? Math.round(lo) : '';
@@ -1847,9 +1735,26 @@
           }
         }
 
-        section.querySelectorAll('[data-veylique-price-slider]').forEach(function (slider) {
+        /* Typing in the min/max boxes should move the thumbs too. */
+        function syncSliderFromInputs(body) {
+          var slider = body.querySelector('[data-veylique-price-slider]');
+          if (!slider) return;
+          var minRange = slider.querySelector('[data-veylique-price-range="min"]');
+          var maxRange = slider.querySelector('[data-veylique-price-range="max"]');
+          var minInput = body.querySelector('[data-veylique-price-input="min"]');
+          var maxInput = body.querySelector('[data-veylique-price-input="max"]');
+          var max = parseFloat(slider.dataset.max) || 100;
+          if (minRange && minInput) minRange.value = minInput.value === '' ? 0 : minInput.value;
+          if (maxRange && maxInput) maxRange.value = maxInput.value === '' ? max : maxInput.value;
           syncPriceSlider(slider, false);
-        });
+        }
+
+        function syncAllPriceSliders() {
+          section.querySelectorAll('[data-veylique-price-slider]').forEach(function (slider) {
+            syncPriceSlider(slider, false);
+          });
+        }
+        syncAllPriceSliders();
 
         /* ---------- Delegated events ---------- */
         section.addEventListener('click', function (event) {
@@ -1928,6 +1833,8 @@
               return;
             }
             if (event.target.hasAttribute('data-veylique-price-input')) {
+              var priceBody = event.target.closest('.veylique-facet__body');
+              if (priceBody) syncSliderFromInputs(priceBody);
               window.clearTimeout(priceTimer);
               priceTimer = window.setTimeout(submitFacets, 500);
             }

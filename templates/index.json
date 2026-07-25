@@ -165,10 +165,10 @@
         "curated_1": {
           "type": "tile",
           "settings": {
-            "product": "",
+            "product": "mustard-wrap-midi-dress",
             "fallback": "hero-1.webp",
-            "title": "Mustard Wrap Midi Dress",
-            "price": "$68.00",
+            "title": "",
+            "price": "",
             "description": "A fluid wrap dress in breathable viscose, cut for effortless everyday movement.",
             "link": ""
           }
@@ -176,10 +176,10 @@
         "curated_2": {
           "type": "tile",
           "settings": {
-            "product": "",
+            "product": "tiered-cotton-maxi-dress",
             "fallback": "hero-2.webp",
-            "title": "Tiered Maxi Dress",
-            "price": "$89.00",
+            "title": "",
+            "price": "",
             "description": "A flowing tiered maxi in soft cotton, designed for warm-weather ease.",
             "link": ""
           }
