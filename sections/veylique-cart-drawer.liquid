@@ -401,12 +401,11 @@
   }
   .veylique-drawer-cart-btn { margin-top: 0.625rem; }
 
-  /* Dim while a quantity change is in flight. */
-  .veylique-cart-drawer.is-busy .veylique-drawer-body,
-  .veylique-cart-drawer.is-busy .veylique-drawer-footer {
-    opacity: 0.5;
+  /* No dimming for a quantity change — the number updates immediately and only
+     the affected figures repaint, so a fade would read as a panel rebuild.
+     Locking just the steppers is enough to stop double-clicks. */
+  .veylique-cart-drawer.is-busy .veylique-drawer-qty-btn {
     pointer-events: none;
-    transition: opacity var(--veylique-duration-fast) ease;
   }
 
   @media (max-width: 480px) {
@@ -483,6 +482,39 @@
 
     /* Re-render from Liquid rather than rebuilding line items in JS, so money
        formatting, discounts and translations stay server-side. */
+    function patchNode(mineEl, freshEl) {
+      if (!mineEl || !freshEl) return;
+      if (mineEl.innerHTML === freshEl.innerHTML) return;
+      mineEl.innerHTML = freshEl.innerHTML;
+    }
+
+    /* Same reasoning as the cart page: patch the figures rather than rebuilding
+       the drawer, so a quantity edit updates values instead of repainting the
+       panel (which re-decoded every thumbnail and lost the scroll position). */
+    function patch(fresh) {
+      var mine = drawer();
+      if (!mine || !fresh) return;
+
+      var mineItems = mine.querySelectorAll('[data-veylique-cart-item]');
+      var freshItems = fresh.querySelectorAll('[data-veylique-cart-item]');
+
+      /* A line appeared or disappeared — the item list itself has to change. */
+      if (mineItems.length !== freshItems.length) {
+        mine.innerHTML = fresh.innerHTML;
+        return;
+      }
+
+      patchNode(mine.querySelector('.veylique-drawer-count'), fresh.querySelector('.veylique-drawer-count'));
+      patchNode(mine.querySelector('.veylique-drawer-subtotal'), fresh.querySelector('.veylique-drawer-subtotal'));
+
+      Array.prototype.forEach.call(mineItems, function (item, index) {
+        var freshItem = freshItems[index];
+        if (!freshItem) return;
+        patchNode(item.querySelector('.veylique-drawer-item-price'), freshItem.querySelector('.veylique-drawer-item-price'));
+        patchNode(item.querySelector('.veylique-drawer-item-qty'), freshItem.querySelector('.veylique-drawer-item-qty'));
+      });
+    }
+
     function refresh(showBusy) {
       var el = drawer();
       if (!el || !window.fetch) return Promise.resolve();
@@ -495,11 +527,7 @@
           var html = data[SECTION];
           if (!html) return;
           var doc = new DOMParser().parseFromString(html, 'text/html');
-          var fresh = doc.querySelector('[data-veylique-cart-drawer]');
-          var mine = drawer();
-          /* Replace the contents, never the element — the open state and the
-             focus/scroll lock live on the element itself. */
-          if (fresh && mine) mine.innerHTML = fresh.innerHTML;
+          patch(doc.querySelector('[data-veylique-cart-drawer]'));
         })
         .catch(function () {})
         .finally(function () { if (showBusy) el.classList.remove('is-busy'); });
@@ -573,7 +601,12 @@
       var qtyBtn = event.target.closest('[data-veylique-qty-change]');
       if (qtyBtn) {
         event.preventDefault();
-        setQuantity(lineFor(qtyBtn), parseInt(qtyBtn.dataset.veyliqueQtyChange, 10));
+        var next = parseInt(qtyBtn.dataset.veyliqueQtyChange, 10);
+        /* Show the new number straight away; the server confirms it a moment
+           later. Waiting on the round trip is what made this feel sluggish. */
+        var numEl = qtyBtn.parentElement && qtyBtn.parentElement.querySelector('.veylique-qty-num');
+        if (numEl && next > 0) numEl.textContent = next;
+        setQuantity(lineFor(qtyBtn), next);
         return;
       }
 

@@ -412,13 +412,21 @@
   /* With AJAX quantity updates the manual Update button has nothing to do. */
   .veylique-js-ready .veylique-cart-update { display: none; }
 
-  /* Rows dim while a quantity change is in flight; the layout is untouched so
-     nothing jumps when the fresh markup swaps in. */
-  .veylique-cart-page.is-updating .veylique-cart-items,
-  .veylique-cart-page.is-updating .veylique-cart-summary {
-    opacity: 0.55;
+  /* No dimming while a change is in flight. The quantity updates instantly and
+     only the affected figures are repainted, so a fade would make an in-place
+     edit look like a page rebuild. Steppers are disabled for the moment the
+     request is out, which is enough to prevent double-clicks. */
+  .veylique-cart-page.is-updating .veylique-qty-btn {
     pointer-events: none;
-    transition: opacity var(--veylique-duration-fast) ease;
+  }
+
+  /* Brief highlight so a changed figure is noticeable without a flash. */
+  .veylique-cart-row-total,
+  .veylique-cart-summary-row span:last-child {
+    transition: color var(--veylique-duration-base) ease;
+  }
+  .veylique-value-changed {
+    color: var(--veylique-color-rose);
   }
 
   .veylique-cart-note { margin-top: 1.75rem; max-width: 34rem; }
@@ -640,6 +648,71 @@
 
     /* Re-render from Liquid rather than patching totals in JS — discounts and
        currency formatting have one source of truth that way. */
+    /* Copy one node's contents only when they actually differ, and flag the
+       change so it can be highlighted briefly. */
+    function patchNode(mineEl, freshEl) {
+      if (!mineEl || !freshEl) return;
+      if (mineEl.innerHTML === freshEl.innerHTML) return;
+      mineEl.innerHTML = freshEl.innerHTML;
+      mineEl.classList.add('veylique-value-changed');
+      window.setTimeout(function () { mineEl.classList.remove('veylique-value-changed'); }, 450);
+    }
+
+    /* Patch the figures in place rather than swapping the section.
+
+       Replacing the whole cart made an in-place edit look like a page rebuild:
+       images re-decoded, the layout repainted and focus was lost. Here only the
+       line totals, the summary and the title change, so editing a quantity
+       feels like editing a value. The markup still comes from Liquid, so money
+       formatting and discounts keep their single source of truth. */
+    function patch(fresh) {
+      var mine = cartRoot();
+      if (!mine || !fresh) return;
+
+      var mineRows = mine.querySelectorAll('[data-veylique-cart-row]');
+      var freshRows = fresh.querySelectorAll('[data-veylique-cart-row]');
+
+      /* Shape changed — a line was removed, or the cart emptied. Those need the
+         real markup (empty state, different row set), so swap wholesale. */
+      if (!mine.classList.contains('veylique-cart-page') ||
+          !fresh.classList.contains('veylique-cart-page') ||
+          mineRows.length !== freshRows.length) {
+        var liveNote = mine.querySelector('#CartNote');
+        var noteValue = liveNote ? liveNote.value : null;
+        var noteFocused = liveNote && document.activeElement === liveNote;
+
+        mine.replaceWith(fresh);
+        markReady();
+
+        if (noteValue !== null) {
+          var newNote = document.querySelector('#CartNote');
+          if (newNote) {
+            newNote.value = noteValue;
+            if (noteFocused) newNote.focus();
+          }
+        }
+        return;
+      }
+
+      patchNode(mine.querySelector('.veylique-cart-title'), fresh.querySelector('.veylique-cart-title'));
+      patchNode(mine.querySelector('.veylique-cart-summary-rows'), fresh.querySelector('.veylique-cart-summary-rows'));
+
+      Array.prototype.forEach.call(mineRows, function (row, index) {
+        var freshRow = freshRows[index];
+        if (!freshRow) return;
+
+        patchNode(row.querySelector('.veylique-cart-row-price'), freshRow.querySelector('.veylique-cart-row-price'));
+        patchNode(row.querySelector('.veylique-cart-row-total'), freshRow.querySelector('.veylique-cart-row-total'));
+
+        /* Never fight the shopper for the field they are typing in. */
+        var mineInput = row.querySelector('[data-qty-input]');
+        var freshInput = freshRow.querySelector('[data-qty-input]');
+        if (mineInput && freshInput && document.activeElement !== mineInput) {
+          mineInput.value = freshInput.value;
+        }
+      });
+    }
+
     function refresh() {
       var root = cartRoot();
       var sectionId = root && root.dataset.sectionId;
@@ -650,26 +723,7 @@
         .then(function (r) { return r.text(); })
         .then(function (html) {
           var doc = new DOMParser().parseFromString(html, 'text/html');
-          var fresh = doc.querySelector('[data-veylique-cart]');
-          var mine = cartRoot();
-          if (!fresh || !mine) return;
-
-          /* Preserve an in-progress note: the debounce may not have saved it
-             yet, and the server copy would overwrite what is being typed. */
-          var liveNote = mine.querySelector('#CartNote');
-          var noteValue = liveNote ? liveNote.value : null;
-          var noteFocused = liveNote && document.activeElement === liveNote;
-
-          mine.replaceWith(fresh);
-          markReady();
-
-          if (noteValue !== null) {
-            var newNote = document.querySelector('#CartNote');
-            if (newNote) {
-              newNote.value = noteValue;
-              if (noteFocused) newNote.focus();
-            }
-          }
+          patch(doc.querySelector('[data-veylique-cart]'));
         })
         .catch(function () {});
     }
