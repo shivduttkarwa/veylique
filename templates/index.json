@@ -244,10 +244,8 @@
             "text": "Clean silhouettes and structured fabrics that move from the desk to after-work plans without missing a beat.",
             "fallback": "shop-hero.jpg",
             "alt": "Office day outfit",
-            "tag_1_name": "Cecilia Blazer",
-            "tag_1_price": "$128.00",
-            "tag_2_name": "Sathorn Pants",
-            "tag_2_price": "$86.00"
+            "tag_1_product": "poplin-oversized-shirt",
+            "tag_2_product": "straight-leg-jeans"
           }
         },
         "occasion_2": {
@@ -257,10 +255,8 @@
             "text": "Easy layers and soft knits for a slow morning that still looks pulled together.",
             "fallback": "hero-5.webp",
             "alt": "Coffee run outfit",
-            "tag_1_name": "Oversized Knit",
-            "tag_1_price": "$58.00",
-            "tag_2_name": "Straight Leg Jeans",
-            "tag_2_price": "$74.00"
+            "tag_1_product": "ribbed-knit-sweater",
+            "tag_2_product": "knit-lounge-co-ord"
           }
         },
         "occasion_3": {
@@ -270,10 +266,8 @@
             "text": "Fluid fabrics and considered details for evenings that call for a little more.",
             "fallback": "hero-3.webp",
             "alt": "Date night outfit",
-            "tag_1_name": "Wrap Midi Dress",
-            "tag_1_price": "$98.00",
-            "tag_2_name": "Strappy Heels",
-            "tag_2_price": "$64.00"
+            "tag_1_product": "satin-slip-dress",
+            "tag_2_product": "satin-cami-trouser-set"
           }
         },
         "occasion_4": {
@@ -283,10 +277,8 @@
             "text": "Breathable cottons and relaxed shapes made for long afternoons outdoors.",
             "fallback": "hero-1.webp",
             "alt": "Sunday picnic outfit",
-            "tag_1_name": "Tiered Sundress",
-            "tag_1_price": "$72.00",
-            "tag_2_name": "Woven Tote",
-            "tag_2_price": "$48.00"
+            "tag_1_product": "tiered-cotton-maxi-dress",
+            "tag_2_product": "puff-sleeve-blouse"
           }
         },
         "occasion_5": {
@@ -296,10 +288,8 @@
             "text": "Performance-ready pieces with a clean, court-side finish.",
             "fallback": "hero-4.webp",
             "alt": "Tennis session outfit",
-            "tag_1_name": "Pleated Tennis Skirt",
-            "tag_1_price": "$54.00",
-            "tag_2_name": "Ribbed Tank",
-            "tag_2_price": "$36.00"
+            "tag_1_product": "ribbed-tank-top",
+            "tag_2_product": "linen-shirt-shorts-co-ord"
           }
         }
       },

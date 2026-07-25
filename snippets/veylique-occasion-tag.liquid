@@ -1,16 +1,23 @@
 {% doc %}
   Renders a product tag pinned over an occasion slide image. The tag becomes a
-  link when a URL is set, and stays a plain label when it isn't.
+  link when a product is picked or a URL is set, and stays a plain label when
+  neither is.
 
-  Renders nothing when both the name and the price are blank.
+  A picked product supplies the name, price and link. The name, price and url
+  parameters override it, so a merchant can relabel a tag without unpicking the
+  product.
 
-  @param {string} [name] - Product name shown on the tag.
-  @param {string} [price] - Formatted price shown under the name.
-  @param {string} [url] - Product URL. When set, the tag becomes clickable.
+  Renders nothing when there is no name and no price to show.
+
+  @param {product} [product] - Product the tag points at.
+  @param {string} [name] - Overrides the product title.
+  @param {string} [price] - Overrides the product price.
+  @param {string} [url] - Overrides the product URL.
   @param {boolean} [stacked] - When true, the tag sits above the bottom tag.
 
   @example
   {% render 'veylique-occasion-tag',
+    product: block.settings.tag_1_product,
     name: block.settings.tag_1_name,
     price: block.settings.tag_1_price,
     url: block.settings.tag_1_link,
@@ -19,13 +26,29 @@
 {% enddoc %}
 
 {% liquid
+  assign tag_name = name
+  assign tag_price = price
+  assign tag_url = url
+
+  if product != blank
+    if tag_name == blank
+      assign tag_name = product.title
+    endif
+    if tag_price == blank
+      assign tag_price = product.price | money
+    endif
+    if tag_url == blank
+      assign tag_url = product.url
+    endif
+  endif
+
   assign tag_class = 'veylique-occ-tag'
 
   if stacked
     assign tag_class = tag_class | append: ' veylique-occ-tag--stacked'
   endif
 
-  if url != blank
+  if tag_url != blank
     assign tag_wrapper = 'a'
     assign tag_class = tag_class | append: ' veylique-occ-tag--link'
   else
@@ -33,14 +56,14 @@
   endif
 %}
 
-{% if name != blank or price != blank %}
+{% if tag_name != blank or tag_price != blank %}
   <{{ tag_wrapper }}
     class="{{ tag_class }}"
-    {% if url != blank %}
-      href="{{ url }}"
+    {% if tag_url != blank %}
+      href="{{ tag_url }}"
     {% endif %}
   >
-    <span class="veylique-occ-tag-name">{{ name }}</span>
-    <span class="veylique-occ-tag-price">{{ price }}</span>
+    <span class="veylique-occ-tag-name">{{ tag_name }}</span>
+    <span class="veylique-occ-tag-price">{{ tag_price }}</span>
   </{{ tag_wrapper }}>
 {% endif %}

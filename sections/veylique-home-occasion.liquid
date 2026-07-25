@@ -36,12 +36,14 @@
             height: 1500
           %}
           {% render 'veylique-occasion-tag',
+            product: block.settings.tag_1_product,
             name: block.settings.tag_1_name,
             price: block.settings.tag_1_price,
             url: block.settings.tag_1_link,
             stacked: true
           %}
           {% render 'veylique-occasion-tag',
+            product: block.settings.tag_2_product,
             name: block.settings.tag_2_name,
             price: block.settings.tag_2_price,
             url: block.settings.tag_2_link
@@ -112,16 +114,20 @@
           "default": "Veylique occasion outfit"
         },
         {
+          "type": "product",
+          "id": "tag_1_product",
+          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_1_product.label",
+          "info": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_1_product.info"
+        },
+        {
           "type": "text",
           "id": "tag_1_name",
-          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_1_name.label",
-          "default": "Cecilia Blazer"
+          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_1_name.label"
         },
         {
           "type": "text",
           "id": "tag_1_price",
-          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_1_price.label",
-          "default": "$128.00"
+          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_1_price.label"
         },
         {
           "type": "url",
@@ -129,16 +135,20 @@
           "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_1_link.label"
         },
         {
+          "type": "product",
+          "id": "tag_2_product",
+          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_2_product.label",
+          "info": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_2_product.info"
+        },
+        {
           "type": "text",
           "id": "tag_2_name",
-          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_2_name.label",
-          "default": "Sathorn Pants"
+          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_2_name.label"
         },
         {
           "type": "text",
           "id": "tag_2_price",
-          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_2_price.label",
-          "default": "$86.00"
+          "label": "t:sections.veylique-home-occasion.blocks.occasion.settings.tag_2_price.label"
         },
         {
           "type": "url",

@@ -1094,6 +1094,10 @@
             "alt": {
               "label": "Alt text"
             },
+            "tag_1_product": {
+              "label": "Tag 1 product",
+              "info": "Fills the tag name, price and link. The fields below override it."
+            },
             "tag_1_name": {
               "label": "Tag 1 name"
             },
@@ -1102,6 +1106,10 @@
             },
             "tag_1_link": {
               "label": "Tag 1 link"
+            },
+            "tag_2_product": {
+              "label": "Tag 2 product",
+              "info": "Fills the tag name, price and link. The fields below override it."
             },
             "tag_2_name": {
               "label": "Tag 2 name"
