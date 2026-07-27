@@ -12,6 +12,13 @@
     "hero": {
       "type": "veylique-hero",
       "blocks": {
+        "slide_FEUkWB": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/Generated_image_5.png",
+            "label": "5"
+          }
+        },
         "slide_jw3EWD": {
           "type": "slide",
           "settings": {
@@ -29,7 +36,7 @@
         "slide_DHExKG": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/2_d0e7ea25-5423-4480-bb56-bee4ca9efd5d.png",
+            "image": "shopify://shop_images/Generated_image_5.png",
             "label": "CHIC"
           }
         },
@@ -63,6 +70,7 @@
         }
       },
       "block_order": [
+        "slide_FEUkWB",
         "slide_jw3EWD",
         "slide_qYPYhJ",
         "slide_DHExKG",
