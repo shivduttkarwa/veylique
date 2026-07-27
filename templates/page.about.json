@@ -12,6 +12,7 @@
     "hero": {
       "type": "veylique-about-hero",
       "settings": {
+        "image": "shopify://shop_images/veylique-fashion-hero-7-3840.webp",
         "fallback": "hero-2.webp",
         "label": "About Veylique",
         "heading_line_1": "Designed for",
@@ -81,7 +82,9 @@
             "label": "The Beginning",
             "heading": "A fashion line rooted in real life",
             "lead": "Veylique was born from a simple idea: everyday clothes should feel polished without asking you to compromise on comfort. Each collection is built around wearable silhouettes, reliable fabrics, and details that earn their place.",
+            "body": "",
             "link_label": "Explore fabrics",
+            "link": "",
             "alt": false
           }
         },
@@ -93,6 +96,8 @@
             "heading": "From sketch to wardrobe",
             "lead": "We work with trusted mills, pattern makers, and finishing partners to refine every piece before it reaches your wardrobe.",
             "body": "Every garment is fit-tested for movement, drape, wash feel, and repeat wear, so it looks good beyond the first try-on.",
+            "link_label": "",
+            "link": "",
             "alt": true
           }
         }
@@ -103,7 +108,7 @@
       ],
       "settings": {
         "fallback": "founder.jpg",
-        "badge_text": "Founded in Paris — 2018 — Founded in Paris — 2018 — ",
+        "badge_text": "Founded in Paris — 2018 — Founded in Paris — 2018 —",
         "founder_kicker": "Founder",
         "founder_name": "Sophie Laurent",
         "founder_role": "Founder & Creative Director"
@@ -289,6 +294,7 @@
         "label": "Begin Your Wardrobe",
         "heading": "Your wardrobe refresh awaits.",
         "button_label": "Shop All Products",
+        "button_link": "",
         "button2_label": "Get In Touch",
         "button2_link": "/pages/contact"
       }
