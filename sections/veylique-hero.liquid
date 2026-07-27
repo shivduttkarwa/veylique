@@ -27,6 +27,7 @@
   class="veylique-page veylique-home-hero veylique-full-width"
   id="VeyliqueHero-{{ section.id }}"
   aria-labelledby="VeyliqueHeroTitle-{{ section.id }}"
+  style="--hero-title-tracking: {{ section.settings.title_tracking | default: 4 | divided_by: 100.0 }}em;"
   data-veylique-hero
 >
   <div class="veylique-home-hero__fallback">
@@ -176,6 +177,16 @@
       "id": "heading",
       "label": "t:sections.veylique-hero.settings.heading.label",
       "default": "Veylique"
+    },
+    {
+      "type": "range",
+      "id": "title_tracking",
+      "label": "Title letter spacing",
+      "info": "Hundredths of an em. Negative values tighten the wordmark, positive values open it up.",
+      "min": -12,
+      "max": 30,
+      "step": 1,
+      "default": 4
     },
     {
       "type": "text",
