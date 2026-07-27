@@ -267,6 +267,7 @@
           "settings": {
             "heading": "Office day",
             "text": "Clean silhouettes and structured fabrics that move from the desk to after-work plans without missing a beat.",
+            "image": "shopify://shop_images/veylique-hero-1.webp",
             "fallback": "shop-hero.jpg",
             "alt": "Office day outfit",
             "tag_1_product": "poplin-oversized-shirt",
@@ -284,6 +285,7 @@
           "settings": {
             "heading": "Coffee run",
             "text": "Easy layers and soft knits for a slow morning that still looks pulled together.",
+            "image": "shopify://shop_images/hover_80252d0d-10c8-4d04-bcb4-2fff00e155d2.webp",
             "fallback": "hero-5.webp",
             "alt": "Coffee run outfit",
             "tag_1_product": "ribbed-knit-sweater",
@@ -301,6 +303,7 @@
           "settings": {
             "heading": "Date night",
             "text": "Fluid fabrics and considered details for evenings that call for a little more.",
+            "image": "shopify://shop_images/hero-slide-hq-02.webp",
             "fallback": "hero-3.webp",
             "alt": "Date night outfit",
             "tag_1_product": "satin-slip-dress",
@@ -335,6 +338,7 @@
           "settings": {
             "heading": "Tennis session",
             "text": "Performance-ready pieces with a clean, court-side finish.",
+            "image": "shopify://shop_images/main_f84d5ce0-923c-4b98-822d-6d6305bd4ab2.webp",
             "fallback": "hero-4.webp",
             "alt": "Tennis session outfit",
             "tag_1_product": "ribbed-tank-top",
