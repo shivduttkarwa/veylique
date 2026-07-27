@@ -142,6 +142,43 @@ window.VeyliqueCart = (function () {
     return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
   }
 
+  // How wide the source must be once cover-fitted into a viewport. A 16:9 photo
+  // in a portrait phone hero is scaled to fill the *height*, so it overflows far
+  // past the viewport width - a 390x844 phone needs ~1500px of source, not 390.
+  function heroCoverWidth(ratio, viewportWidth, viewportHeight) {
+    if (ratio > viewportWidth / viewportHeight) return viewportHeight * ratio;
+    return viewportWidth;
+  }
+
+  // Hero slides ship an ascending ladder of candidate widths. Pick the first
+  // one that covers the canvas in device pixels so the image is never upscaled.
+  function pickHeroSource(entry, ratioFallback) {
+    if (typeof entry === 'string') return entry;
+
+    var sources = Array.isArray(entry) ? entry : entry && entry.sources;
+    if (!Array.isArray(sources) || !sources.length) return '';
+
+    var ratio = (entry && entry.ratio) || ratioFallback || 16 / 9;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var vw = window.innerWidth || 1440;
+    var vh = window.innerHeight || 900;
+    var needed = heroCoverWidth(ratio, vw, vh);
+
+    // Phones and tablets rotate; desktops don't. Hedging on a desktop would
+    // inflate the request to cover a portrait monitor nobody is using.
+    if (Math.max(vw, vh) < 1200) {
+      needed = Math.max(needed, heroCoverWidth(ratio, vh, vw));
+    }
+
+    var targetWidth = Math.ceil(needed * dpr);
+
+    for (var i = 0; i < sources.length; i += 1) {
+      if (sources[i] && sources[i].w >= targetWidth) return sources[i].url || '';
+    }
+
+    return sources[sources.length - 1].url || '';
+  }
+
   function initHero(hero) {
     if (hero.dataset.veyliqueHeroReady === 'true') return;
     hero.dataset.veyliqueHeroReady = 'true';
@@ -151,7 +188,7 @@ window.VeyliqueCart = (function () {
     var label = hero.querySelector('[data-veylique-hero-label]');
     var scrollButton = hero.querySelector('[data-veylique-scroll-down]');
     var config = readHeroConfig(hero);
-    var imageUrls = Array.isArray(config.images) ? config.images.filter(Boolean) : [];
+    var imageSources = Array.isArray(config.images) ? config.images.filter(Boolean) : [];
     var labels = Array.isArray(config.labels) ? config.labels : [];
     var slideDuration = Number(config.slideDuration) || 3000;
     var transitionDuration = Number(config.transitionDuration) || 2000;
@@ -170,14 +207,14 @@ window.VeyliqueCart = (function () {
       });
     }
 
-    if (reduceMotion || !canvas || !imageUrls.length) return;
+    if (reduceMotion || !canvas || !imageSources.length) return;
 
     var context = canvas.getContext('2d', { alpha: false });
     if (!context) return;
 
     var baseLayer = document.createElement('canvas');
     var baseContext = baseLayer.getContext('2d', { alpha: false });
-    var images = new Array(imageUrls.length);
+    var images = new Array(imageSources.length);
     var width = 0;
     var height = 0;
     var dpr = 1;
@@ -233,6 +270,14 @@ window.VeyliqueCart = (function () {
       baseLayer.width = canvas.width;
       baseLayer.height = canvas.height;
       baseContext.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // Resizing a canvas resets its context state, so re-apply the high
+      // quality resampler here. The default is "low" (cheap bilinear), which
+      // is what made cover-fitted hero photos look soft next to an <img>.
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = 'high';
+      baseContext.imageSmoothingEnabled = true;
+      baseContext.imageSmoothingQuality = 'high';
 
       pointer.radius = Math.min(width, height) * 0.11;
     }
@@ -367,6 +412,10 @@ window.VeyliqueCart = (function () {
 
       context.save();
       context.imageSmoothingEnabled = true;
+      // Hundreds of 1px strips per frame: keep this pass on the cheap
+      // resampler. save()/restore() puts the high quality setting back for the
+      // full-frame composite, which is where sharpness actually shows.
+      context.imageSmoothingQuality = 'low';
 
       for (var y = pointer.y - radiusY; y <= pointer.y + radiusY; y += 1) {
         var dy = y - pointer.y;
@@ -497,7 +546,10 @@ window.VeyliqueCart = (function () {
       pointer.lastMoveTime = performance.now();
     }
 
-    imageUrls.forEach(function (url, index) {
+    imageSources.forEach(function (entry, index) {
+      var url = pickHeroSource(entry);
+      if (!url) return;
+
       var image = new Image();
       image.onload = function () {
         images[index] = image;

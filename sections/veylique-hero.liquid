@@ -36,7 +36,7 @@
       class: 'veylique-media',
       alt: fallback_alt,
       loading: 'eager',
-      width: 2400,
+      width: 3200,
       height: 1600
     %}
   </div>
@@ -82,30 +82,54 @@
   <script type="application/json" data-veylique-hero-config>
     {
       "images": [
-        {% if slide_blocks.size > 0 %}
-          {% for block in slide_blocks limit: 5 %}
-            {% liquid
+        {%- comment -%}
+          Each slide ships a ladder of candidate widths instead of one fixed
+          size, so the canvas script can request a source that matches the
+          viewport multiplied by the device pixel ratio. A single 2400px URL
+          was being upscaled on high-DPR and wide screens.
+        {%- endcomment -%}
+        {%- if slide_blocks.size > 0 -%}
+          {%- for block in slide_blocks limit: 5 -%}
+            {%- liquid
               capture fallback_asset
                 echo 'hero-' | append: forloop.index | append: '.webp'
               endcapture
-
-              capture slide_url
-                if block.settings.image != blank
-                  echo block.settings.image | image_url: width: 2400
-                else
-                  echo fallback_asset | strip | asset_url
-                endif
-              endcapture
-            %}
-            {{ slide_url | strip | json }}{% unless forloop.last %},{% endunless %}
-          {% endfor %}
-        {% else %}
-          {{ 'hero-1.webp' | asset_url | json }},
-          {{ 'hero-2.webp' | asset_url | json }},
-          {{ 'hero-3.webp' | asset_url | json }},
-          {{ 'hero-4.webp' | asset_url | json }},
-          {{ 'hero-5.webp' | asset_url | json }}
-        {% endif %}
+            -%}
+            {%- if block.settings.image != blank -%}
+              {%- assign slide_ratio = block.settings.image.width | times: 1.0 | divided_by: block.settings.image.height -%}
+              {"ratio":{{ slide_ratio }},"sources":[
+              {%- assign source_width = block.settings.image.width -%}
+              {%- assign largest_width = 0 -%}
+              {%- assign candidate_widths = '1200,1800,2400,3200,3840' | split: ',' -%}
+              {%- for candidate in candidate_widths -%}
+                {%- assign candidate_width = candidate | times: 1 -%}
+                {%- if candidate_width <= source_width -%}
+                  {%- if largest_width > 0 %},{% endif -%}
+                  {"w":{{ candidate_width }},"url":{{ block.settings.image | image_url: width: candidate_width | json }}}
+                  {%- assign largest_width = candidate_width -%}
+                {%- endif -%}
+              {%- endfor -%}
+              {%- if largest_width < source_width -%}
+                {%- if largest_width > 0 %},{% endif -%}
+                {"w":{{ source_width }},"url":{{ block.settings.image | image_url: width: source_width | json }}}
+              {%- endif -%}
+              ]}
+            {%- else -%}
+              {"ratio":1.7768,"sources":[{"w":1672,"url":{{ fallback_asset | strip | asset_url | json }}}]}
+            {%- endif -%}
+            {%- unless forloop.last -%},{%- endunless -%}
+          {%- endfor -%}
+        {%- else -%}
+          {%- comment -%}
+            The bundled hero-*.webp fallbacks are 1672x941, so declare their
+            real width rather than pretending they can fill a 4K canvas.
+          {%- endcomment -%}
+          {"ratio":1.7768,"sources":[{"w":1672,"url":{{ 'hero-1.webp' | asset_url | json }}}]},
+          {"ratio":1.7768,"sources":[{"w":1672,"url":{{ 'hero-2.webp' | asset_url | json }}}]},
+          {"ratio":1.7768,"sources":[{"w":1672,"url":{{ 'hero-3.webp' | asset_url | json }}}]},
+          {"ratio":1.7768,"sources":[{"w":1672,"url":{{ 'hero-4.webp' | asset_url | json }}}]},
+          {"ratio":1.7768,"sources":[{"w":1672,"url":{{ 'hero-5.webp' | asset_url | json }}}]}
+        {%- endif -%}
       ],
       "labels": [
         {% if slide_blocks.size > 0 %}
