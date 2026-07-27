@@ -81,6 +81,14 @@
     padding-block: clamp(3rem, 7vw, 6rem);
   }
 
+  /* The grid, bar and empty state all set an explicit display, and a class
+     selector outranks the user-agent's [hidden] { display: none }. Without
+     this rule every hidden attribute in the section is silently ignored and
+     the skeletons, the empty state and the real grid all stack up at once. */
+  .veylique-wishlist [hidden] {
+    display: none;
+  }
+
   .veylique-wishlist__bar {
     display: flex;
     flex-wrap: wrap;
