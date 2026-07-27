@@ -30,15 +30,26 @@
   data-veylique-hero
 >
   <div class="veylique-home-hero__fallback">
-    {% render 'veylique-responsive-image',
-      image: fallback_image,
-      fallback: 'hero-1.webp',
-      class: 'veylique-media',
-      alt: fallback_alt,
-      loading: 'eager',
-      width: 3200,
-      height: 1600
-    %}
+    {% if fallback_image != blank %}
+      {% render 'veylique-responsive-image',
+        image: fallback_image,
+        class: 'veylique-media',
+        alt: fallback_alt,
+        loading: 'eager',
+        width: 3840,
+        height: 2160
+      %}
+    {% else %}
+      <img
+        class="veylique-media"
+        src="{{ 'veylique-fashion-hero-1-3840.webp' | asset_url }}"
+        width="3840"
+        height="2160"
+        alt="{{ fallback_alt | escape }}"
+        loading="eager"
+        fetchpriority="high"
+      >
+    {% endif %}
   </div>
 
   <div class="veylique-home-hero__canvas-wrap" aria-hidden="true">
@@ -92,7 +103,7 @@
           {%- for block in slide_blocks limit: 5 -%}
             {%- liquid
               capture fallback_asset
-                echo 'hero-' | append: forloop.index | append: '.webp'
+                echo 'veylique-fashion-hero-' | append: forloop.index | append: '-3840.webp'
               endcapture
             -%}
             {%- if block.settings.image != blank -%}
@@ -115,20 +126,20 @@
               {%- endif -%}
               ]}
             {%- else -%}
-              {"ratio":1.7768,"sources":[{"w":1672,"url":{{ fallback_asset | strip | asset_url | json }}}]}
+              {"ratio":1.7778,"sources":[{"w":3840,"url":{{ fallback_asset | strip | asset_url | json }}}]}
             {%- endif -%}
             {%- unless forloop.last -%},{%- endunless -%}
           {%- endfor -%}
         {%- else -%}
           {%- comment -%}
-            The bundled hero-*.webp fallbacks are 1672x941, so declare their
-            real width rather than pretending they can fill a 4K canvas.
+            These full-resolution assets are onboarding fallbacks. Images
+            selected in Shopify admin use the responsive CDN ladder above.
           {%- endcomment -%}
-          {"ratio":1.7768,"sources":[{"w":1672,"url":{{ 'hero-1.webp' | asset_url | json }}}]},
-          {"ratio":1.7768,"sources":[{"w":1672,"url":{{ 'hero-2.webp' | asset_url | json }}}]},
-          {"ratio":1.7768,"sources":[{"w":1672,"url":{{ 'hero-3.webp' | asset_url | json }}}]},
-          {"ratio":1.7768,"sources":[{"w":1672,"url":{{ 'hero-4.webp' | asset_url | json }}}]},
-          {"ratio":1.7768,"sources":[{"w":1672,"url":{{ 'hero-5.webp' | asset_url | json }}}]}
+          {"ratio":1.7778,"sources":[{"w":3840,"url":{{ 'veylique-fashion-hero-1-3840.webp' | asset_url | json }}}]},
+          {"ratio":1.7778,"sources":[{"w":3840,"url":{{ 'veylique-fashion-hero-2-3840.webp' | asset_url | json }}}]},
+          {"ratio":1.7778,"sources":[{"w":3840,"url":{{ 'veylique-fashion-hero-3-3840.webp' | asset_url | json }}}]},
+          {"ratio":1.7778,"sources":[{"w":3840,"url":{{ 'veylique-fashion-hero-4-3840.webp' | asset_url | json }}}]},
+          {"ratio":1.7778,"sources":[{"w":3840,"url":{{ 'veylique-fashion-hero-5-3840.webp' | asset_url | json }}}]}
         {%- endif -%}
       ],
       "labels": [

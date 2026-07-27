@@ -12,39 +12,34 @@
     "hero": {
       "type": "veylique-hero",
       "blocks": {
-        "slide_FEUkWB": {
+        "slide_olive": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/Generated_image_5.png",
-            "label": "5"
-          }
-        },
-        "slide_jw3EWD": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/1.png",
-            "label": "FRESH"
-          }
-        },
-        "slide_qYPYhJ": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/5.webp",
-            "label": "trending"
-          }
-        },
-        "slide_DHExKG": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/Generated_image_5.png",
-            "label": "CHIC"
-          }
-        },
-        "slide_NaGGVY": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/Generated_image_9.png",
             "label": "New"
+          }
+        },
+        "slide_terracotta": {
+          "type": "slide",
+          "settings": {
+            "label": "Bold"
+          }
+        },
+        "slide_cobalt": {
+          "type": "slide",
+          "settings": {
+            "label": "Chic"
+          }
+        },
+        "slide_mustard": {
+          "type": "slide",
+          "settings": {
+            "label": "Effortless"
+          }
+        },
+        "slide_plum": {
+          "type": "slide",
+          "settings": {
+            "label": "Fresh"
           }
         },
         "category_1": {
@@ -70,11 +65,11 @@
         }
       },
       "block_order": [
-        "slide_FEUkWB",
-        "slide_jw3EWD",
-        "slide_qYPYhJ",
-        "slide_DHExKG",
-        "slide_NaGGVY",
+        "slide_olive",
+        "slide_terracotta",
+        "slide_cobalt",
+        "slide_mustard",
+        "slide_plum",
         "category_1",
         "category_2",
         "category_3"
