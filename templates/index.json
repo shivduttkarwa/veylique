@@ -15,30 +15,35 @@
         "slide_olive": {
           "type": "slide",
           "settings": {
+            "image": "shopify://shop_images/veylique-fashion-hero-1-3840.webp",
             "label": "New"
           }
         },
         "slide_terracotta": {
           "type": "slide",
           "settings": {
+            "image": "shopify://shop_images/veylique-fashion-hero-5-3840.webp",
             "label": "Bold"
           }
         },
         "slide_cobalt": {
           "type": "slide",
           "settings": {
+            "image": "shopify://shop_images/veylique-fashion-hero-10-3840.webp",
             "label": "Chic"
           }
         },
         "slide_mustard": {
           "type": "slide",
           "settings": {
+            "image": "shopify://shop_images/veylique-fashion-hero-7-3840.webp",
             "label": "Effortless"
           }
         },
         "slide_plum": {
           "type": "slide",
           "settings": {
+            "image": "shopify://shop_images/veylique-fashion-hero-4-3840.webp",
             "label": "Fresh"
           }
         },
