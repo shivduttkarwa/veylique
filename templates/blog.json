@@ -10,8 +10,16 @@
 {
   "sections": {
     "main": {
-      "type": "blog",
-      "settings": {}
+      "type": "veylique-blog",
+      "settings": {
+        "kicker": "Journal",
+        "text": "Wardrobe notes, styling ideas, and the thinking behind each collection.",
+        "fallback": "veylique-fashion-hero-7-3840.webp",
+        "show_featured": true,
+        "show_tags": true,
+        "posts_per_page": 10,
+        "columns_desktop": 3
+      }
     }
   },
   "order": [

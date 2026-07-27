@@ -10,8 +10,11 @@
 {
   "sections": {
     "main": {
-      "type": "article",
-      "settings": {}
+      "type": "veylique-article",
+      "settings": {
+        "show_hero_image": true,
+        "show_reading_time": true
+      }
     }
   },
   "order": [

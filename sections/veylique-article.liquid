@@ -1,0 +1,466 @@
+{% comment %}
+  Article page: full-bleed hero, measured prose column, and styled comments.
+
+  The prose column is deliberately narrow (~34rem of text) because article
+  content comes from the rich text editor and cannot carry its own classes —
+  everything here is styled by element inside .veylique-article__content.
+{% endcomment %}
+
+{%- liquid
+  assign words = article.content | strip_html | split: ' ' | size
+  assign minutes = words | divided_by: 200 | plus: 1
+-%}
+
+<article class="veylique-article" aria-labelledby="VeyliqueArticleTitle-{{ section.id }}">
+  {% if article.image and section.settings.show_hero_image %}
+    <div class="veylique-article__hero">
+      {% render 'veylique-responsive-image',
+        image: article.image,
+        class: 'veylique-media',
+        alt: article.title,
+        loading: 'eager',
+        width: 2400
+      %}
+    </div>
+  {% endif %}
+
+  <div class="veylique-container">
+    <header class="veylique-article__head">
+      <nav class="veylique-article__back" aria-label="{{ 'general.breadcrumb.home' | t }}">
+        <a href="{{ blog.url }}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          {{ 'blog.back_to_blog' | t: title: blog.title }}
+        </a>
+      </nav>
+
+      <h1 id="VeyliqueArticleTitle-{{ section.id }}" class="veylique-article__title">{{ article.title | escape }}</h1>
+
+      <div class="veylique-article__meta">
+        <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+          {{- article.published_at | date: format: 'abbreviated_date' -}}
+        </time>
+        {% if article.author != blank %}
+          <span aria-hidden="true">·</span>
+          <span>{{ article.author }}</span>
+        {% endif %}
+        {% if section.settings.show_reading_time %}
+          <span aria-hidden="true">·</span>
+          <span>{{ 'blog.reading_time' | t: minutes: minutes }}</span>
+        {% endif %}
+      </div>
+
+      {% if article.tags.size > 0 %}
+        <div class="veylique-article__tags">
+          {% for tag in article.tags %}
+            <a class="veylique-pill" href="{{ blog.url }}/tagged/{{ tag | handleize }}">{{ tag }}</a>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </header>
+
+    <div class="veylique-article__content rte">
+      {{ article.content }}
+    </div>
+
+    {%- comment -%} Sibling navigation keeps readers inside the journal. {%- endcomment -%}
+    {% if blog.previous_article or blog.next_article %}
+      <nav class="veylique-article__siblings" aria-label="{{ 'blog.more_reading' | t }}">
+        {% if blog.previous_article %}
+          <a class="veylique-article__sibling" href="{{ blog.previous_article.url }}">
+            <span class="veylique-article__sibling-label">{{ 'blog.previous_article' | t }}</span>
+            <span class="veylique-article__sibling-title">{{ blog.previous_article.title | escape }}</span>
+          </a>
+        {% else %}
+          <span></span>
+        {% endif %}
+
+        {% if blog.next_article %}
+          <a class="veylique-article__sibling veylique-article__sibling--next" href="{{ blog.next_article.url }}">
+            <span class="veylique-article__sibling-label">{{ 'blog.next_article' | t }}</span>
+            <span class="veylique-article__sibling-title">{{ blog.next_article.title | escape }}</span>
+          </a>
+        {% endif %}
+      </nav>
+    {% endif %}
+
+    {% if blog.comments_enabled? %}
+      <section class="veylique-article__comments" id="comments">
+        <h2 class="veylique-article__comments-title">
+          {{ 'blog.article_comments' | t }}
+          {% if article.comments_count > 0 %}
+            <span>({{ article.comments_count }})</span>
+          {% endif %}
+        </h2>
+
+        {% paginate article.comments by 10 %}
+          {% if article.comments_count > 0 %}
+            <ul class="veylique-comments" role="list">
+              {% for comment in article.comments %}
+                <li class="veylique-comment">
+                  <div class="veylique-comment__head">
+                    <span class="veylique-comment__author">{{ comment.author }}</span>
+                    <time datetime="{{ comment.created_at | date: '%Y-%m-%d' }}">
+                      {{- comment.created_at | date: format: 'abbreviated_date' -}}
+                    </time>
+                  </div>
+                  <p class="veylique-comment__body">{{ comment.content }}</p>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+
+          {%- if paginate.pages > 1 -%}
+            <nav class="veylique-article__pagination" role="navigation">
+              {{- paginate | default_pagination: anchor: 'comments' -}}
+            </nav>
+          {%- endif -%}
+        {% endpaginate %}
+
+        {% form 'new_comment', article, class: 'veylique-comment-form' %}
+          <h3 class="veylique-comment-form__title">{{ 'blog.comment_form_title' | t }}</h3>
+
+          {% if form.errors %}
+            <div class="veylique-comment-form__errors" role="alert">
+              {{ form.errors | default_errors }}
+            </div>
+          {% endif %}
+
+          {% if form.posted_successfully? %}
+            <p class="veylique-comment-form__success" role="status">{{ 'blog.comment_success' | t }}</p>
+          {% endif %}
+
+          <div class="veylique-comment-form__row">
+            <div class="veylique-field">
+              <label for="CommentAuthor-{{ section.id }}">{{ 'blog.comment_form_name' | t }}</label>
+              <input type="text" name="comment[author]" id="CommentAuthor-{{ section.id }}" value="{{ form.author }}" autocomplete="name" required>
+            </div>
+            <div class="veylique-field">
+              <label for="CommentEmail-{{ section.id }}">{{ 'blog.comment_form_email' | t }}</label>
+              <input type="email" name="comment[email]" id="CommentEmail-{{ section.id }}" value="{{ form.email }}" autocomplete="email" required>
+            </div>
+          </div>
+
+          <div class="veylique-field">
+            <label for="CommentBody-{{ section.id }}">{{ 'blog.comment_form_body' | t }}</label>
+            <textarea name="comment[body]" id="CommentBody-{{ section.id }}" rows="5" required>{{ form.body }}</textarea>
+          </div>
+
+          <button type="submit" class="veylique-btn btn-black">{{ 'blog.comment_form_submit' | t }}</button>
+        {% endform %}
+      </section>
+    {% endif %}
+  </div>
+</article>
+
+{% stylesheet %}
+  .veylique-article {
+    padding-bottom: clamp(3rem, 7vw, 6rem);
+  }
+
+  .veylique-article__hero {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    aspect-ratio: 16 / 7;
+    background: var(--veylique-color-surface-alt);
+  }
+
+  @media (max-width: 47.99rem) {
+    .veylique-article__hero { aspect-ratio: 4 / 3; }
+  }
+
+  .veylique-article__hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .veylique-article__head {
+    max-width: 44rem;
+    margin-inline: auto;
+    padding-block: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 3vw, 2.5rem);
+    text-align: center;
+  }
+
+  .veylique-article__back {
+    margin-bottom: 1.5rem;
+  }
+
+  .veylique-article__back a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--veylique-color-muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: color 200ms ease;
+  }
+
+  .veylique-article__back a:hover { color: var(--veylique-color-foreground); }
+
+  .veylique-article__title {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: clamp(2.125rem, 5vw, 3.5rem);
+    font-weight: 400;
+    letter-spacing: -0.025em;
+    line-height: 1.08;
+  }
+
+  .veylique-article__meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    color: var(--veylique-color-muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .veylique-article__tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+  }
+
+  /* --- Prose -------------------------------------------------------------- */
+  /* Rich-text output carries no classes, so everything is styled by element. */
+  .veylique-article__content {
+    max-width: 40rem;
+    margin-inline: auto;
+    font-size: 1.0625rem;
+    line-height: 1.75;
+  }
+
+  .veylique-article__content > * + * { margin-top: 1.35em; }
+
+  .veylique-article__content h2,
+  .veylique-article__content h3,
+  .veylique-article__content h4 {
+    margin-top: 2.25em;
+    margin-bottom: -0.5em;
+    font-family: var(--font-heading--family);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .veylique-article__content h2 { font-size: 1.75rem; }
+  .veylique-article__content h3 { font-size: 1.375rem; }
+  .veylique-article__content h4 { font-size: 1.125rem; }
+
+  .veylique-article__content a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.1875rem;
+    text-decoration-thickness: 0.0625rem;
+  }
+
+  .veylique-article__content a:hover { color: var(--veylique-color-rose); }
+
+  .veylique-article__content img {
+    width: 100%;
+    height: auto;
+    margin-block: 2em;
+  }
+
+  .veylique-article__content blockquote {
+    margin-inline: 0;
+    padding-left: 1.5rem;
+    border-left: 0.125rem solid var(--veylique-color-foreground);
+    font-family: var(--font-heading--family);
+    font-size: 1.25rem;
+    line-height: 1.5;
+  }
+
+  .veylique-article__content ul,
+  .veylique-article__content ol { padding-left: 1.25rem; }
+  .veylique-article__content li + li { margin-top: 0.5em; }
+
+  .veylique-article__content hr {
+    margin-block: 2.5em;
+    border: 0;
+    border-top: 0.0625rem solid var(--veylique-color-border);
+  }
+
+  /* --- Siblings ----------------------------------------------------------- */
+  .veylique-article__siblings {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    max-width: 44rem;
+    margin: clamp(3rem, 6vw, 5rem) auto 0;
+    padding-top: 2rem;
+    border-top: 0.0625rem solid var(--veylique-color-border);
+  }
+
+  @media (min-width: 40rem) {
+    .veylique-article__siblings { grid-template-columns: 1fr 1fr; gap: 2rem; }
+  }
+
+  .veylique-article__sibling {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .veylique-article__sibling--next { text-align: right; }
+
+  .veylique-article__sibling-label {
+    color: var(--veylique-color-muted);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .veylique-article__sibling-title {
+    font-family: var(--font-heading--family);
+    font-size: 1.0625rem;
+    line-height: 1.35;
+  }
+
+  .veylique-article__sibling:hover .veylique-article__sibling-title {
+    text-decoration: underline;
+    text-underline-offset: 0.1875rem;
+  }
+
+  /* --- Comments ----------------------------------------------------------- */
+  .veylique-article__comments {
+    max-width: 44rem;
+    margin: clamp(3rem, 6vw, 5rem) auto 0;
+    padding-top: clamp(2rem, 4vw, 3rem);
+    border-top: 0.0625rem solid var(--veylique-color-border);
+  }
+
+  .veylique-article__comments-title {
+    margin: 0 0 1.5rem;
+    font-family: var(--font-heading--family);
+    font-size: 1.5rem;
+    font-weight: 400;
+  }
+
+  .veylique-article__comments-title span { color: var(--veylique-color-muted); }
+
+  .veylique-comments {
+    margin: 0 0 2.5rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .veylique-comment {
+    padding-block: 1.25rem;
+    border-bottom: 0.0625rem solid var(--veylique-color-border);
+  }
+
+  .veylique-comment__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .veylique-comment__author { font-weight: 600; }
+
+  .veylique-comment__head time {
+    color: var(--veylique-color-muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .veylique-comment__body { margin: 0; line-height: 1.65; }
+
+  .veylique-comment-form__title {
+    margin: 0 0 1.25rem;
+    font-family: var(--font-heading--family);
+    font-size: 1.25rem;
+    font-weight: 400;
+  }
+
+  .veylique-comment-form__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  @media (min-width: 40rem) {
+    .veylique-comment-form__row { grid-template-columns: 1fr 1fr; }
+  }
+
+  .veylique-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    margin-bottom: 1rem;
+  }
+
+  .veylique-field label {
+    color: var(--veylique-color-muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .veylique-field input,
+  .veylique-field textarea {
+    width: 100%;
+    border: 0.0625rem solid var(--veylique-color-border);
+    border-radius: 0;
+    padding: 0.75rem 0.875rem;
+    background: transparent;
+    color: inherit;
+    font-family: inherit;
+    font-size: 0.9375rem;
+    transition: border-color 200ms ease;
+  }
+
+  .veylique-field input:focus,
+  .veylique-field textarea:focus {
+    outline: none;
+    border-color: var(--veylique-color-foreground);
+  }
+
+  .veylique-field textarea { resize: vertical; }
+
+  .veylique-comment-form__errors,
+  .veylique-comment-form__success {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    border-left: 0.125rem solid currentColor;
+    font-size: 0.875rem;
+  }
+
+  .veylique-comment-form__errors { color: #a33; }
+  .veylique-comment-form__success { color: #2c6e49; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Article",
+  "tag": "section",
+  "class": "shopify-section--veylique-article",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_hero_image",
+      "label": "Show featured image as hero",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reading_time",
+      "label": "Show estimated reading time",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

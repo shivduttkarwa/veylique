@@ -1,0 +1,339 @@
+{% comment %}
+  Blog index: an editorial lead story followed by a paginated grid.
+
+  Keeps the [data-veylique-ajax-list] / [data-veylique-ajax-pagination] hooks so
+  the theme's existing AJAX pagination swaps the list in place instead of
+  reloading the page.
+{% endcomment %}
+
+{%- liquid
+  assign heading = section.settings.heading | default: blog.title
+  assign per_page = section.settings.posts_per_page
+-%}
+
+<section class="veylique-blog" aria-labelledby="VeyliqueBlogTitle-{{ section.id }}">
+  <div class="veylique-container">
+    <header class="veylique-blog__head">
+      <p class="veylique-kicker">{{ section.settings.kicker | escape }}</p>
+      <h1 id="VeyliqueBlogTitle-{{ section.id }}" class="veylique-blog__title">{{ heading | escape }}</h1>
+      {% if section.settings.text != blank %}
+        <p class="veylique-blog__intro">{{ section.settings.text | escape }}</p>
+      {% endif %}
+    </header>
+
+    {%- comment -%}
+      Topic filter. Shopify exposes tag archives at /blogs/<handle>/tagged/<tag>,
+      so these are plain links and work without JavaScript.
+    {%- endcomment -%}
+    {% if section.settings.show_tags and blog.all_tags.size > 0 %}
+      <nav class="veylique-blog__topics" aria-label="{{ 'blog.topics' | t }}">
+        <a
+          class="veylique-pill{% if current_tags == blank %} is-active{% endif %}"
+          href="{{ blog.url }}"
+        >{{ 'blog.all_topics' | t }}</a>
+        {% for tag in blog.all_tags %}
+          <a
+            class="veylique-pill{% if current_tags contains tag %} is-active{% endif %}"
+            href="{{ blog.url }}/tagged/{{ tag | handleize }}"
+          >{{ tag }}</a>
+        {% endfor %}
+      </nav>
+    {% endif %}
+  </div>
+
+  <div data-veylique-ajax-list data-section-id="{{ section.id }}">
+    {% paginate blog.articles by per_page %}
+      <div class="veylique-container">
+        {% if blog.articles_count == 0 %}
+          <p class="veylique-blog__empty">{{ 'blog.empty' | t }}</p>
+        {% endif %}
+
+        {%- comment -%} Lead story: page one only, so page two does not re-feature a different post. {%- endcomment -%}
+        {% if section.settings.show_featured and paginate.current_page == 1 %}
+          {% for article in blog.articles limit: 1 %}
+            <a class="veylique-blog__lead veylique-reveal-js" href="{{ article.url }}">
+              <span class="veylique-blog__lead-media">
+                {% render 'veylique-responsive-image',
+                  image: article.image,
+                  fallback: section.settings.fallback,
+                  class: 'veylique-media',
+                  alt: article.title,
+                  loading: 'eager',
+                  width: 1600
+                %}
+              </span>
+              <span class="veylique-blog__lead-body">
+                <span class="veylique-blog__meta">
+                  <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+                    {{- article.published_at | date: format: 'abbreviated_date' -}}
+                  </time>
+                  {% if article.tags.size > 0 %}
+                    <span class="veylique-blog__dot" aria-hidden="true">·</span>
+                    <span>{{ article.tags.first }}</span>
+                  {% endif %}
+                </span>
+                <span class="veylique-blog__lead-title">{{ article.title | escape }}</span>
+                {% if article.excerpt_or_content != blank %}
+                  <span class="veylique-blog__lead-excerpt">
+                    {{- article.excerpt_or_content | strip_html | truncatewords: 40 -}}
+                  </span>
+                {% endif %}
+                <span class="veylique-blog__more">{{ 'blog.read_article' | t }}</span>
+              </span>
+            </a>
+          {% endfor %}
+        {% endif %}
+
+        <div class="veylique-card-grid" style="--columns: {{ section.settings.columns_desktop }}">
+          {%- liquid
+            assign grid_offset = 0
+            if section.settings.show_featured and paginate.current_page == 1
+              assign grid_offset = 1
+            endif
+          -%}
+          {% for article in blog.articles offset: grid_offset %}
+            <a class="veylique-article-card veylique-reveal-js" href="{{ article.url }}">
+              <span class="veylique-article-card__media">
+                {% render 'veylique-responsive-image',
+                  image: article.image,
+                  fallback: section.settings.fallback,
+                  class: 'veylique-media',
+                  alt: article.title,
+                  width: 900
+                %}
+              </span>
+              <span class="veylique-card-body">
+                <span>
+                  <span class="veylique-blog__meta">
+                    <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+                      {{- article.published_at | date: format: 'abbreviated_date' -}}
+                    </time>
+                  </span>
+                  <span class="veylique-card-title">{{ article.title | escape }}</span>
+                  {% if article.excerpt_or_content != blank %}
+                    <span class="veylique-card-sub">
+                      {{- article.excerpt_or_content | strip_html | truncatewords: 18 -}}
+                    </span>
+                  {% endif %}
+                </span>
+              </span>
+            </a>
+          {% endfor %}
+        </div>
+
+        {%- if paginate.pages > 1 -%}
+          <nav class="veylique-blog__pagination" data-veylique-ajax-pagination role="navigation" aria-label="{{ 'collection.pagination' | t }}">
+            {{- paginate | default_pagination -}}
+          </nav>
+        {%- endif -%}
+      </div>
+    {% endpaginate %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .veylique-blog {
+    padding-block: clamp(2.5rem, 6vw, 5rem);
+  }
+
+  .veylique-blog__head {
+    max-width: 46rem;
+    margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .veylique-blog__title {
+    margin: 0.5rem 0 0;
+    font-family: var(--font-heading--family);
+    font-size: clamp(2.5rem, 6.5vw, 4.5rem);
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+  }
+
+  .veylique-blog__intro {
+    margin: 1rem 0 0;
+    color: var(--veylique-color-muted);
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .veylique-blog__topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+    padding-bottom: 1.25rem;
+    border-bottom: 0.0625rem solid var(--veylique-color-border);
+  }
+
+  .veylique-blog__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--veylique-color-muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* --- Lead story --------------------------------------------------------- */
+  .veylique-blog__lead {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(1.25rem, 3vw, 2.5rem);
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+    padding-bottom: clamp(2.5rem, 5vw, 4rem);
+    border-bottom: 0.0625rem solid var(--veylique-color-border);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  @media (min-width: 48rem) {
+    .veylique-blog__lead {
+      grid-template-columns: 1.15fr 1fr;
+      align-items: center;
+    }
+  }
+
+  .veylique-blog__lead-media {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    background: var(--veylique-color-surface-alt);
+  }
+
+  .veylique-blog__lead-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .veylique-blog__lead:hover .veylique-blog__lead-media img {
+    transform: scale(1.04);
+  }
+
+  .veylique-blog__lead-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+
+  .veylique-blog__lead-title {
+    font-family: var(--font-heading--family);
+    font-size: clamp(1.75rem, 3.6vw, 2.75rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .veylique-blog__lead-excerpt {
+    color: var(--veylique-color-muted);
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .veylique-blog__more {
+    align-self: flex-start;
+    padding-bottom: 0.1875rem;
+    border-bottom: 0.0625rem solid currentColor;
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  /* --- Grid cards --------------------------------------------------------- */
+  .veylique-blog .veylique-card-grid {
+    row-gap: clamp(2rem, 4vw, 3rem);
+  }
+
+  .veylique-blog .veylique-card-body > span {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .veylique-blog__empty {
+    padding-block: clamp(3rem, 8vw, 6rem);
+    color: var(--veylique-color-muted);
+    text-align: center;
+  }
+
+  .veylique-blog__pagination {
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    padding-top: 1.5rem;
+    border-top: 0.0625rem solid var(--veylique-color-border);
+    text-align: center;
+  }
+
+  [data-veylique-ajax-list].is-loading {
+    opacity: 0.55;
+    transition: opacity 180ms ease;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Blog posts",
+  "tag": "section",
+  "class": "shopify-section--veylique-blog",
+  "settings": [
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Kicker",
+      "default": "Journal"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Leave blank to use the blog title."
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Intro text",
+      "default": "Wardrobe notes, styling ideas, and the thinking behind each collection."
+    },
+    {
+      "type": "text",
+      "id": "fallback",
+      "label": "Fallback image asset",
+      "info": "Used when an article has no featured image.",
+      "default": "veylique-fashion-hero-7-3840.webp"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_featured",
+      "label": "Feature the latest post",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "Show topic filter",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "posts_per_page",
+      "label": "Posts per page",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    }
+  ]
+}
+{% endschema %}

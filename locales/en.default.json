@@ -23,7 +23,17 @@
     "comment_form_email": "Email",
     "comment_form_name": "Name",
     "comment_form_submit": "Post",
-    "comment_form_title": "Add a comment"
+    "comment_form_title": "Add a comment",
+    "topics": "Topics",
+    "all_topics": "All",
+    "read_article": "Read article",
+    "reading_time": "{{ minutes }} min read",
+    "back_to_blog": "Back to {{ title }}",
+    "more_reading": "More reading",
+    "previous_article": "Previous",
+    "next_article": "Next",
+    "empty": "No stories published yet. Check back soon.",
+    "comment_success": "Thanks — your comment has been submitted."
   },
   "cart": {
     "checkout": "Checkout",
