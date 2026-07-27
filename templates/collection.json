@@ -11,7 +11,27 @@
   "sections": {
     "main": {
       "type": "collection",
-      "settings": {}
+      "settings": {
+        "show_hero": true,
+        "hero_image": "shopify://shop_images/veylique-fashion-hero-10-3840.webp",
+        "hero_fallback": "shop-hero.jpg",
+        "show_breadcrumb": true,
+        "kicker": "The shop",
+        "show_description": true,
+        "heading_alignment": "left",
+        "products_per_page": 24,
+        "columns_desktop": 4,
+        "columns_tablet": "3",
+        "columns_mobile": "2",
+        "show_vendor": true,
+        "enable_quick_add": true,
+        "show_product_count": true,
+        "enable_sorting": true,
+        "enable_column_switcher": true,
+        "enable_filtering": true,
+        "sticky_sidebar": true,
+        "open_filters": 3
+      }
     }
   },
   "order": [
