@@ -15,6 +15,7 @@
         "slide_DHExKG": {
           "type": "slide",
           "settings": {
+            "image": "shopify://shop_images/veylique-hero-2.png",
             "label": "CHIC"
           }
         },
