@@ -15,6 +15,7 @@
         "slide_NaGGVY": {
           "type": "slide",
           "settings": {
+            "image": "shopify://shop_images/veylique-hero-1.webp",
             "label": "New"
           }
         },
