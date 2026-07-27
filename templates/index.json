@@ -562,6 +562,7 @@
         "story_3": {
           "type": "story",
           "settings": {
+            "image": "shopify://shop_images/veylique-hero-2.png",
             "fallback": "manifest-cta.jpg",
             "badge": "Behind the Brand",
             "meta": "02 Jul 2026 - 5 min read",
@@ -573,6 +574,7 @@
         "story_4": {
           "type": "story",
           "settings": {
+            "image": "shopify://shop_images/veylique-hero-3.png",
             "fallback": "shop-hero.jpg",
             "badge": "Guides",
             "meta": "27 Jun 2026 - 7 min read",
