@@ -12,6 +12,13 @@
     "hero": {
       "type": "veylique-hero",
       "blocks": {
+        "slide_jw3EWD": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/hero-slide-hq-02.webp",
+            "label": "FRESH"
+          }
+        },
         "slide_qYPYhJ": {
           "type": "slide",
           "settings": {
@@ -56,6 +63,7 @@
         }
       },
       "block_order": [
+        "slide_jw3EWD",
         "slide_qYPYhJ",
         "slide_DHExKG",
         "slide_NaGGVY",
