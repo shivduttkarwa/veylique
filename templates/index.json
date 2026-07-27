@@ -12,6 +12,12 @@
     "hero": {
       "type": "veylique-hero",
       "blocks": {
+        "slide_DHExKG": {
+          "type": "slide",
+          "settings": {
+            "label": "CHIC"
+          }
+        },
         "slide_NaGGVY": {
           "type": "slide",
           "settings": {
@@ -42,6 +48,7 @@
         }
       },
       "block_order": [
+        "slide_DHExKG",
         "slide_NaGGVY",
         "category_1",
         "category_2",
