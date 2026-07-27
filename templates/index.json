@@ -12,25 +12,10 @@
     "hero": {
       "type": "veylique-hero",
       "blocks": {
-        "slide_6rLPR8": {
+        "slide_NaGGVY": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/veylique-hero-1.png",
             "label": "New"
-          }
-        },
-        "slide_BnnDTU": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/cta.webp",
-            "label": "test"
-          }
-        },
-        "slide_HDyD9Q": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/veylique-mustard-field-hero-4k.jpg",
-            "label": "test-2"
           }
         },
         "category_1": {
@@ -56,9 +41,7 @@
         }
       },
       "block_order": [
-        "slide_6rLPR8",
-        "slide_BnnDTU",
-        "slide_HDyD9Q",
+        "slide_NaGGVY",
         "category_1",
         "category_2",
         "category_3"
