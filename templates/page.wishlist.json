@@ -1,0 +1,29 @@
+{
+  "sections": {
+    "hero": {
+      "type": "veylique-page-hero",
+      "settings": {
+        "kicker": "Saved",
+        "heading": "Your favourites",
+        "text": "The pieces you loved, kept in one place. Saved on this device, ready whenever you are.",
+        "fallback": "veylique-fashion-hero-6-3840.webp"
+      }
+    },
+    "wishlist": {
+      "type": "veylique-wishlist",
+      "settings": {
+        "title": "Saved items",
+        "columns_desktop": 4,
+        "empty_kicker": "Nothing saved yet",
+        "empty_title": "Your favourites live here",
+        "empty_text": "Tap the heart on any piece and it will be waiting for you here, ready when you are.",
+        "empty_button_label": "Start browsing",
+        "empty_button_link": "/collections/all"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "wishlist"
+  ]
+}

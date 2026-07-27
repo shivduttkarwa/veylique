@@ -96,10 +96,11 @@
       {% endif %}
 
       {% if section.settings.show_wishlist %}
-        <a class="veylique-header-icon-btn veylique-wishlist-link" aria-label="{{ section.settings.wishlist_label | escape }}" href="{{ wishlist_url }}">
+        <a class="veylique-header-icon-btn veylique-wishlist-link" data-veylique-wish-link aria-label="{{ section.settings.wishlist_label | escape }}" href="{{ wishlist_url }}">
           <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
           </svg>
+          <span class="veylique-wishlist-count" data-veylique-wish-count hidden>0</span>
         </a>
       {% endif %}
 
@@ -360,6 +361,33 @@
   .veylique-cart-trigger svg {
     width: var(--veylique-header-cart-icon-size);
     height: var(--veylique-header-cart-icon-size);
+  }
+
+  .veylique-wishlist-count {
+    position: absolute;
+    top: 0.125rem;
+    right: 0.125rem;
+    min-width: 1rem;
+    height: 1rem;
+    display: grid;
+    place-items: center;
+    border-radius: 999rem;
+    padding-inline: 0.1875rem;
+    background: var(--veylique-gold);
+    color: var(--veylique-gold-contrast);
+    font-size: 0.625rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .veylique-wishlist-count[hidden] {
+    display: none;
+  }
+
+  /* Filled heart once something is saved, so the state reads at a glance. */
+  .veylique-wishlist-link.has-items svg path {
+    fill: currentColor;
+    fill-opacity: 0.16;
   }
 
   .veylique-cart-count {

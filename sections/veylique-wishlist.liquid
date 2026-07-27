@@ -1,0 +1,708 @@
+{% comment %}
+  Renders the saved-items page.
+
+  The wishlist lives in localStorage as product handles (see
+  window.VeyliqueWishlist in veylique-theme.js), so this section ships an empty
+  shell and hydrates each saved product from /products/<handle>.js on load.
+  That keeps the page correct for any catalogue size without an app, a customer
+  account, or server-side state.
+
+  Strings that the script needs are passed as data attributes because Liquid is
+  not rendered inside {% raw %}{% javascript %}{% endraw %}.
+{% endcomment %}
+
+<section
+  class="veylique-wishlist"
+  data-veylique-wishlist
+  data-money-format="{{ shop.money_format | escape }}"
+  data-label-add="{{ 'products.add_to_cart' | t | escape }}"
+  data-label-adding="{{ 'products.adding' | t | escape }}"
+  data-label-added="{{ 'products.added' | t | escape }}"
+  data-label-options="{{ 'products.choose_options' | t | escape }}"
+  data-label-soldout="{{ 'products.sold_out' | t | escape }}"
+  data-label-remove="{{ 'products.remove_from_wishlist' | t: title: '' | strip | escape }}"
+  data-label-sale="{{ 'products.badge_sale' | t | escape }}"
+  data-count-one="{{ 'general.wishlist.count_one' | t | escape }}"
+  data-count-many="{{ 'general.wishlist.count_many' | t: count: '[count]' | escape }}"
+  style="--wishlist-columns: {{ section.settings.columns_desktop }};"
+  aria-labelledby="VeyliqueWishlistTitle-{{ section.id }}"
+>
+  <div class="veylique-container">
+    <h2 id="VeyliqueWishlistTitle-{{ section.id }}" class="visually-hidden">
+      {{ section.settings.title | escape }}
+    </h2>
+
+    {%- comment -%} Toolbar. Hidden until we know there is something to count. {%- endcomment -%}
+    <div class="veylique-wishlist__bar" data-wishlist-bar hidden>
+      <p class="veylique-wishlist__summary" data-wishlist-summary aria-live="polite"></p>
+      <button type="button" class="veylique-wishlist__clear" data-wishlist-clear>
+        {{ 'general.wishlist.clear' | t }}
+      </button>
+    </div>
+
+    {%- comment -%}
+      Skeletons match the real card's aspect ratio so the page does not jump
+      when the fetched products land.
+    {%- endcomment -%}
+    <div class="veylique-wishlist__grid" data-wishlist-loading aria-hidden="true">
+      {% for i in (1..4) %}
+        <div class="veylique-wcard veylique-wcard--skeleton">
+          <div class="veylique-wcard__media"></div>
+          <div class="veylique-wcard__body">
+            <span class="veylique-wcard__ghost veylique-wcard__ghost--title"></span>
+            <span class="veylique-wcard__ghost veylique-wcard__ghost--price"></span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="veylique-wishlist__grid" data-wishlist-grid hidden></div>
+
+    <div class="veylique-wishlist__empty" data-wishlist-empty hidden>
+      <span class="veylique-wishlist__empty-mark" aria-hidden="true">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+      </span>
+      <p class="veylique-kicker">{{ section.settings.empty_kicker | escape }}</p>
+      <h3 class="veylique-wishlist__empty-title">{{ section.settings.empty_title | escape }}</h3>
+      <p class="veylique-wishlist__empty-text">{{ section.settings.empty_text | escape }}</p>
+      {% if section.settings.empty_button_label != blank %}
+        <a class="veylique-btn btn-black" href="{{ section.settings.empty_button_link | default: routes.all_products_collection_url }}">
+          {{ section.settings.empty_button_label | escape }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .veylique-wishlist {
+    padding-block: clamp(3rem, 7vw, 6rem);
+  }
+
+  .veylique-wishlist__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    padding-bottom: 1rem;
+    border-bottom: 0.0625rem solid var(--veylique-color-border);
+  }
+
+  .veylique-wishlist__summary {
+    margin: 0;
+    color: var(--veylique-color-muted);
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .veylique-wishlist__clear {
+    border: 0;
+    background: none;
+    padding: 0;
+    color: var(--veylique-color-muted);
+    font-family: inherit;
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    border-bottom: 0.0625rem solid currentColor;
+    transition: color 200ms ease;
+  }
+
+  .veylique-wishlist__clear:hover {
+    color: var(--veylique-color-foreground);
+  }
+
+  .veylique-wishlist__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1rem, 2.4vw, 2rem) clamp(0.75rem, 1.6vw, 1.5rem);
+  }
+
+  @media (min-width: 48rem) {
+    .veylique-wishlist__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .veylique-wishlist__grid {
+      grid-template-columns: repeat(var(--wishlist-columns, 4), minmax(0, 1fr));
+    }
+  }
+
+  .veylique-wcard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    animation: veylique-wcard-in 520ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+
+  .veylique-wcard.is-leaving {
+    opacity: 0;
+    transform: translateY(0.5rem) scale(0.985);
+    transition: opacity 260ms ease, transform 260ms ease;
+  }
+
+  @keyframes veylique-wcard-in {
+    from { opacity: 0; transform: translateY(0.75rem); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .veylique-wcard { animation: none; }
+    .veylique-wcard.is-leaving { transition: none; }
+  }
+
+  .veylique-wcard__media {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 3 / 4;
+    background: var(--veylique-color-surface-alt);
+    border-radius: 0.125rem;
+  }
+
+  .veylique-wcard__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .veylique-wcard:hover .veylique-wcard__media img {
+    transform: scale(1.04);
+  }
+
+  .veylique-wcard--soldout .veylique-wcard__media img {
+    opacity: 0.55;
+  }
+
+  .veylique-wcard__badge {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    background: var(--veylique-color-foreground);
+    color: var(--veylique-color-background);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* Always visible on touch, where there is no hover to reveal it. */
+  .veylique-wcard__remove {
+    position: absolute;
+    top: 0.625rem;
+    right: 0.625rem;
+    z-index: 2;
+    width: 2rem;
+    height: 2rem;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 999rem;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--veylique-color-foreground);
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 200ms ease, transform 200ms ease, background 200ms ease;
+  }
+
+  .veylique-wcard:hover .veylique-wcard__remove,
+  .veylique-wcard__remove:focus-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (hover: none) {
+    .veylique-wcard__remove { opacity: 1; transform: none; }
+  }
+
+  .veylique-wcard__remove:hover {
+    background: #fff;
+  }
+
+  .veylique-wcard__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    padding-top: 0.875rem;
+  }
+
+  .veylique-wcard__title {
+    color: var(--veylique-color-foreground);
+    font-family: var(--font-heading--family);
+    font-size: 0.9375rem;
+    line-height: 1.35;
+    text-decoration: none;
+  }
+
+  .veylique-wcard__title:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.1875rem;
+  }
+
+  .veylique-wcard__vendor {
+    margin: 0;
+    color: var(--veylique-color-muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .veylique-wcard__price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  .veylique-wcard__price s {
+    color: var(--veylique-color-muted);
+    font-size: 0.8125rem;
+  }
+
+  .veylique-wcard__price .is-sale {
+    color: var(--veylique-color-rose);
+  }
+
+  .veylique-wcard__add {
+    margin-top: 0.625rem;
+    width: 100%;
+    border: 0.0625rem solid var(--veylique-color-foreground);
+    border-radius: 0;
+    padding: 0.6875rem 1rem;
+    background: transparent;
+    color: var(--veylique-color-foreground);
+    font-family: inherit;
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 220ms ease, color 220ms ease, opacity 220ms ease;
+  }
+
+  .veylique-wcard__add:hover {
+    background: var(--veylique-color-foreground);
+    color: var(--veylique-color-background);
+  }
+
+  .veylique-wcard__add[disabled] {
+    border-color: var(--veylique-color-border);
+    color: var(--veylique-color-muted);
+    cursor: not-allowed;
+  }
+
+  .veylique-wcard__add[disabled]:hover {
+    background: transparent;
+    color: var(--veylique-color-muted);
+  }
+
+  .veylique-wcard__add.is-busy { opacity: 0.6; pointer-events: none; }
+
+  .veylique-wcard__add.is-added {
+    background: var(--veylique-color-foreground);
+    color: var(--veylique-color-background);
+  }
+
+  /* --- Skeleton ---------------------------------------------------------- */
+  .veylique-wcard--skeleton .veylique-wcard__media,
+  .veylique-wcard__ghost {
+    background: linear-gradient(
+      90deg,
+      var(--veylique-color-surface-alt) 25%,
+      color-mix(in srgb, var(--veylique-color-surface-alt) 60%, #fff) 37%,
+      var(--veylique-color-surface-alt) 63%
+    );
+    background-size: 400% 100%;
+    animation: veylique-wcard-shimmer 1.4s ease infinite;
+  }
+
+  .veylique-wcard__ghost {
+    display: block;
+    height: 0.75rem;
+    border-radius: 0.125rem;
+  }
+
+  .veylique-wcard__ghost--title { width: 72%; }
+  .veylique-wcard__ghost--price { width: 38%; }
+
+  @keyframes veylique-wcard-shimmer {
+    from { background-position: 100% 50%; }
+    to   { background-position: 0 50%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .veylique-wcard--skeleton .veylique-wcard__media,
+    .veylique-wcard__ghost { animation: none; }
+  }
+
+  /* --- Empty state ------------------------------------------------------- */
+  .veylique-wishlist__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.75rem;
+    padding-block: clamp(3rem, 9vw, 7rem);
+  }
+
+  .veylique-wishlist__empty-mark {
+    display: grid;
+    place-items: center;
+    width: 5rem;
+    height: 5rem;
+    margin-bottom: 0.5rem;
+    border: 0.0625rem solid var(--veylique-color-border);
+    border-radius: 999rem;
+    color: var(--veylique-color-muted);
+  }
+
+  .veylique-wishlist__empty-title {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: clamp(1.75rem, 4.2vw, 2.75rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+  }
+
+  .veylique-wishlist__empty-text {
+    max-width: 32rem;
+    margin: 0;
+    color: var(--veylique-color-muted);
+    line-height: 1.6;
+  }
+
+  .veylique-wishlist__empty .veylique-btn {
+    margin-top: 1rem;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    var IMAGE_WIDTHS = [400, 600, 800, 1000, 1200];
+
+    function formatMoney(cents, format) {
+      var value = Number(cents || 0) / 100;
+
+      function withDelimiters(number, precision, thousands, decimal) {
+        var fixed = number.toFixed(precision);
+        var parts = fixed.split('.');
+        var whole = parts[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1' + thousands);
+        return parts[1] ? whole + decimal + parts[1] : whole;
+      }
+
+      var placeholder = (format || '').match(/\{\{\s*(\w+)\s*\}\}/);
+      var name = placeholder ? placeholder[1] : 'amount';
+      var body;
+
+      switch (name) {
+        case 'amount_no_decimals':
+          body = withDelimiters(value, 0, ',', '.');
+          break;
+        case 'amount_with_comma_separator':
+          body = withDelimiters(value, 2, '.', ',');
+          break;
+        case 'amount_no_decimals_with_comma_separator':
+          body = withDelimiters(value, 0, '.', ',');
+          break;
+        default:
+          body = withDelimiters(value, 2, ',', '.');
+      }
+
+      if (!format) return body;
+      return format.replace(/\{\{\s*\w+\s*\}\}/, body);
+    }
+
+    function imageUrl(src, width) {
+      if (!src) return '';
+      var url = src.indexOf('//') === 0 ? 'https:' + src : src;
+      return url + (url.indexOf('?') === -1 ? '?' : '&') + 'width=' + width;
+    }
+
+    function escapeHtml(value) {
+      return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function syncCartCount(count) {
+      document.querySelectorAll('.veylique-cart-count').forEach(function (node) {
+        node.textContent = count;
+      });
+    }
+
+    function initWishlistPage(root) {
+      var section = (root || document).querySelector('[data-veylique-wishlist]');
+      if (!section || section.dataset.ready === 'true') return;
+      section.dataset.ready = 'true';
+
+      var store = window.VeyliqueWishlist;
+      if (!store) return;
+
+      var grid = section.querySelector('[data-wishlist-grid]');
+      var loading = section.querySelector('[data-wishlist-loading]');
+      var empty = section.querySelector('[data-wishlist-empty]');
+      var bar = section.querySelector('[data-wishlist-bar]');
+      var summary = section.querySelector('[data-wishlist-summary]');
+      var clearButton = section.querySelector('[data-wishlist-clear]');
+      var text = section.dataset;
+      var cache = {};
+
+      function summarise(count) {
+        if (count === 1) return text.countOne;
+        return (text.countMany || '').replace('[count]', count);
+      }
+
+      function showEmpty() {
+        if (loading) loading.hidden = true;
+        if (grid) grid.hidden = true;
+        if (bar) bar.hidden = true;
+        if (empty) empty.hidden = false;
+      }
+
+      function cardMarkup(product) {
+        var onSale = product.compare_at_price && product.compare_at_price > product.price;
+        var soldOut = product.available === false;
+        var variants = product.variants || [];
+        var single = variants.length === 1 && variants[0] && variants[0].available;
+        var src = product.featured_image || (product.images && product.images[0]) || '';
+
+        var srcset = IMAGE_WIDTHS.map(function (w) {
+          return imageUrl(src, w) + ' ' + w + 'w';
+        }).join(', ');
+
+        var action;
+        if (soldOut) {
+          action = '<button type="button" class="veylique-wcard__add" disabled>' +
+            escapeHtml(text.labelSoldout) + '</button>';
+        } else if (single) {
+          action = '<button type="button" class="veylique-wcard__add" data-wishlist-add ' +
+            'data-variant-id="' + variants[0].id + '">' + escapeHtml(text.labelAdd) + '</button>';
+        } else {
+          /* More than one variant: let the shopper pick on the product page
+             rather than guessing a size for them. */
+          action = '<a class="veylique-wcard__add" href="' + escapeHtml(product.url) + '">' +
+            escapeHtml(text.labelOptions) + '</a>';
+        }
+
+        return '' +
+          '<article class="veylique-wcard' + (soldOut ? ' veylique-wcard--soldout' : '') +
+            '" data-handle="' + escapeHtml(product.handle) + '">' +
+            '<a class="veylique-wcard__media" href="' + escapeHtml(product.url) + '" tabindex="-1" aria-hidden="true">' +
+              (src
+                ? '<img src="' + escapeHtml(imageUrl(src, 800)) + '" srcset="' + escapeHtml(srcset) +
+                  '" sizes="(min-width: 64rem) 22vw, (min-width: 48rem) 30vw, 45vw" alt="" loading="lazy" width="600" height="800">'
+                : '') +
+              (onSale && !soldOut ? '<span class="veylique-wcard__badge">' + escapeHtml(text.labelSale) + '</span>' : '') +
+            '</a>' +
+            '<button type="button" class="veylique-wcard__remove" data-wishlist-remove ' +
+              'aria-label="' + escapeHtml((text.labelRemove || 'Remove') + ' ' + product.title) + '">' +
+              '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+            '</button>' +
+            '<div class="veylique-wcard__body">' +
+              '<a class="veylique-wcard__title" href="' + escapeHtml(product.url) + '">' +
+                escapeHtml(product.title) + '</a>' +
+              (product.vendor
+                ? '<p class="veylique-wcard__vendor">' + escapeHtml(product.vendor) + '</p>'
+                : '') +
+              '<p class="veylique-wcard__price">' +
+                '<span' + (onSale ? ' class="is-sale"' : '') + '>' +
+                  escapeHtml(formatMoney(product.price, text.moneyFormat)) + '</span>' +
+                (onSale
+                  ? '<s>' + escapeHtml(formatMoney(product.compare_at_price, text.moneyFormat)) + '</s>'
+                  : '') +
+              '</p>' +
+              action +
+            '</div>' +
+          '</article>';
+      }
+
+      function fetchProduct(handle) {
+        if (cache[handle]) return Promise.resolve(cache[handle]);
+        return fetch('/products/' + encodeURIComponent(handle) + '.js', {
+          headers: { Accept: 'application/json' }
+        })
+          .then(function (response) {
+            if (!response.ok) throw new Error('missing');
+            return response.json();
+          })
+          .then(function (product) {
+            cache[handle] = product;
+            return product;
+          })
+          .catch(function () {
+            /* Product was deleted or unpublished — drop it so the list stays
+               truthful instead of showing a permanent gap. */
+            store.remove(handle);
+            return null;
+          });
+      }
+
+      function render() {
+        var handles = store.all();
+
+        if (!handles.length) {
+          showEmpty();
+          return;
+        }
+
+        Promise.all(handles.map(fetchProduct)).then(function (products) {
+          var live = products.filter(Boolean);
+
+          if (!live.length) {
+            showEmpty();
+            return;
+          }
+
+          if (loading) loading.hidden = true;
+          if (empty) empty.hidden = true;
+          if (grid) {
+            grid.innerHTML = live.map(cardMarkup).join('');
+            grid.hidden = false;
+          }
+          if (bar) bar.hidden = false;
+          if (summary) summary.textContent = summarise(live.length);
+        });
+      }
+
+      section.addEventListener('click', function (event) {
+        var remove = event.target.closest('[data-wishlist-remove]');
+        if (remove) {
+          var card = remove.closest('[data-handle]');
+          if (!card) return;
+          card.classList.add('is-leaving');
+          var handle = card.dataset.handle;
+          window.setTimeout(function () { store.remove(handle); }, 240);
+          return;
+        }
+
+        var add = event.target.closest('[data-wishlist-add]');
+        if (add && window.fetch) {
+          event.preventDefault();
+          if (add.classList.contains('is-busy')) return;
+
+          add.classList.add('is-busy');
+          fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ id: parseInt(add.dataset.variantId, 10), quantity: 1 })
+          })
+            .then(function (r) { if (!r.ok) throw new Error('add'); return r.json(); })
+            .then(function () { return fetch('/cart.js', { headers: { Accept: 'application/json' } }); })
+            .then(function (r) { return r.json(); })
+            .then(function (cart) {
+              syncCartCount(cart.item_count);
+              document.dispatchEvent(
+                new CustomEvent('veylique:cart:updated', { detail: { open: false } })
+              );
+              add.classList.add('is-added');
+              add.textContent = text.labelAdded;
+              window.setTimeout(function () {
+                add.classList.remove('is-added');
+                add.textContent = text.labelAdd;
+              }, 2000);
+            })
+            .catch(function () {})
+            .finally(function () { add.classList.remove('is-busy'); });
+        }
+      });
+
+      if (clearButton) {
+        clearButton.addEventListener('click', function () { store.clear(); });
+      }
+
+      store.subscribe(render);
+      render();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function () { initWishlistPage(document); });
+    } else {
+      initWishlistPage(document);
+    }
+
+    document.addEventListener('shopify:section:load', function (event) {
+      initWishlistPage(event.target);
+    });
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Wishlist",
+  "tag": "section",
+  "class": "shopify-section--veylique-wishlist",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Accessible section title",
+      "default": "Saved items"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Empty state"
+    },
+    {
+      "type": "text",
+      "id": "empty_kicker",
+      "label": "Kicker",
+      "default": "Nothing saved yet"
+    },
+    {
+      "type": "text",
+      "id": "empty_title",
+      "label": "Heading",
+      "default": "Your favourites live here"
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "label": "Text",
+      "default": "Tap the heart on any piece and it will be waiting for you here, on any device you shop from."
+    },
+    {
+      "type": "text",
+      "id": "empty_button_label",
+      "label": "Button label",
+      "default": "Start browsing"
+    },
+    {
+      "type": "url",
+      "id": "empty_button_link",
+      "label": "Button link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Wishlist"
+    }
+  ]
+}
+{% endschema %}

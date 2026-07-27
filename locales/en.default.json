@@ -168,12 +168,18 @@
     "next_image": "Next image",
     "zoom_image": "Open image in full screen",
     "close_gallery": "Close",
-    "share_copied": "Link copied to clipboard"
+    "share_copied": "Link copied to clipboard",
+    "remove_from_wishlist": "Remove {{ title }} from wishlist"
   },
   "general": {
     "breadcrumb": {
       "home": "Home"
     },
-    "back_to_top": "Back to top"
+    "back_to_top": "Back to top",
+    "wishlist": {
+      "count_one": "1 piece saved",
+      "count_many": "{{ count }} pieces saved",
+      "clear": "Clear all"
+    }
   }
 }

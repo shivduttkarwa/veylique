@@ -89,6 +89,102 @@ window.VeyliqueCart = (function () {
   };
 })();
 
+/* ---------------------------------------------------------------------------
+   Wishlist store.
+
+   Saved products are kept in localStorage as product handles, which lets the
+   wishlist page hydrate them from /products/<handle>.js — no app, no customer
+   account, no server state. Handles (not IDs) because that is what the
+   product JSON endpoint takes.
+
+   Falls back to an in-memory list when localStorage is unavailable (Safari
+   private mode, blocked cookies) so the buttons still respond within the page.
+   --------------------------------------------------------------------------- */
+window.VeyliqueWishlist = (function () {
+  var KEY = 'veyliqueWishlist';
+  var listeners = [];
+  var memory = [];
+
+  var canStore = (function () {
+    try {
+      window.localStorage.setItem(KEY + ':probe', '1');
+      window.localStorage.removeItem(KEY + ':probe');
+      return true;
+    } catch (error) {
+      return false;
+    }
+  })();
+
+  function clean(list) {
+    var seen = {};
+    var out = [];
+    (Array.isArray(list) ? list : []).forEach(function (item) {
+      var handle = String(item || '').trim();
+      if (!handle || seen[handle]) return;
+      seen[handle] = true;
+      out.push(handle);
+    });
+    return out;
+  }
+
+  function read() {
+    if (!canStore) return memory.slice();
+    try {
+      return clean(JSON.parse(window.localStorage.getItem(KEY) || '[]'));
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function emit(list) {
+    listeners.forEach(function (fn) {
+      try { fn(list); } catch (error) {}
+    });
+  }
+
+  function write(list) {
+    var next = clean(list);
+    if (canStore) {
+      try { window.localStorage.setItem(KEY, JSON.stringify(next)); } catch (error) {}
+    } else {
+      memory = next;
+    }
+    emit(next);
+    return next;
+  }
+
+  /* Keep a second tab in step without it having to poll. */
+  window.addEventListener('storage', function (event) {
+    if (event.key === KEY) emit(read());
+  });
+
+  return {
+    all: read,
+    count: function () { return read().length; },
+    has: function (handle) { return read().indexOf(String(handle)) !== -1; },
+    add: function (handle) {
+      var list = read();
+      list.unshift(String(handle)); /* newest first */
+      return write(list);
+    },
+    remove: function (handle) {
+      var target = String(handle);
+      return write(read().filter(function (item) { return item !== target; }));
+    },
+    toggle: function (handle) {
+      var target = String(handle);
+      if (read().indexOf(target) !== -1) {
+        this.remove(target);
+        return false;
+      }
+      this.add(target);
+      return true;
+    },
+    clear: function () { return write([]); },
+    subscribe: function (fn) { if (typeof fn === 'function') listeners.push(fn); }
+  };
+})();
+
 (function () {
   function initFaq(root) {
     root.querySelectorAll('[data-veylique-faq-button]').forEach(function (button) {
@@ -2216,6 +2312,61 @@ window.VeyliqueCart = (function () {
      `.veylique-reveal-js` (visibility: hidden until the GSAP engine plays them)
      and that engine only scans the DOM present at page load, so injected
      content would otherwise stay invisible. */
+  /* Binds every heart on the page to the store and keeps the header count and
+     each button's pressed state in sync — including hearts that arrive later
+     via AJAX pagination or a section re-render. */
+  function initWishlistButtons(root) {
+    var store = window.VeyliqueWishlist;
+    if (!store) return;
+
+    function syncButton(button) {
+      var handle = button.dataset.productHandle;
+      if (!handle) return;
+
+      var saved = store.has(handle);
+      button.classList.toggle('is-wished', saved);
+      button.setAttribute('aria-pressed', saved ? 'true' : 'false');
+
+      var label = saved ? button.dataset.labelRemove : button.dataset.labelAdd;
+      if (label) button.setAttribute('aria-label', label);
+    }
+
+    function syncCount() {
+      var count = store.count();
+      document.querySelectorAll('[data-veylique-wish-count]').forEach(function (node) {
+        node.textContent = count;
+        node.hidden = count === 0;
+      });
+      document.querySelectorAll('[data-veylique-wish-link]').forEach(function (link) {
+        link.classList.toggle('has-items', count > 0);
+      });
+    }
+
+    function syncAll(scope) {
+      (scope || document).querySelectorAll('[data-veylique-wish]').forEach(syncButton);
+      syncCount();
+    }
+
+    syncAll(root);
+
+    /* One delegated listener for the whole document, bound once. */
+    if (document.documentElement.dataset.veyliqueWishReady === 'true') return;
+    document.documentElement.dataset.veyliqueWishReady = 'true';
+
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-veylique-wish]');
+      if (!button || !button.dataset.productHandle) return;
+
+      event.preventDefault();
+      store.toggle(button.dataset.productHandle);
+
+      button.classList.add('is-pulsing');
+      window.setTimeout(function () { button.classList.remove('is-pulsing'); }, 420);
+    });
+
+    store.subscribe(function () { syncAll(document); });
+  }
+
   function initAjaxPagination(root) {
     root.querySelectorAll('[data-veylique-ajax-list]').forEach(function (list) {
       if (list.dataset.veyliqueAjaxReady === 'true') return;
@@ -2760,6 +2911,7 @@ window.VeyliqueCart = (function () {
     initServiceCards(document);
     initServiceMethod(document);
     initBlogs(document);
+    initWishlistButtons(document);
     initAjaxPagination(document);
   }
 
@@ -2789,6 +2941,7 @@ window.VeyliqueCart = (function () {
     initServiceCards(event.target);
     initServiceMethod(event.target);
     initBlogs(event.target);
+    initWishlistButtons(event.target);
     initAjaxPagination(event.target);
   });
 })();
