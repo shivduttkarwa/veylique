@@ -459,10 +459,18 @@
     function initWishlistPage(root) {
       var section = (root || document).querySelector('[data-veylique-wishlist]');
       if (!section || section.dataset.ready === 'true') return;
-      section.dataset.ready = 'true';
 
       var store = window.VeyliqueWishlist;
-      if (!store) return;
+      if (!store) {
+        /* The store lives in veylique-theme.js, which is deferred, while this
+           section bundle is not — so on some loads we run first. Wait for the
+           deferred bundle rather than giving up, and do NOT mark the section
+           ready, or this page would never recover. */
+        window.addEventListener('load', function () { initWishlistPage(root); }, { once: true });
+        return;
+      }
+
+      section.dataset.ready = 'true';
 
       var grid = section.querySelector('[data-wishlist-grid]');
       var loading = section.querySelector('[data-wishlist-loading]');
@@ -556,12 +564,30 @@
             return product;
           })
           .catch(function () {
-            /* Product was deleted or unpublished — drop it so the list stays
-               truthful instead of showing a permanent gap. */
-            store.remove(handle);
+            /* Deleted or unpublished. Report it rather than pruning here:
+               removing from inside the catch re-enters render() through the
+               store subscription and can loop. */
             return null;
           });
       }
+
+      function paint(live) {
+        if (!live.length) {
+          showEmpty();
+          return;
+        }
+
+        if (loading) loading.hidden = true;
+        if (empty) empty.hidden = true;
+        if (grid) {
+          grid.innerHTML = live.map(cardMarkup).join('');
+          grid.hidden = false;
+        }
+        if (bar) bar.hidden = false;
+        if (summary) summary.textContent = summarise(live.length);
+      }
+
+      var rendering = false;
 
       function render() {
         var handles = store.all();
@@ -571,23 +597,37 @@
           return;
         }
 
-        Promise.all(handles.map(fetchProduct)).then(function (products) {
-          var live = products.filter(Boolean);
+        if (rendering) return; /* a pass is already in flight */
+        rendering = true;
 
-          if (!live.length) {
+        Promise.all(
+          handles.map(function (handle) {
+            return fetchProduct(handle).then(function (product) {
+              return { handle: handle, product: product };
+            });
+          })
+        )
+          .then(function (results) {
+            paint(
+              results
+                .map(function (result) { return result.product; })
+                .filter(Boolean)
+            );
+
+            /* Prune dead handles after painting. The guard above swallows the
+               re-entrant render()s these removals trigger, and the paint above
+               already reflects the surviving set. */
+            results.forEach(function (result) {
+              if (!result.product) store.remove(result.handle);
+            });
+          })
+          .catch(function () {
+            /* Never strand the shopper on a skeleton. */
             showEmpty();
-            return;
-          }
-
-          if (loading) loading.hidden = true;
-          if (empty) empty.hidden = true;
-          if (grid) {
-            grid.innerHTML = live.map(cardMarkup).join('');
-            grid.hidden = false;
-          }
-          if (bar) bar.hidden = false;
-          if (summary) summary.textContent = summarise(live.length);
-        });
+          })
+          .then(function () {
+            rendering = false;
+          });
       }
 
       section.addEventListener('click', function (event) {
