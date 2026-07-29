@@ -203,6 +203,7 @@
           "type": "tile",
           "settings": {
             "product": "tiered-cotton-maxi-dress",
+            "image": "shopify://shop_images/everyday-edit-01.webp",
             "fallback": "hero-2.webp",
             "title": "",
             "price": "",
