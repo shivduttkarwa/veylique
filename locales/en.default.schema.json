@@ -617,21 +617,6 @@
         },
         "show_search": {
           "label": "Show search"
-        },
-        "cta_header": {
-          "content": "Bottom call to action"
-        },
-        "cta_title": {
-          "label": "CTA title"
-        },
-        "cta_text": {
-          "label": "CTA text"
-        },
-        "cta_button_label": {
-          "label": "CTA button label"
-        },
-        "cta_button_link": {
-          "label": "CTA button link"
         }
       },
       "blocks": {
@@ -639,7 +624,7 @@
           "name": "Question",
           "settings": {
             "category": {
-              "label": "Category (tab)"
+              "label": "Category"
             },
             "question": {
               "label": "Question"

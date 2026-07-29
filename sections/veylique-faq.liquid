@@ -115,22 +115,6 @@
     </div>
   </div>
 
-  {% if section.settings.cta_title != blank %}
-    <div class="veylique-faqx-cta">
-      <div class="veylique-faqx-cta__inner veylique-reveal-js veylique-reveal--static-js">
-        <div class="veylique-faqx-cta__copy">
-          <h2 class="veylique-faqx-cta__title">{{ section.settings.cta_title | escape }}</h2>
-          <p class="veylique-faqx-cta__text">{{ section.settings.cta_text | escape }}</p>
-        </div>
-        {% if section.settings.cta_button_label != blank %}
-          <a href="{{ section.settings.cta_button_link | default: routes.root_url }}" class="veylique-faqx-cta__btn">
-            {{ section.settings.cta_button_label | escape }}
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </a>
-        {% endif %}
-      </div>
-    </div>
-  {% endif %}
 </section>
 
 {% stylesheet %}
@@ -467,69 +451,6 @@
     color: var(--mustard-muted);
   }
 
-  /* ── Closing CTA ────────────────────────────────────────────────── */
-
-  .veylique-faqx-cta {
-    margin-top: clamp(3rem, 7vw, 6rem);
-    padding: clamp(3rem, 6vw, 5rem) 0;
-    background: var(--mustard-text);
-    border-top: 0.1875rem solid var(--mustard-accent);
-  }
-
-  .veylique-faqx-cta__inner {
-    width: min(100% - 3rem, 76rem);
-    margin-inline: auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: clamp(1.5rem, 4vw, 3rem);
-  }
-
-  .veylique-faqx-cta__title {
-    margin: 0 0 0.5rem;
-    font-family: var(--mustard-font-heading);
-    font-size: clamp(1.75rem, 3.5vw, 2.75rem);
-    font-weight: 400;
-    line-height: 1.1;
-    letter-spacing: -0.03em;
-    text-wrap: balance;
-    color: #ffffff;
-  }
-
-  .veylique-faqx-cta__text {
-    margin: 0;
-    font-family: var(--mustard-font-body);
-    font-size: 0.9375rem;
-    line-height: 1.7;
-    color: rgba(255, 255, 255, 0.66);
-  }
-
-  .veylique-faqx-cta__btn {
-    flex: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.625rem;
-    padding: 0.9375rem 1.75rem;
-    border: 0.0625rem solid rgba(255, 255, 255, 0.32);
-    border-radius: 6.25rem;
-    font-family: var(--mustard-font-body);
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #ffffff;
-    text-decoration: none;
-    transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
-  }
-
-  .veylique-faqx-cta__btn svg { transition: transform 0.3s var(--mustard-ease); }
-
-  .veylique-faqx-cta__btn:hover {
-    background: var(--mustard-accent);
-    border-color: var(--mustard-accent);
-    color: var(--mustard-text);
-  }
-
-  .veylique-faqx-cta__btn:hover svg { transform: translateX(0.25rem); }
-
   /* ── Mobile: the rail becomes a scrolling filter strip ──────────── */
 
   @media (max-width: 899px) {
@@ -576,13 +497,11 @@
     }
 
     .veylique-faqx__row::before { left: calc(-1 * 0.625rem); }
-    .veylique-faqx-cta__inner { flex-direction: column; align-items: flex-start; }
   }
 
   @media (max-width: 600px) {
     .veylique-faqx { --faqx-num-col: 1.75rem; }
     .veylique-faqx__a-text { padding-left: 0; }
-    .veylique-faqx-cta__btn { width: 100%; justify-content: center; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -775,12 +694,7 @@
   "settings": [
     { "type": "text", "id": "title", "label": "t:sections.veylique-faq.settings.title.label", "default": "Frequently asked questions" },
     { "type": "text", "id": "tablist_label", "label": "t:sections.veylique-faq.settings.tablist_label.label", "default": "FAQ categories" },
-    { "type": "checkbox", "id": "show_search", "label": "t:sections.veylique-faq.settings.show_search.label", "default": true },
-    { "type": "header", "content": "t:sections.veylique-faq.settings.cta_header.content" },
-    { "type": "text", "id": "cta_title", "label": "t:sections.veylique-faq.settings.cta_title.label", "default": "Still have questions?" },
-    { "type": "text", "id": "cta_text", "label": "t:sections.veylique-faq.settings.cta_text.label", "default": "Our customer care team replies within one business day." },
-    { "type": "text", "id": "cta_button_label", "label": "t:sections.veylique-faq.settings.cta_button_label.label", "default": "Contact us" },
-    { "type": "url", "id": "cta_button_link", "label": "t:sections.veylique-faq.settings.cta_button_link.label" }
+    { "type": "checkbox", "id": "show_search", "label": "t:sections.veylique-faq.settings.show_search.label", "default": true }
   ],
   "blocks": [
     {

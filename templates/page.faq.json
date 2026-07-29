@@ -152,16 +152,27 @@
         "q14"
       ],
       "settings": {
-        "title": "Frequently asked questions",
-        "cta_title": "Still have questions?",
-        "cta_text": "Our customer care team replies within one business day.",
-        "cta_button_label": "Contact us",
-        "cta_button_link": "/pages/contact"
+        "title": "Frequently asked questions"
+      }
+    },
+    "cta": {
+      "type": "veylique-home-full-cta",
+      "settings": {
+        "aria_label": "Contact customer care",
+        "fallback": "hero-2.webp",
+        "mobile_fallback": "hero-2.webp",
+        "label": "Still Have Questions",
+        "heading": "We're here to help.",
+        "button_label": "Get In Touch",
+        "button_link": "/pages/contact",
+        "button2_label": "Shop All Products",
+        "button2_link": ""
       }
     }
   },
   "order": [
     "hero",
-    "faq"
+    "faq",
+    "cta"
   ]
 }
