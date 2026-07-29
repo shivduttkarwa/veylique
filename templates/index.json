@@ -81,6 +81,7 @@
       ],
       "settings": {
         "heading": "Veylique",
+        "title_tracking": 4,
         "category_label": "Featured categories",
         "button_label": "Shop collection",
         "button_link": "",
@@ -190,6 +191,7 @@
           "type": "tile",
           "settings": {
             "product": "mustard-wrap-midi-dress",
+            "image": "shopify://shop_images/everyday-edit-02.webp",
             "fallback": "hero-1.webp",
             "title": "",
             "price": "",
