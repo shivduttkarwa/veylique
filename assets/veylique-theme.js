@@ -838,10 +838,43 @@ window.VeyliqueWishlist = (function () {
     });
   }
 
+  /* Footer brand band: the texture image and the oversized wordmark drift in
+     opposite directions as the band crosses the viewport, so the picture reads
+     as sitting behind the type. Purely decorative — if GSAP is unavailable or
+     motion is reduced, both simply stay put. */
+  function initFooterParallax(footer) {
+    var brand = footer.querySelector('[data-veylique-footer-brand]');
+    if (!brand) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+
+    var media = brand.querySelector('[data-veylique-footer-brand-media]');
+    var text = brand.querySelector('[data-veylique-footer-brand-text]');
+    if (!media && !text) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    var tl = gsap.timeline({
+      defaults: { ease: 'none', duration: 1 },
+      scrollTrigger: {
+        trigger: brand,
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: true,
+        invalidateOnRefresh: true
+      }
+    });
+
+    if (media) tl.fromTo(media, { yPercent: -12 }, { yPercent: 12 }, 0);
+    if (text) tl.fromTo(text, { yPercent: 7 }, { yPercent: -7 }, 0);
+  }
+
   function initFooter(root) {
     root.querySelectorAll('[data-veylique-footer]').forEach(function (footer) {
       if (footer.dataset.veyliqueFooterReady === 'true') return;
       footer.dataset.veyliqueFooterReady = 'true';
+
+      initFooterParallax(footer);
 
       if (!('IntersectionObserver' in window)) {
         footer.classList.add('is-visible');

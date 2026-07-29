@@ -139,9 +139,17 @@
     </div>
   </div>
 
-  <div class="veylique-footer-brand" aria-hidden="true">
-    <div class="veylique-footer-brand-text">{{ section.settings.brand_text | default: shop.name | escape }}</div>
-    <div class="veylique-footer-brand-media">
+  <div class="veylique-footer-brand" data-veylique-footer-brand aria-hidden="true">
+    <div class="veylique-footer-brand-text">
+      {%- comment -%}
+        The entrance reveal transforms the parent, so the parallax gets its own
+        inner element to animate instead of fighting it for the transform.
+      {%- endcomment -%}
+      <span class="veylique-footer-brand-text-inner" data-veylique-footer-brand-text>
+        {{- section.settings.brand_text | default: shop.name | escape -}}
+      </span>
+    </div>
+    <div class="veylique-footer-brand-media" data-veylique-footer-brand-media>
       {% render 'veylique-responsive-image',
         image: section.settings.brand_image,
         fallback: 'footer.webp',
@@ -399,12 +407,20 @@
     white-space: nowrap;
   }
 
+  .veylique-footer-brand-text-inner {
+    display: block;
+    will-change: transform;
+  }
+
+  /* Overscanned top and bottom so the parallax drift never exposes an edge:
+     the box is 136% tall and travels at most ±12% of that. */
   .veylique-footer-brand-media {
     position: absolute;
-    inset: 0;
+    inset: -18% 0;
     z-index: 2;
     mix-blend-mode: multiply;
     pointer-events: none;
+    will-change: transform;
   }
 
   .veylique-footer[data-veylique-footer] .veylique-footer-col,
