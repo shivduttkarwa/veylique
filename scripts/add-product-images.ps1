@@ -48,7 +48,8 @@ $handles = @(
   "oversized-denim-jacket", "straight-leg-jeans", "ribbed-knit-sweater",
   "linen-shirt-shorts-co-ord", "satin-cami-trouser-set", "knit-lounge-co-ord",
   "poplin-oversized-shirt", "puff-sleeve-blouse", "ribbed-tank-top",
-  "woven-straw-tote", "strappy-block-heels", "gold-layered-necklace"
+  "woven-straw-tote", "strappy-block-heels", "gold-layered-necklace",
+  "graphite-leather-bomber", "cobalt-oversized-blazer"
 )
 $exts = @(".jpg", ".jpeg", ".png", ".webp")
 

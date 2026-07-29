@@ -103,7 +103,14 @@ $products = @(
   @{ title = "Ribbed Tank Top";             type = "Top";        price = "36.00";  sizes = $apparel;           tags = @("tops-shirts","new") },
   @{ title = "Woven Straw Tote";            type = "Bag";        price = "48.00";  sizes = @("One Size");      tags = @("accessories","bestseller") },
   @{ title = "Strappy Block Heels";         type = "Footwear";   price = "64.00";  sizes = @("6","7","8","9"); tags = @("accessories") },
-  @{ title = "Gold Layered Necklace";       type = "Jewellery";  price = "32.00";  sizes = @("One Size");      tags = @("accessories","new") }
+  @{ title = "Gold Layered Necklace";       type = "Jewellery";  price = "32.00";  sizes = @("One Size");      tags = @("accessories","new") },
+
+  # The Everyday Edit tiles on the home page. These two carry real photography
+  # and copy, so they set `desc` instead of falling back to the demo blurb.
+  @{ title = "Graphite Leather Bomber";     type = "Jacket";     price = "189.00"; sizes = $apparel;           tags = @("western-wear","new","bestseller")
+     desc = "A cropped bomber in supple graphite leather, cut with a relaxed shoulder and a boxy body. Ribbed collar, cuffs and hem keep the shape; the two-way zip and slash pockets keep it easy. Wear it over knitwear with tailored trousers." },
+  @{ title = "Cobalt Oversized Blazer";     type = "Blazer";     price = "145.00"; sizes = $apparel;           tags = @("western-wear","new","bestseller")
+     desc = "A longline blazer in fluid cobalt crepe, with peak lapels and a single-button close. The oversized cut drapes rather than structures, so it layers over a slip or a tee without bulk. A colour that does the work for you." }
 )
 
 function Get-Handle([string]$title) {
@@ -201,10 +208,14 @@ foreach ($p in $products) {
   $allTags = @($p.tags) + @("veylique-demo")
   $img = "https://picsum.photos/seed/veylique-$index/1000/1250"
 
+  # Products that ship real copy set `desc`; the rest get the demo placeholder.
+  $descriptionHtml = "<p>Demo product for design testing — $($p.type) in the Veylique collection.</p>"
+  if ($p.ContainsKey("desc")) { $descriptionHtml = "<p>$($p.desc)</p>" }
+
   $input = @{
     title          = $p.title
     handle         = $handle
-    descriptionHtml = "<p>Demo product for design testing — $($p.type) in the Veylique collection.</p>"
+    descriptionHtml = $descriptionHtml
     vendor         = "Veylique"
     productType    = $p.type
     status         = "ACTIVE"

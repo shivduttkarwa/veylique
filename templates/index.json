@@ -190,24 +190,24 @@
         "curated_1": {
           "type": "tile",
           "settings": {
-            "product": "knit-lounge-co-ord",
-            "image": "shopify://shop_images/everyday-edit-02.webp",
+            "product": "graphite-leather-bomber",
+            "image": "",
             "fallback": "hero-1.webp",
             "title": "",
             "price": "",
-            "description": "A fluid wrap dress in breathable viscose, cut for effortless everyday movement.",
+            "description": "Supple graphite leather, cropped and boxy, with ribbed trims that hold the shape.",
             "link": ""
           }
         },
         "curated_2": {
           "type": "tile",
           "settings": {
-            "product": "tiered-cotton-maxi-dress",
-            "image": "shopify://shop_images/everyday-edit-01.webp",
+            "product": "cobalt-oversized-blazer",
+            "image": "",
             "fallback": "",
             "title": "",
             "price": "",
-            "description": "A flowing tiered maxi in soft cotton, designed for warm-weather ease.",
+            "description": "Fluid cobalt crepe with peak lapels — an oversized cut that drapes instead of structures.",
             "link": ""
           }
         }
