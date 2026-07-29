@@ -3,9 +3,9 @@
     "hero": {
       "type": "veylique-page-hero",
       "settings": {
-        "kicker": "Help desk",
-        "heading": "Questions, answered",
-        "text": "Sizing, shipping, returns, care, orders, and everyday wardrobe questions.",
+        "kicker": "Help Centre",
+        "heading": "Frequently Asked Questions",
+        "text": "",
         "fallback": "hero-4.webp"
       }
     },

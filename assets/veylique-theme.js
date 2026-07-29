@@ -973,6 +973,68 @@ window.VeyliqueWishlist = (function () {
     });
   }
 
+  /* Shop-hero intro (ported from the static demo standard-hero reveal): the
+     eyebrow blur-fades in, the masked title lines slide up, and the description
+     rises in on page load. The text ships visibility:hidden with a CSS failsafe
+     so it can never stay hidden if GSAP is unavailable. */
+  function initShopHeroReveal(root) {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    root.querySelectorAll('[data-veylique-shop-hero]').forEach(function (hero) {
+      if (hero.dataset.veyliqueShopHeroReady === 'true') return;
+      hero.dataset.veyliqueShopHeroReady = 'true';
+
+      var eyebrow = hero.querySelector('.veylique-shop-hero-eyebrow');
+      var title = hero.querySelector('.veylique-shop-hero-title');
+      var desc = hero.querySelector('.veylique-shop-hero-desc');
+      var hasGsap = typeof gsap !== 'undefined';
+      var hasSplit = typeof SplitText !== 'undefined';
+
+      function show() {
+        [eyebrow, title, desc].forEach(function (el) {
+          if (el) el.style.visibility = 'visible';
+        });
+      }
+
+      if (!title || !hasGsap || reduce) {
+        show();
+        return;
+      }
+
+      var titleTargets;
+      if (hasSplit) {
+        var split = new SplitText(title, { type: 'lines', linesClass: 'veylique-si-line', aria: 'none' });
+        titleTargets = split.lines.length ? split.lines : [title];
+      } else {
+        titleTargets = [title];
+      }
+      titleTargets.forEach(function (line) {
+        if (line.parentNode.classList && line.parentNode.classList.contains('veylique-si-mask')) return;
+        var mask = document.createElement('div');
+        mask.className = 'veylique-si-mask';
+        line.parentNode.insertBefore(mask, line);
+        mask.appendChild(line);
+      });
+
+      show();
+
+      gsap.set(titleTargets, { yPercent: 110 });
+      if (eyebrow) gsap.set(eyebrow, { autoAlpha: 0, y: 8, filter: 'blur(5px)' });
+      if (desc) gsap.set(desc, { autoAlpha: 0, y: 18 });
+
+      var tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+      if (eyebrow) {
+        tl.to(eyebrow, { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: 0.85, ease: 'power2.out' }, 0);
+      }
+      var titleAt = eyebrow ? 0.18 : 0;
+      tl.to(titleTargets, { yPercent: 0, duration: 1.05, stagger: 0.12 }, titleAt);
+      if (desc) {
+        tl.to(desc, { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power2.out' }, '-=0.55');
+      }
+      hero.veyliqueHeroTimeline = tl;
+    });
+  }
+
   /* Batch reveal engine (ported from the static demo). Reveals .veylique-reveal-js
      elements on scroll with per-type animation — static (fade), fade (rise+fade),
      right/left (slide), text (SplitText line/char stagger), clip (clip-path wipe)
@@ -2898,6 +2960,7 @@ window.VeyliqueWishlist = (function () {
     initFooter(document);
     initCategoryCarousels(document);
     initSectionIntroReveal(document);
+    initShopHeroReveal(document);
     initReveals(document);
     initProductCards(document);
     initArrivals(document);
@@ -2928,6 +2991,7 @@ window.VeyliqueWishlist = (function () {
     initFooter(event.target);
     initCategoryCarousels(event.target);
     initSectionIntroReveal(event.target);
+    initShopHeroReveal(event.target);
     initReveals(event.target);
     initProductCards(event.target);
     initArrivals(event.target);

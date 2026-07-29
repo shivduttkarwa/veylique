@@ -75,8 +75,18 @@
       endif
       assign hero_fallback = section.settings.hero_fallback
     -%}
-    <div class="veylique-page veylique-sale veylique-collection__hero">
-      <div class="veylique-sale__media">
+    <noscript>
+      <style>
+        .veylique-shop-hero-eyebrow,
+        .veylique-shop-hero-title,
+        .veylique-shop-hero-desc {
+          visibility: visible !important;
+          animation: none !important;
+        }
+      </style>
+    </noscript>
+    <div class="veylique-page veylique-shop-hero veylique-collection__hero" data-veylique-shop-hero>
+      <div class="veylique-shop-hero-media">
         {% render 'veylique-responsive-image',
           image: hero_image,
           fallback: hero_fallback,
@@ -87,7 +97,8 @@
           height: 1600
         %}
       </div>
-      <div class="veylique-sale__content">
+      <div class="veylique-shop-hero-overlay"></div>
+      <div class="veylique-shop-hero-inner">
         {%- if section.settings.show_breadcrumb -%}
           <nav class="veylique-collection__breadcrumb" aria-label="breadcrumb">
             <a href="{{ routes.root_url }}">{{ 'general.breadcrumb.home' | t }}</a>
@@ -96,11 +107,11 @@
           </nav>
         {%- endif -%}
         {%- if section.settings.kicker != blank -%}
-          <p class="veylique-kicker">{{ section.settings.kicker | escape }}</p>
+          <p class="veylique-shop-hero-eyebrow">{{ section.settings.kicker | escape }}</p>
         {%- endif -%}
-        <h1 id="VeyliqueCollectionTitle-{{ section.id }}" class="veylique-title">{{ collection.title | escape }}</h1>
+        <h1 id="VeyliqueCollectionTitle-{{ section.id }}" class="veylique-shop-hero-title">{{ collection.title | escape }}</h1>
         {%- if section.settings.show_description and collection.description != blank -%}
-          <div class="veylique-collection__hero-text veylique-text">{{ collection.description }}</div>
+          <div class="veylique-collection__hero-text veylique-shop-hero-desc">{{ collection.description }}</div>
         {%- endif -%}
       </div>
     </div>
@@ -435,7 +446,7 @@
     .veylique-collection { --veylique-collection-header-h: 4.25rem; }
   }
 
-  /* Hero — reuses the shared .veylique-sale banner (same as page hero) */
+  /* Hero — reuses the shared .veylique-shop-hero banner (same as page hero) */
   .veylique-collection__hero .veylique-collection__breadcrumb {
     margin-bottom: 0.75rem;
     color: rgba(255, 255, 255, 0.78);
@@ -445,11 +456,6 @@
     text-decoration: none;
   }
   .veylique-collection__hero .veylique-collection__breadcrumb a:hover { color: #fff; }
-  .veylique-collection__hero-text {
-    margin-top: 1rem;
-    max-width: 42rem;
-    color: rgba(255, 255, 255, 0.78);
-  }
   .veylique-collection__hero-text > *:first-child { margin-top: 0; }
   .veylique-collection__hero-text > *:last-child { margin-bottom: 0; }
 
