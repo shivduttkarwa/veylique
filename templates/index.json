@@ -204,7 +204,7 @@
           "settings": {
             "product": "tiered-cotton-maxi-dress",
             "image": "shopify://shop_images/everyday-edit-01.webp",
-            "fallback": "hero-2.webp",
+            "fallback": "",
             "title": "",
             "price": "",
             "description": "A flowing tiered maxi in soft cotton, designed for warm-weather ease.",
