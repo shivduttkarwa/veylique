@@ -121,7 +121,7 @@
   .veylique-faqx {
     --faqx-num-col: 3rem;
     --faqx-gap: clamp(0.875rem, 2vw, 1.75rem);
-    background: var(--mustard-bg);
+    background: var(--mustard-surface);
     padding: clamp(2.5rem, 6vw, 5rem) 0 clamp(3.5rem, 7vw, 6rem);
   }
 
@@ -408,7 +408,9 @@
     font-family: var(--mustard-font-body);
     font-size: 0.9375rem;
     line-height: 1.85;
-    color: var(--mustard-muted);
+    /* Denser than --mustard-muted: answers are the content, and 56% ink reads
+       washed out now that the warm paper tint is gone. */
+    color: rgba(42, 35, 24, 0.74);
   }
 
   .veylique-faqx__a-text > p { margin: 0 0 0.85rem; }
