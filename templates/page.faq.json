@@ -6,7 +6,8 @@
         "kicker": "Help Centre",
         "heading": "Frequently Asked Questions",
         "text": "",
-        "fallback": "hero-4.webp"
+        "fallback": "hero-4.webp",
+        "title_size": "veylique-shop-hero-title--compact"
       }
     },
     "faq": {

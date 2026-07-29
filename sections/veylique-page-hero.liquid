@@ -30,7 +30,7 @@
     {% if section.settings.kicker != blank %}
       <p class="veylique-shop-hero-eyebrow">{{ section.settings.kicker | escape }}</p>
     {% endif %}
-    <h1 id="VeyliquePageHeroTitle-{{ section.id }}" class="veylique-shop-hero-title">{{ section.settings.heading }}</h1>
+    <h1 id="VeyliquePageHeroTitle-{{ section.id }}" class="veylique-shop-hero-title {{ section.settings.title_size }}">{{ section.settings.heading }}</h1>
     {% if section.settings.text != blank %}
       <p class="veylique-shop-hero-desc">{{ section.settings.text }}</p>
     {% endif %}
@@ -69,6 +69,23 @@
       "id": "text",
       "label": "t:sections.veylique-page-hero.settings.text.label",
       "default": "Modern clothing designed around comfort, confident silhouettes, and everyday polish."
+    },
+    {
+      "type": "select",
+      "id": "title_size",
+      "label": "t:sections.veylique-page-hero.settings.title_size.label",
+      "info": "t:sections.veylique-page-hero.settings.title_size.info",
+      "options": [
+        {
+          "value": "veylique-shop-hero-title--display",
+          "label": "t:sections.veylique-page-hero.settings.title_size.options.display"
+        },
+        {
+          "value": "veylique-shop-hero-title--compact",
+          "label": "t:sections.veylique-page-hero.settings.title_size.options.compact"
+        }
+      ],
+      "default": "veylique-shop-hero-title--display"
     }
   ],
   "presets": [

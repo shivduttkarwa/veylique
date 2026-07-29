@@ -728,7 +728,15 @@ body {
   letter-spacing: -0.04em;
   line-height: 0.9;
   text-transform: uppercase;
+  text-wrap: balance;
   color: #fff;
+}
+
+/* Long headings ("Frequently asked questions") overflow the 45rem content box
+   at the display size and — because critical.css sets overflow-wrap:break-word
+   on headings — split mid-word. The demo scales those pages down instead. */
+.veylique-shop-hero-title--compact {
+  font-size: clamp(2rem, 5vw, 4rem);
 }
 
 .veylique-shop-hero-desc {

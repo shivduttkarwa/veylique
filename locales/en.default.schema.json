@@ -1382,6 +1382,14 @@
         },
         "text": {
           "label": "Text"
+        },
+        "title_size": {
+          "label": "Title size",
+          "info": "Use compact for headings longer than about three words.",
+          "options": {
+            "display": "Display",
+            "compact": "Compact"
+          }
         }
       },
       "presets": {

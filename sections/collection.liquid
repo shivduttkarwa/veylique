@@ -74,6 +74,16 @@
         assign hero_image = section.settings.hero_image
       endif
       assign hero_fallback = section.settings.hero_fallback
+
+      comment
+        Collection names are merchant-created, so one section setting can't suit
+        them all. Long names overflow the hero at the display size and split
+        mid-word, so scale those down the way the FAQ hero does.
+      endcomment
+      assign hero_title_size = ''
+      if collection.title.size > 14
+        assign hero_title_size = 'veylique-shop-hero-title--compact'
+      endif
     -%}
     <noscript>
       <style>
@@ -109,7 +119,7 @@
         {%- if section.settings.kicker != blank -%}
           <p class="veylique-shop-hero-eyebrow">{{ section.settings.kicker | escape }}</p>
         {%- endif -%}
-        <h1 id="VeyliqueCollectionTitle-{{ section.id }}" class="veylique-shop-hero-title">{{ collection.title | escape }}</h1>
+        <h1 id="VeyliqueCollectionTitle-{{ section.id }}" class="veylique-shop-hero-title {{ hero_title_size }}">{{ collection.title | escape }}</h1>
         {%- if section.settings.show_description and collection.description != blank -%}
           <div class="veylique-collection__hero-text veylique-shop-hero-desc">{{ collection.description }}</div>
         {%- endif -%}

@@ -6,7 +6,8 @@
         "kicker": "Saved",
         "heading": "Your favourites",
         "text": "The pieces you loved, kept in one place. Saved on this device, ready whenever you are.",
-        "fallback": "veylique-fashion-hero-6-3840.webp"
+        "fallback": "veylique-fashion-hero-6-3840.webp",
+        "title_size": "veylique-shop-hero-title--compact"
       }
     },
     "wishlist": {
