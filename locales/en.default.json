@@ -145,6 +145,16 @@
     "result_article": "Journal",
     "pagination": "Search pagination"
   },
+  "faq": {
+    "index": "Help index",
+    "search_placeholder": "Search answers",
+    "search_label": "Search questions and answers",
+    "clear_search": "Clear search",
+    "all": "All",
+    "showing": "{{ count }} of {{ total }} answers",
+    "empty_title": "No answers match “{{ terms }}”",
+    "empty_text": "Try a different wording, or choose another category."
+  },
   "products": {
     "add_to_cart": "Add to cart",
     "view_cart": "View cart",

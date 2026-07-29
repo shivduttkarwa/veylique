@@ -613,7 +613,10 @@
           "label": "Accessible title"
         },
         "tablist_label": {
-          "label": "Tablist aria-label"
+          "label": "Category list aria-label"
+        },
+        "show_search": {
+          "label": "Show search"
         },
         "cta_header": {
           "content": "Bottom call to action"

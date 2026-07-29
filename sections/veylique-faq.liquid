@@ -1,5 +1,6 @@
 {% liquid
-  # Collect the distinct categories from the question blocks, in first-seen order.
+  # Distinct categories in first-seen order, so merchants control the rail order
+  # by reordering blocks in the theme editor.
   assign categories = ''
   for block in section.blocks
     assign cat = block.settings.category | default: 'General'
@@ -10,72 +11,122 @@
   assign category_list = categories | split: '|||'
 %}
 
-<section class="veylique-faq-page" data-veylique-faq-page aria-labelledby="VeyliqueFaqTitle-{{ section.id }}">
+<section class="veylique-faqx" data-veylique-faqx aria-labelledby="VeyliqueFaqTitle-{{ section.id }}">
   <h2 id="VeyliqueFaqTitle-{{ section.id }}" class="visually-hidden">{{ section.settings.title | escape }}</h2>
 
-  <div class="veylique-faq-body">
-    <div class="veylique-faq-body-inner">
-      <div class="veylique-faq-tabs veylique-reveal-js veylique-reveal--static-js" role="tablist" aria-label="{{ section.settings.tablist_label | escape }}">
-        {% for cat in category_list %}
-          {% assign key = cat | handleize %}
-          <button
-            type="button"
-            class="veylique-pill{% if forloop.first %} is-active{% endif %}"
-            role="tab"
-            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
-            tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
-            aria-controls="veylique-faq-panel-{{ key }}-{{ section.id }}"
-            id="veylique-faq-tab-{{ key }}-{{ section.id }}"
-            data-faq-tab="{{ key }}"
-          >{{ cat }}</button>
-        {% endfor %}
-      </div>
+  <div class="veylique-faqx__inner">
+    <aside class="veylique-faqx__rail">
+      <p class="veylique-faqx__rail-label">{{ 'faq.index' | t }}</p>
 
-      {% for cat in category_list %}
-        {% assign key = cat | handleize %}
-        <div
-          class="veylique-faq-panel{% if forloop.first %} is-active{% endif %}"
-          id="veylique-faq-panel-{{ key }}-{{ section.id }}"
-          role="tabpanel"
-          aria-labelledby="veylique-faq-tab-{{ key }}-{{ section.id }}"
-          {% unless forloop.first %}hidden{% endunless %}
-        >
-          {% for block in section.blocks %}
-            {% assign block_cat = block.settings.category | default: 'General' %}
-            {% if block_cat == cat %}
-              {% assign item_id = key | append: '-' | append: forloop.index0 | append: '-' | append: section.id %}
-              <div class="veylique-faq-item" data-faq-item {{ block.shopify_attributes }}>
-                <button
-                  type="button"
-                  class="veylique-faq-question"
-                  aria-expanded="false"
-                  aria-controls="faq-{{ item_id }}"
-                  id="faq-{{ item_id }}-btn"
-                >
-                  <span>{{ block.settings.question | escape }}</span>
-                  <svg class="veylique-faq-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-                <div class="veylique-faq-answer" id="faq-{{ item_id }}" role="region" aria-labelledby="faq-{{ item_id }}-btn" hidden>
-                  <div class="veylique-faq-answer-inner">{{ block.settings.answer }}</div>
+      {% if section.settings.show_search %}
+        <div class="veylique-faqx__search">
+          <svg class="veylique-faqx__search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input
+            type="search"
+            class="veylique-faqx__search-input"
+            placeholder="{{ 'faq.search_placeholder' | t }}"
+            aria-label="{{ 'faq.search_label' | t }}"
+            autocomplete="off"
+            data-faqx-search
+          >
+          <button type="button" class="veylique-faqx__search-clear" aria-label="{{ 'faq.clear_search' | t }}" data-faqx-clear hidden>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      {% endif %}
+
+      <nav class="veylique-faqx__cats" aria-label="{{ section.settings.tablist_label | escape }}">
+        <button type="button" class="veylique-faqx__cat" aria-pressed="true" data-faqx-cat-btn="all">
+          <span class="veylique-faqx__cat-name">{{ 'faq.all' | t }}</span>
+          <span class="veylique-faqx__cat-count">{{ section.blocks.size }}</span>
+        </button>
+        {% for cat in category_list %}
+          {% liquid
+            assign key = cat | handleize
+            assign cat_count = 0
+            for block in section.blocks
+              assign block_cat = block.settings.category | default: 'General'
+              if block_cat == cat
+                assign cat_count = cat_count | plus: 1
+              endif
+            endfor
+          %}
+          <button type="button" class="veylique-faqx__cat" aria-pressed="false" data-faqx-cat-btn="{{ key }}">
+            <span class="veylique-faqx__cat-name">{{ cat | escape }}</span>
+            <span class="veylique-faqx__cat-count">{{ cat_count }}</span>
+          </button>
+        {% endfor %}
+      </nav>
+    </aside>
+
+    <div class="veylique-faqx__main">
+      <p
+        class="veylique-faqx__count"
+        aria-live="polite"
+        data-faqx-count
+        data-faqx-template="{{ 'faq.showing' | t: count: '__c__', total: '__t__' }}"
+      >{{ 'faq.showing' | t: count: section.blocks.size, total: section.blocks.size }}</p>
+
+      <ol class="veylique-faqx__list">
+        {% for block in section.blocks %}
+          {% liquid
+            assign key = block.settings.category | default: 'General' | handleize
+            assign item_id = section.id | append: '-' | append: forloop.index0
+            capture row_text
+              echo block.settings.question
+              echo ' '
+              echo block.settings.answer | strip_html
+            endcapture
+          %}
+          <li
+            class="veylique-faqx__row"
+            data-faqx-row
+            data-faqx-key="{{ key }}"
+            data-faqx-text="{{ row_text | downcase | strip_newlines | escape }}"
+            {{ block.shopify_attributes }}
+          >
+            <details class="veylique-faqx__d" id="faq-{{ item_id }}">
+              <summary class="veylique-faqx__q">
+                <span class="veylique-faqx__num" aria-hidden="true"></span>
+                <span class="veylique-faqx__qtext">{{ block.settings.question | escape }}</span>
+                <span class="veylique-faqx__sign" aria-hidden="true"></span>
+              </summary>
+              <div class="veylique-faqx__a" data-faqx-panel>
+                <div class="veylique-faqx__a-clip">
+                  <div class="veylique-faqx__a-text">
+                    {{ block.settings.answer }}
+                    <span class="veylique-faqx__a-tag">{{ block.settings.category | default: 'General' | escape }}</span>
+                  </div>
                 </div>
               </div>
-            {% endif %}
-          {% endfor %}
-        </div>
-      {% endfor %}
+            </details>
+          </li>
+        {% endfor %}
+      </ol>
+
+      <div class="veylique-faqx__empty" data-faqx-empty hidden>
+        <p
+          class="veylique-faqx__empty-title"
+          data-faqx-empty-title
+          data-faqx-template="{{ 'faq.empty_title' | t: terms: '__q__' }}"
+        >{{ 'faq.empty_title' | t: terms: '' }}</p>
+        <p class="veylique-faqx__empty-text">{{ 'faq.empty_text' | t }}</p>
+      </div>
     </div>
   </div>
 
   {% if section.settings.cta_title != blank %}
-    <div class="veylique-faq-cta">
-      <div class="veylique-faq-cta-inner veylique-reveal-js veylique-reveal--static-js">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        <div>
-          <h2 class="veylique-faq-cta-title">{{ section.settings.cta_title | escape }}</h2>
-          <p class="veylique-faq-cta-text">{{ section.settings.cta_text | escape }}</p>
+    <div class="veylique-faqx-cta">
+      <div class="veylique-faqx-cta__inner veylique-reveal-js veylique-reveal--static-js">
+        <div class="veylique-faqx-cta__copy">
+          <h2 class="veylique-faqx-cta__title">{{ section.settings.cta_title | escape }}</h2>
+          <p class="veylique-faqx-cta__text">{{ section.settings.cta_text | escape }}</p>
         </div>
         {% if section.settings.cta_button_label != blank %}
-          <a href="{{ section.settings.cta_button_link | default: routes.root_url }}" class="veylique-btn btn-black">{{ section.settings.cta_button_label | escape }}</a>
+          <a href="{{ section.settings.cta_button_link | default: routes.root_url }}" class="veylique-faqx-cta__btn">
+            {{ section.settings.cta_button_label | escape }}
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
         {% endif %}
       </div>
     </div>
@@ -83,151 +134,639 @@
 </section>
 
 {% stylesheet %}
-  /* .veylique-pill now lives in assets/veylique-theme.css — it is shared by the
-     FAQ tabs, the blog topic filter and the article tag list. */
-
-  .veylique-faq-body {
-    padding: 3.5rem 0 5rem;
+  .veylique-faqx {
+    --faqx-num-col: 3rem;
+    --faqx-gap: clamp(0.875rem, 2vw, 1.75rem);
+    background: var(--mustard-bg);
+    padding: clamp(2.5rem, 6vw, 5rem) 0 clamp(3.5rem, 7vw, 6rem);
   }
 
-  .veylique-faq-body-inner {
-    width: min(100% - 3rem, 51.25rem);
+  .veylique-faqx__inner {
+    width: min(100% - 3rem, 76rem);
     margin-inline: auto;
+    display: grid;
+    grid-template-columns: minmax(0, 17rem) minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: start;
   }
 
-  .veylique-faq-tabs {
+  /* ── Rail ───────────────────────────────────────────────────────── */
+
+  .veylique-faqx__rail {
+    position: sticky;
+    /* Clears the fixed site header. */
+    top: 6.5rem;
+  }
+
+  .veylique-faqx__rail-label {
+    margin: 0 0 1.25rem;
+    font-family: var(--mustard-font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mustard-muted);
+  }
+
+  .veylique-faqx__search {
+    position: relative;
     display: flex;
-    gap: 0.5rem;
-    margin-bottom: 2.5rem;
-    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 2rem;
+    border-bottom: 0.0625rem solid var(--mustard-border);
+    transition: border-color 0.25s ease;
   }
 
-  .veylique-faq-panel {
-    display: none;
+  .veylique-faqx__search:focus-within {
+    border-bottom-color: var(--mustard-text);
   }
 
-  .veylique-faq-panel.is-active {
-    display: block;
+  .veylique-faqx__search-icon {
+    flex: none;
+    color: var(--mustard-muted);
+    transition: color 0.25s ease;
   }
 
-  .veylique-faq-item {
+  .veylique-faqx__search:focus-within .veylique-faqx__search-icon {
+    color: var(--mustard-accent-dark);
+  }
+
+  .veylique-faqx__search-input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.75rem 0.5rem;
+    border: 0;
+    background: transparent;
+    font-family: var(--mustard-font-body);
+    font-size: 0.9375rem;
+    color: var(--mustard-text);
+  }
+
+  .veylique-faqx__search-input::placeholder { color: var(--mustard-muted); }
+  .veylique-faqx__search-input:focus { outline: none; }
+  .veylique-faqx__search-input::-webkit-search-cancel-button { display: none; }
+
+  .veylique-faqx__search-clear {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(42, 35, 24, 0.08);
+    color: var(--mustard-text);
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .veylique-faqx__search-clear:hover { background: rgba(42, 35, 24, 0.16); }
+  .veylique-faqx__search-clear[hidden] { display: none; }
+
+  .veylique-faqx__cats {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .veylique-faqx__cat {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.8125rem 0;
+    border: 0;
+    border-bottom: 0.0625rem solid var(--mustard-border);
+    background: transparent;
+    font-family: var(--mustard-font-body);
+    font-size: 0.9375rem;
+    text-align: left;
+    color: var(--mustard-muted);
+    cursor: pointer;
+    transition: color 0.22s ease, padding-left 0.28s var(--mustard-ease);
+  }
+
+  /* Accent marker for the active category, drawn outside the text flow. */
+  .veylique-faqx__cat::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 0.125rem;
+    height: 0;
+    background: var(--mustard-accent);
+    transform: translateY(-50%);
+    transition: height 0.28s var(--mustard-ease);
+  }
+
+  .veylique-faqx__cat:hover { color: var(--mustard-text); }
+
+  .veylique-faqx__cat[aria-pressed='true'] {
+    color: var(--mustard-text);
+    padding-left: 0.875rem;
+  }
+
+  .veylique-faqx__cat[aria-pressed='true']::before { height: 1.125rem; }
+
+  .veylique-faqx__cat-count {
+    flex: none;
+    font-family: var(--mustard-font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    color: var(--mustard-muted);
+  }
+
+  .veylique-faqx__cat:focus-visible {
+    outline: 0.125rem solid var(--mustard-accent);
+    outline-offset: 0.25rem;
+  }
+
+  /* ── Question list ──────────────────────────────────────────────── */
+
+  .veylique-faqx__count {
+    margin: 0 0 1.25rem;
+    font-family: var(--mustard-font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mustard-muted);
+  }
+
+  .veylique-faqx__list {
+    counter-reset: faqx;
+    list-style: none;
+    margin: 0;
+    padding: 0;
     border-bottom: 0.0625rem solid var(--mustard-border);
   }
 
-  .veylique-faq-item:first-child {
+  .veylique-faqx__row {
+    position: relative;
+    counter-increment: faqx;
     border-top: 0.0625rem solid var(--mustard-border);
   }
 
-  .veylique-faq-question {
+  .veylique-faqx__row[hidden] { display: none; }
+
+  /* Accent spine that grows down the open row. */
+  .veylique-faqx__row::before {
+    content: '';
+    position: absolute;
+    left: calc(-1 * clamp(0.75rem, 1.6vw, 1.25rem));
+    top: 0;
+    bottom: 0;
+    width: 0.125rem;
+    background: var(--mustard-accent);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.42s var(--mustard-ease);
+  }
+
+  .veylique-faqx__row.is-open::before { transform: scaleY(1); }
+
+  .veylique-faqx__q {
+    display: grid;
+    grid-template-columns: var(--faqx-num-col) minmax(0, 1fr) auto;
+    gap: var(--faqx-gap);
+    align-items: start;
+    padding: clamp(1.125rem, 2.2vw, 1.625rem) 0;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .veylique-faqx__q::-webkit-details-marker { display: none; }
+  .veylique-faqx__q::marker { content: ''; }
+
+  .veylique-faqx__q:focus-visible {
+    outline: 0.125rem solid var(--mustard-accent);
+    outline-offset: 0.25rem;
+  }
+
+  .veylique-faqx__num {
+    padding-top: 0.375rem;
+    font-family: var(--mustard-font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    color: var(--mustard-muted);
+    transition: color 0.25s ease;
+  }
+
+  .veylique-faqx__num::before { content: counter(faqx, decimal-leading-zero); }
+
+  .veylique-faqx__qtext {
+    font-family: var(--mustard-font-heading);
+    font-size: clamp(1.0625rem, 1.55vw, 1.4375rem);
+    font-weight: 400;
+    line-height: 1.28;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    color: var(--mustard-text);
+    transition: color 0.25s ease;
+  }
+
+  .veylique-faqx__q:hover .veylique-faqx__qtext { color: var(--mustard-accent-dark); }
+  .veylique-faqx__q:hover .veylique-faqx__num { color: var(--mustard-accent); }
+
+  .veylique-faqx__d.is-open .veylique-faqx__num { color: var(--mustard-accent); }
+
+  /* Plus that collapses into a minus when the row opens. */
+  .veylique-faqx__sign {
+    position: relative;
+    width: 1rem;
+    height: 1rem;
+    margin-top: 0.4375rem;
+  }
+
+  .veylique-faqx__sign::before,
+  .veylique-faqx__sign::after {
+    content: '';
+    position: absolute;
+    background: var(--mustard-text);
+    transition: transform 0.38s var(--mustard-ease), background 0.25s ease;
+  }
+
+  .veylique-faqx__sign::before {
+    top: 50%;
+    left: 0;
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.25rem;
-    padding: 1.375rem 0;
-    background: transparent;
-    border: none;
-    text-align: left;
+    height: 0.0625rem;
+    transform: translateY(-50%);
+  }
+
+  .veylique-faqx__sign::after {
+    left: 50%;
+    top: 0;
+    width: 0.0625rem;
+    height: 100%;
+    transform: translateX(-50%);
+  }
+
+  .veylique-faqx__d.is-open .veylique-faqx__sign::after { transform: translateX(-50%) scaleY(0); }
+  .veylique-faqx__d.is-open .veylique-faqx__sign::before { background: var(--mustard-accent); }
+
+  /* Height animation via grid-template-rows, so no JS measurement is needed. */
+  .veylique-faqx__a {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.42s var(--mustard-ease);
+  }
+
+  .veylique-faqx__a-clip { overflow: hidden; }
+
+  /* Without JS the native details toggle drives the open state instead. */
+  .veylique-faqx:not(.is-enhanced) .veylique-faqx__d[open] .veylique-faqx__a { grid-template-rows: 1fr; }
+  .veylique-faqx.is-enhanced .veylique-faqx__d.is-open .veylique-faqx__a { grid-template-rows: 1fr; }
+
+  .veylique-faqx__a-text {
+    padding: 0 0 1.75rem calc(var(--faqx-num-col) + var(--faqx-gap));
+    max-width: 44rem;
     font-family: var(--mustard-font-body);
     font-size: 0.9375rem;
-    font-weight: 600;
-    color: var(--mustard-text);
-    cursor: pointer;
-    transition: color 0.18s;
-  }
-
-  .veylique-faq-question:hover {
-    color: var(--mustard-accent-dark);
-  }
-
-  .veylique-faq-icon {
-    flex-shrink: 0;
-    color: var(--mustard-muted);
-    transition: transform 0.25s ease, color 0.18s;
-  }
-
-  .veylique-faq-item.is-open .veylique-faq-icon {
-    transform: rotate(180deg);
-    color: var(--mustard-accent-dark);
-  }
-
-  .veylique-faq-answer {
-    height: 0;
-    overflow: hidden;
-    opacity: 0;
-    transition: height 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
-  }
-
-  .veylique-faq-item.is-open .veylique-faq-answer {
-    opacity: 1;
-  }
-
-  .veylique-faq-answer-inner {
-    padding: 0 0 1.5rem;
-    font-family: var(--mustard-font-body);
-    font-size: 0.875rem;
-    line-height: 1.8;
+    line-height: 1.85;
     color: var(--mustard-muted);
   }
 
-  .veylique-faq-answer-inner p {
-    margin: 0;
+  .veylique-faqx__a-text > p { margin: 0 0 0.85rem; }
+  .veylique-faqx__a-text > p:last-of-type { margin-bottom: 0; }
+  .veylique-faqx__a-text a { color: var(--mustard-accent-dark); }
+
+  .veylique-faqx__a-tag {
+    display: inline-block;
+    margin-top: 1.125rem;
+    padding: 0.25rem 0.625rem;
+    border: 0.0625rem solid var(--mustard-border);
+    border-radius: 6.25rem;
+    font-family: var(--mustard-font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mustard-muted);
   }
 
-  .veylique-faq-cta {
-    background: #ffffff;
-    border-top: 0.0625rem solid var(--mustard-border);
-    padding: 3.5rem 0;
+  .veylique-faqx__empty {
+    padding: clamp(2.5rem, 6vw, 4rem) 0;
+    text-align: center;
   }
 
-  .veylique-faq-cta-inner {
-    width: min(100% - 3rem, var(--mustard-container));
-    margin-inline: auto;
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
+  .veylique-faqx__empty[hidden] { display: none; }
 
-  .veylique-faq-cta-inner > svg {
-    color: var(--mustard-accent-dark);
-    flex-shrink: 0;
-  }
-
-  .veylique-faq-cta-inner > div {
-    flex: 1;
-  }
-
-  .veylique-faq-cta-title {
-    margin: 0 0 0.25rem;
+  .veylique-faqx__empty-title {
+    margin: 0 0 0.5rem;
     font-family: var(--mustard-font-heading);
-    font-size: 1.375rem;
+    font-size: clamp(1.25rem, 2.5vw, 1.75rem);
     font-weight: 400;
     letter-spacing: -0.02em;
     color: var(--mustard-text);
   }
 
-  .veylique-faq-cta-text {
+  .veylique-faqx__empty-text {
     margin: 0;
     font-family: var(--mustard-font-body);
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     color: var(--mustard-muted);
   }
 
-  .veylique-faq-cta-inner .veylique-btn {
-    flex-shrink: 0;
+  /* ── Closing CTA ────────────────────────────────────────────────── */
+
+  .veylique-faqx-cta {
+    margin-top: clamp(3rem, 7vw, 6rem);
+    padding: clamp(3rem, 6vw, 5rem) 0;
+    background: var(--mustard-text);
+    border-top: 0.1875rem solid var(--mustard-accent);
   }
 
-  @media (max-width: 768px) {
-    .veylique-faq-cta-inner {
-      flex-direction: column;
-      text-align: center;
+  .veylique-faqx-cta__inner {
+    width: min(100% - 3rem, 76rem);
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .veylique-faqx-cta__title {
+    margin: 0 0 0.5rem;
+    font-family: var(--mustard-font-heading);
+    font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+    color: #ffffff;
+  }
+
+  .veylique-faqx-cta__text {
+    margin: 0;
+    font-family: var(--mustard-font-body);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.66);
+  }
+
+  .veylique-faqx-cta__btn {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.9375rem 1.75rem;
+    border: 0.0625rem solid rgba(255, 255, 255, 0.32);
+    border-radius: 6.25rem;
+    font-family: var(--mustard-font-body);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #ffffff;
+    text-decoration: none;
+    transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  }
+
+  .veylique-faqx-cta__btn svg { transition: transform 0.3s var(--mustard-ease); }
+
+  .veylique-faqx-cta__btn:hover {
+    background: var(--mustard-accent);
+    border-color: var(--mustard-accent);
+    color: var(--mustard-text);
+  }
+
+  .veylique-faqx-cta__btn:hover svg { transform: translateX(0.25rem); }
+
+  /* ── Mobile: the rail becomes a scrolling filter strip ──────────── */
+
+  @media (max-width: 899px) {
+    .veylique-faqx__inner { grid-template-columns: minmax(0, 1fr); }
+
+    .veylique-faqx__rail {
+      position: static;
+      padding-bottom: 0.5rem;
     }
 
-    .veylique-faq-cta-inner > svg {
-      display: none;
+    .veylique-faqx__rail-label { display: none; }
+    .veylique-faqx__search { margin-bottom: 1.25rem; }
+
+    .veylique-faqx__cats {
+      flex-direction: row;
+      gap: 0.5rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+      /* Matches the 1.5rem container gutter so the strip bleeds edge to edge. */
+      margin-inline: -1.5rem;
+      padding-inline: 1.5rem;
+    }
+
+    .veylique-faqx__cats::-webkit-scrollbar { display: none; }
+
+    .veylique-faqx__cat {
+      flex: none;
+      width: auto;
+      padding: 0.5rem 1.125rem;
+      border: 0.0625rem solid var(--mustard-border);
+      border-radius: 6.25rem;
+      font-size: 0.8125rem;
+      white-space: nowrap;
+    }
+
+    .veylique-faqx__cat::before { display: none; }
+    .veylique-faqx__cat-count { display: none; }
+
+    .veylique-faqx__cat[aria-pressed='true'] {
+      padding-left: 1.125rem;
+      background: var(--mustard-text);
+      border-color: var(--mustard-text);
+      color: #ffffff;
+    }
+
+    .veylique-faqx__row::before { left: calc(-1 * 0.625rem); }
+    .veylique-faqx-cta__inner { flex-direction: column; align-items: flex-start; }
+  }
+
+  @media (max-width: 600px) {
+    .veylique-faqx { --faqx-num-col: 1.75rem; }
+    .veylique-faqx__a-text { padding-left: 0; }
+    .veylique-faqx-cta__btn { width: 100%; justify-content: center; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .veylique-faqx__a,
+    .veylique-faqx__row::before,
+    .veylique-faqx__sign::before,
+    .veylique-faqx__sign::after,
+    .veylique-faqx__cat,
+    .veylique-faqx__cat::before {
+      transition: none;
     }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    function init(root) {
+      root.querySelectorAll('[data-veylique-faqx]').forEach(function (section) {
+        if (section.dataset.faqxReady === 'true') return;
+        section.dataset.faqxReady = 'true';
+
+        var rows = Array.prototype.slice.call(section.querySelectorAll('[data-faqx-row]'));
+        if (!rows.length) return;
+
+        var cats = Array.prototype.slice.call(section.querySelectorAll('[data-faqx-cat-btn]'));
+        var input = section.querySelector('[data-faqx-search]');
+        var clear = section.querySelector('[data-faqx-clear]');
+        var countEl = section.querySelector('[data-faqx-count]');
+        var empty = section.querySelector('[data-faqx-empty]');
+        var emptyTitle = section.querySelector('[data-faqx-empty-title]');
+        var activeCat = 'all';
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        /* Taking over the toggle lets the panel animate; without JS the class
+           is absent and native details open/close still works. */
+        section.classList.add('is-enhanced');
+
+        function closeRow(details, instant) {
+          var row = details.parentElement;
+          var panel = details.querySelector('[data-faqx-panel]');
+          details.classList.remove('is-open');
+          if (row) row.classList.remove('is-open');
+
+          if (instant || reduce || !panel) {
+            details.open = false;
+            return;
+          }
+
+          var settled = false;
+          function finish() {
+            if (settled) return;
+            settled = true;
+            panel.removeEventListener('transitionend', onEnd);
+            if (!details.classList.contains('is-open')) details.open = false;
+          }
+          function onEnd(event) {
+            if (event.target !== panel) return;
+            finish();
+          }
+          panel.addEventListener('transitionend', onEnd);
+          window.setTimeout(finish, 520);
+        }
+
+        function openRow(details) {
+          var row = details.parentElement;
+          var panel = details.querySelector('[data-faqx-panel]');
+          details.open = true;
+          /* Force a frame at 0fr so the grow actually transitions. */
+          if (panel) panel.getBoundingClientRect();
+          details.classList.add('is-open');
+          if (row) row.classList.add('is-open');
+        }
+
+        rows.forEach(function (row) {
+          var details = row.querySelector('details');
+          var summary = details.querySelector('summary');
+
+          summary.addEventListener('click', function (event) {
+            event.preventDefault();
+            if (details.classList.contains('is-open')) {
+              closeRow(details);
+              return;
+            }
+            rows.forEach(function (other) {
+              var otherDetails = other.querySelector('details');
+              if (otherDetails !== details && otherDetails.classList.contains('is-open')) {
+                closeRow(otherDetails);
+              }
+            });
+            openRow(details);
+          });
+        });
+
+        function fill(template, values) {
+          var out = template;
+          Object.keys(values).forEach(function (token) {
+            out = out.split(token).join(values[token]);
+          });
+          return out;
+        }
+
+        function apply() {
+          var query = '';
+          if (input) query = input.value.trim().toLowerCase();
+          var shown = 0;
+
+          rows.forEach(function (row) {
+            var matchesCat = activeCat === 'all' || row.dataset.faqxKey === activeCat;
+            var matchesQuery = !query || row.dataset.faqxText.indexOf(query) !== -1;
+            var visible = matchesCat && matchesQuery;
+
+            row.hidden = !visible;
+            if (visible) {
+              shown++;
+              return;
+            }
+            var details = row.querySelector('details');
+            if (details.classList.contains('is-open')) closeRow(details, true);
+          });
+
+          if (countEl) {
+            countEl.textContent = fill(countEl.dataset.faqxTemplate, {
+              __c__: shown,
+              __t__: rows.length
+            });
+          }
+          if (empty) empty.hidden = shown !== 0;
+          if (emptyTitle && shown === 0) {
+            emptyTitle.textContent = fill(emptyTitle.dataset.faqxTemplate, { __q__: query });
+          }
+          if (clear) clear.hidden = !query;
+        }
+
+        cats.forEach(function (button) {
+          button.addEventListener('click', function () {
+            activeCat = button.dataset.faqxCatBtn;
+            cats.forEach(function (other) {
+              other.setAttribute('aria-pressed', other === button ? 'true' : 'false');
+            });
+            apply();
+          });
+        });
+
+        if (input) {
+          input.addEventListener('input', function () {
+            /* A query can only match rows the category filter is hiding, so
+               widen back to All the moment someone starts typing. */
+            if (input.value.trim() && activeCat !== 'all') {
+              activeCat = 'all';
+              cats.forEach(function (other) {
+                other.setAttribute('aria-pressed', other.dataset.faqxCatBtn === 'all' ? 'true' : 'false');
+              });
+            }
+            apply();
+          });
+
+          input.addEventListener('keydown', function (event) {
+            if (event.key !== 'Escape' || !input.value) return;
+            input.value = '';
+            apply();
+          });
+        }
+
+        if (clear) {
+          clear.addEventListener('click', function () {
+            input.value = '';
+            apply();
+            input.focus();
+          });
+        }
+
+        apply();
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function () { init(document); });
+    } else {
+      init(document);
+    }
+
+    document.addEventListener('shopify:section:load', function (event) { init(event.target); });
+  })();
+{% endjavascript %}
 
 {% schema %}
 {
@@ -236,6 +775,7 @@
   "settings": [
     { "type": "text", "id": "title", "label": "t:sections.veylique-faq.settings.title.label", "default": "Frequently asked questions" },
     { "type": "text", "id": "tablist_label", "label": "t:sections.veylique-faq.settings.tablist_label.label", "default": "FAQ categories" },
+    { "type": "checkbox", "id": "show_search", "label": "t:sections.veylique-faq.settings.show_search.label", "default": true },
     { "type": "header", "content": "t:sections.veylique-faq.settings.cta_header.content" },
     { "type": "text", "id": "cta_title", "label": "t:sections.veylique-faq.settings.cta_title.label", "default": "Still have questions?" },
     { "type": "text", "id": "cta_text", "label": "t:sections.veylique-faq.settings.cta_text.label", "default": "Our customer care team replies within one business day." },
