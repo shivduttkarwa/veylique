@@ -27,6 +27,12 @@ assets/inter*
 assets/demo-vid.mp4
 assets/footer-video.mp4
 
+# Source product photography. These are uploaded to Shopify Files by
+# scripts/seed-catalogue.ps1 and served from the CDN as product media — the
+# theme never references them. They must stay out of the deploy: `assets/` is
+# a flat directory in a Shopify theme and a subfolder here breaks the sync.
+assets/latest-product-images/
+
 # IMPORTANT: gsap / ScrollTrigger / SplitText / swiper JS and the clash-display
 # fonts ARE runtime dependencies of the theme (animations, sliders, headings)
 # and MUST stay committed so the Shopify GitHub integration deploys them.

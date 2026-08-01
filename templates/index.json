@@ -93,61 +93,61 @@
     "categories": {
       "type": "veylique-category-carousel",
       "blocks": {
+        "category_outerwear": {
+          "type": "category",
+          "settings": {
+            "collection": "outerwear",
+            "heading": "Outerwear",
+            "link": "",
+            "fallback": "hero-1.webp",
+            "hover_fallback": "hero-2.webp"
+          }
+        },
         "category_dresses": {
           "type": "category",
           "settings": {
             "collection": "dresses",
             "heading": "Dresses",
             "link": "",
-            "fallback": "hero-1.webp",
-            "hover_fallback": "hero-2.webp"
-          }
-        },
-        "category_ethnic": {
-          "type": "category",
-          "settings": {
-            "collection": "ethnic-wear",
-            "heading": "Ethnic Wear",
-            "link": "",
             "fallback": "hero-2.webp",
             "hover_fallback": "hero-3.webp"
           }
         },
-        "category_western": {
+        "category_tailoring": {
           "type": "category",
           "settings": {
-            "collection": "western-wear",
-            "heading": "Western Wear",
+            "collection": "tailoring",
+            "heading": "Tailoring",
             "link": "",
             "fallback": "hero-3.webp",
             "hover_fallback": "hero-4.webp"
           }
         },
-        "category_coord": {
+        "category_knitwear": {
           "type": "category",
           "settings": {
-            "collection": "co-ord-sets",
-            "heading": "Co-ord Sets",
+            "collection": "knitwear",
+            "heading": "Knitwear",
             "link": "",
             "fallback": "hero-4.webp",
             "hover_fallback": "hero-5.webp"
           }
         },
-        "category_tops": {
+        "category_women": {
           "type": "category",
           "settings": {
-            "collection": "tops-shirts",
-            "heading": "Tops & Shirts",
+            "collection": "women",
+            "heading": "Women",
             "link": "",
             "fallback": "hero-5.webp",
             "hover_fallback": "cta.webp"
           }
         },
-        "category_accessories": {
+        "category_men": {
           "type": "category",
           "settings": {
-            "collection": "accessories",
-            "heading": "Accessories",
+            "collection": "men",
+            "heading": "Men",
             "link": "",
             "fallback": "cta.webp",
             "hover_fallback": "hero-1.webp"
@@ -155,12 +155,12 @@
         }
       },
       "block_order": [
+        "category_outerwear",
         "category_dresses",
-        "category_ethnic",
-        "category_western",
-        "category_coord",
-        "category_tops",
-        "category_accessories"
+        "category_tailoring",
+        "category_knitwear",
+        "category_women",
+        "category_men"
       ],
       "settings": {
         "heading": "Shop by Category",
