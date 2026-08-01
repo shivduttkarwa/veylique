@@ -162,6 +162,7 @@
         "m1": {
           "type": "material",
           "settings": {
+            "image": "shopify://shop_images/hero-faq-3840.webp",
             "fallback": "about-ingredient-rose-otto.jpg",
             "tag": "I",
             "name": "Cotton Voile",
@@ -289,6 +290,8 @@
       "type": "veylique-home-full-cta",
       "settings": {
         "aria_label": "Begin your wardrobe",
+        "image": "shopify://shop_images/veylique-fashion-hero-7-3840.webp",
+        "mobile_image": "shopify://shop_images/detail-1.webp",
         "fallback": "hero-3.webp",
         "mobile_fallback": "hero-3.webp",
         "label": "Begin Your Wardrobe",
