@@ -13,7 +13,7 @@
       "type": "collection",
       "settings": {
         "show_hero": true,
-        "hero_image": "shopify://shop_images/veylique-fashion-hero-10-3840.webp",
+        "hero_image": "shopify://shop_images/hero-collection-3840.webp",
         "hero_fallback": "shop-hero.jpg",
         "show_breadcrumb": true,
         "kicker": "The shop",
