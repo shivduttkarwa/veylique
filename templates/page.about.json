@@ -162,7 +162,7 @@
         "m1": {
           "type": "material",
           "settings": {
-            "image": "shopify://shop_images/hero-faq-3840.webp",
+            "image": "shopify://shop_images/about-fabric-cotton-voile.jpg",
             "fallback": "about-ingredient-rose-otto.jpg",
             "tag": "I",
             "name": "Cotton Voile",
@@ -172,6 +172,7 @@
         "m2": {
           "type": "material",
           "settings": {
+            "image": "shopify://shop_images/about-fabric-linen-blend.jpg",
             "fallback": "about-ingredient-bakuchiol.jpg",
             "tag": "II",
             "name": "Linen Blend",
@@ -181,6 +182,7 @@
         "m3": {
           "type": "material",
           "settings": {
+            "image": "shopify://shop_images/about-fabric-viscose-crepe.jpg",
             "fallback": "about-ingredient-blue-tansy.jpg",
             "tag": "III",
             "name": "Viscose Crepe",
