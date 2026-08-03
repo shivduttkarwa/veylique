@@ -12,8 +12,7 @@
     "hero": {
       "type": "veylique-about-hero",
       "settings": {
-        "image": "shopify://shop_images/veylique-fashion-hero-7-3840.webp",
-        "fallback": "hero-2.webp",
+        "fallback": "about-hero-2026.jpg",
         "label": "About Veylique",
         "heading_line_1": "Designed for",
         "heading_line_2": "real life.",
@@ -107,7 +106,7 @@
         "p2"
       ],
       "settings": {
-        "fallback": "founder.jpg",
+        "fallback": "about-founder-2026.jpg",
         "badge_text": "Founded in Paris — 2018 — Founded in Paris — 2018 —",
         "founder_kicker": "Founder",
         "founder_name": "Sophie Laurent",
@@ -153,7 +152,7 @@
       "settings": {
         "eyebrow": "What We Stand For",
         "heading": "Three principles. Every decision.",
-        "fallback": "hero-4.webp"
+        "fallback": "about-values-2026.jpg"
       }
     },
     "materials": {
@@ -163,7 +162,7 @@
           "type": "material",
           "settings": {
             "image": "shopify://shop_images/about-fabric-cotton-voile.jpg",
-            "fallback": "about-ingredient-rose-otto.jpg",
+            "fallback": "about-fabric-cotton-voile.jpg",
             "tag": "I",
             "name": "Cotton Voile",
             "desc": "Light, breathable, and soft against the skin, chosen for everyday dresses and easy summer layers."
@@ -173,7 +172,7 @@
           "type": "material",
           "settings": {
             "image": "shopify://shop_images/about-fabric-linen-blend.jpg",
-            "fallback": "about-ingredient-bakuchiol.jpg",
+            "fallback": "about-fabric-linen-blend.jpg",
             "tag": "II",
             "name": "Linen Blend",
             "desc": "Textured without feeling stiff, giving co-ords and separates a relaxed yet polished structure."
@@ -183,7 +182,7 @@
           "type": "material",
           "settings": {
             "image": "shopify://shop_images/about-fabric-viscose-crepe.jpg",
-            "fallback": "about-ingredient-blue-tansy.jpg",
+            "fallback": "about-fabric-viscose-crepe.jpg",
             "tag": "III",
             "name": "Viscose Crepe",
             "desc": "Fluid, drapey, and crease-friendly, selected for pieces that need to move from desk to dinner."
@@ -294,8 +293,8 @@
         "aria_label": "Begin your wardrobe",
         "image": "shopify://shop_images/veylique-fashion-hero-7-3840.webp",
         "mobile_image": "shopify://shop_images/detail-1.webp",
-        "fallback": "hero-3.webp",
-        "mobile_fallback": "hero-3.webp",
+        "fallback": "about-cta-2026-desktop.jpg",
+        "mobile_fallback": "about-cta-2026-mobile.jpg",
         "label": "Begin Your Wardrobe",
         "heading": "Your wardrobe refresh awaits.",
         "button_label": "Shop All Products",
