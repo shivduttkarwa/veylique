@@ -1483,14 +1483,6 @@ body {
   transform: translateY(-0.25em) rotate(-4deg);
 }
 
-.veylique-eos-desc {
-  max-width: 26rem;
-  margin: 0 0 2.25rem;
-  color: var(--eos-muted);
-  font-size: 1rem;
-  line-height: 1.7;
-}
-
 .veylique-eos-tiers {
   display: flex;
   align-items: flex-end;
@@ -1586,6 +1578,7 @@ body {
 }
 
 .veylique-eos-media {
+  --eos-bleed: 0rem;
   position: relative;
   min-width: 0;
   min-height: 22rem;
@@ -1602,18 +1595,87 @@ body {
   display: block;
 }
 
+/* The media is masked into the ink rather than butting against the copy, so the
+   veil only needs to settle the remaining edges — a heavy left gradient here
+   would fight the mask and re-introduce a visible seam. */
 .veylique-eos-veil {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(23, 18, 10, 0.5) 0%, rgba(23, 18, 10, 0) 38%),
-    linear-gradient(0deg, rgba(23, 18, 10, 0.4) 0%, rgba(23, 18, 10, 0) 40%);
+    linear-gradient(90deg, rgba(23, 18, 10, 0.28) 0%, rgba(23, 18, 10, 0) 30%),
+    linear-gradient(0deg, rgba(23, 18, 10, 0.34) 0%, rgba(23, 18, 10, 0) 38%);
   pointer-events: none;
+}
+
+/* ---- Content / media blend --------------------------------------------------
+   The photo bleeds back under the copy column and its leading edge is masked
+   away, so it dissolves into the section ink instead of ending on a hard
+   vertical line.
+
+   The mask goes on the image and the veil, NOT on .veylique-eos-media — a mask
+   clips its descendants too, and the orbit sticker sits in the fully transparent
+   zone, so masking the wrapper would erase it. `--eos-bleed` drives both the
+   negative margin and the sticker offset so the sticker stays put over the
+   original seam rather than drifting onto the copy. */
+@media (min-width: 992px) {
+  .veylique-eos-main {
+    position: relative;
+  }
+
+  .veylique-eos-content {
+    z-index: 2;
+  }
+
+  .veylique-eos-media {
+    --eos-bleed: clamp(6rem, 11vw, 16rem);
+    z-index: 0;
+    margin-left: calc(var(--eos-bleed) * -1);
+  }
+
+  .veylique-eos-media > .veylique-eos-video,
+  .veylique-eos-media > img,
+  .veylique-eos-veil {
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.35) 22%,
+      rgba(0, 0, 0, 0.8) 40%,
+      #000 58%
+    );
+    mask-image: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.35) 22%,
+      rgba(0, 0, 0, 0.8) 40%,
+      #000 58%
+    );
+  }
+}
+
+/* Stacked layout: the seam is horizontal, so fade the foot of the image into the
+   copy beneath it instead. */
+@media (max-width: 991.98px) {
+  .veylique-eos-media > .veylique-eos-video,
+  .veylique-eos-media > img,
+  .veylique-eos-veil {
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      #000 58%,
+      rgba(0, 0, 0, 0.55) 84%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    mask-image: linear-gradient(
+      180deg,
+      #000 58%,
+      rgba(0, 0, 0, 0.55) 84%,
+      rgba(0, 0, 0, 0) 100%
+    );
+  }
 }
 
 .veylique-eos-sticker {
   position: absolute;
-  left: 0;
+  left: var(--eos-bleed, 0rem);
   top: 50%;
   z-index: 5;
   width: 9.5rem;
