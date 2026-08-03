@@ -4,6 +4,13 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/customers-order
 {% endcomment %}
 
+{% liquid
+  # Format dates before translating: a filter written after `| t` would apply to
+  # the translated string rather than to the interpolated argument.
+  assign order_date = order.created_at | date: format: 'date'
+  assign order_cancelled_date = order.cancelled_at | date: format: 'date'
+%}
+
 <section class="veylique-account veylique-page full-width" aria-labelledby="VeyliqueOrderTitle-{{ section.id }}">
   <div class="veylique-container">
     <p class="veylique-account__back">
@@ -15,13 +22,13 @@
         <h1 id="VeyliqueOrderTitle-{{ section.id }}" class="veylique-account__title">
           {{ 'customers.order.title' | t: name: order.name }}
         </h1>
-        <p class="veylique-text">{{ 'customers.order.date' | t: date: order.created_at | date: format: 'date' }}</p>
+        <p class="veylique-text">{{ 'customers.order.date' | t: date: order_date }}</p>
       </div>
     </header>
 
     {%- if order.cancelled -%}
       <p class="veylique-account__notice">
-        {{ 'customers.order.cancelled' | t: date: order.cancelled_at | date: format: 'date' }}
+        {{ 'customers.order.cancelled' | t: date: order_cancelled_date }}
         {{ order.cancel_reason_label }}
       </p>
     {%- endif -%}
@@ -46,8 +53,9 @@
                   <td data-label="{{ 'customers.order.product' | t }}">
                     <a href="{{ line_item.product.url }}">{{ line_item.title }}</a>
                     {%- if line_item.fulfillment -%}
+                      {%- assign fulfilled_date = line_item.fulfillment.created_at | date: format: 'date' -%}
                       <span class="veylique-account__meta">
-                        {{ 'customers.order.fulfilled_at' | t: date: line_item.fulfillment.created_at | date: format: 'date' }}
+                        {{ 'customers.order.fulfilled_at' | t: date: fulfilled_date }}
                       </span>
                     {%- endif -%}
                   </td>
