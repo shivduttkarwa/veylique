@@ -28,7 +28,11 @@
         <div class="veylique-card-grid" style="--columns: {{ section.settings.columns_desktop }}">
           {% for recommended_product in recommendations.products %}
             <div>
-              {% render 'veylique-product-card', product: recommended_product %}
+              {% render 'veylique-home-product-card',
+                product: recommended_product,
+                show_brand: true,
+                quick_add: true
+              %}
             </div>
           {% endfor %}
         </div>
@@ -54,6 +58,10 @@
             var fresh = html.querySelector('[data-veylique-recommendations]');
             if (fresh && fresh.innerHTML.trim().length) {
               container.innerHTML = fresh.innerHTML;
+              /* These cards land after the theme's initial pass, so the wishlist
+                 buttons would render unfilled even for saved products. Re-run the
+                 theme's section wiring scoped to this container. */
+              container.dispatchEvent(new CustomEvent('shopify:section:load', { bubbles: true }));
             }
           })
           .catch(function () { /* leave the shell empty on network failure */ });
