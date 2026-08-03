@@ -6,8 +6,33 @@
     assign has_products = true
   endif
 
+  # Slides alternate menswear and womenswear rather than following the
+  # collection's own order, which groups the two genders together.
+  assign men_total = 0
+  assign women_total = 0
   if has_products
+    for candidate in product_collection.products
+      if candidate.tags contains 'men'
+        assign men_total = men_total | plus: 1
+      else
+        assign women_total = women_total | plus: 1
+      endif
+    endfor
+  endif
+
+  assign men_used = 0
+  assign women_used = 0
+  assign want_men = true
+
+  if has_products
+    # The caption tracks slide one, so it follows the first menswear piece.
     assign first_product = product_collection.products.first
+    for candidate in product_collection.products
+      if candidate.tags contains 'men'
+        assign first_product = candidate
+        break
+      endif
+    endfor
     assign first_text = first_product.title
     assign first_link = first_product.url
   else
@@ -32,14 +57,62 @@
     <div class="veylique-slider-stage is-loading" id="veyliqueSlider-{{ section.id }}">
       <div class="veylique-slides" id="veyliqueSlides-{{ section.id }}">
         {% if has_products %}
-          {% for product in product_collection.products limit: products_to_show %}
+          {% for slide in (1..products_to_show) %}
             {% liquid
+              assign take_men = want_men
+              if take_men
+                if men_used >= men_total
+                  assign take_men = false
+                endif
+              else
+                if women_used >= women_total
+                  assign take_men = true
+                endif
+              endif
+
+              if take_men
+                assign target_position = men_used
+              else
+                assign target_position = women_used
+              endif
+
+              assign product = blank
+              assign seen = 0
+              for candidate in product_collection.products
+                assign candidate_is_men = false
+                if candidate.tags contains 'men'
+                  assign candidate_is_men = true
+                endif
+                if candidate_is_men == take_men
+                  if seen == target_position
+                    assign product = candidate
+                    break
+                  endif
+                  assign seen = seen | plus: 1
+                endif
+              endfor
+
+              if product != blank
+                if take_men
+                  assign men_used = men_used | plus: 1
+                else
+                  assign women_used = women_used | plus: 1
+                endif
+              endif
+
+              if want_men
+                assign want_men = false
+              else
+                assign want_men = true
+              endif
+
               assign slide_number = forloop.index | prepend: '0' | slice: -2, 2
               assign slide_loading = 'lazy'
               if forloop.first
                 assign slide_loading = 'eager'
               endif
             %}
+            {% if product != blank %}
             <div
               class="veylique-slide{% if forloop.first %} is-active{% elsif forloop.index == 2 %} is-next{% else %} is-hidden-right{% endif %}"
               data-veylique-arrivals-slide
@@ -60,6 +133,7 @@
                 %}
               </div>
             </div>
+            {% endif %}
           {% endfor %}
         {% else %}
           {% for i in (1..products_to_show) %}

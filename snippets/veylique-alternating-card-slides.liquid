@@ -1,0 +1,110 @@
+{% doc %}
+  Renders product-card carousel slides that alternate between men's and women's
+  pieces (men, women, men, women, ...) instead of following the collection's own
+  order, which groups the two genders together.
+
+  A product counts as menswear when it carries the `men` tag; everything else is
+  treated as womenswear. When one side runs out, the remaining slides fall back
+  to whatever is left, so the slide count never drops below what the collection
+  can fill.
+
+  @param {collection} [collection] - Source collection. Placeholder cards render when it's empty.
+  @param {number} [limit] - How many slides to render.
+  @param {string} [variant] - Card variant passed through to the product card.
+
+  @example
+  {% render 'veylique-alternating-card-slides',
+    collection: section.settings.collection,
+    limit: section.settings.products_to_show,
+    variant: 'best'
+  %}
+{% enddoc %}
+
+{% liquid
+  assign slide_limit = limit | default: 8
+  assign has_products = false
+  if collection != blank and collection.products.size > 0
+    assign has_products = true
+  endif
+
+  assign men_total = 0
+  assign women_total = 0
+  if has_products
+    for candidate in collection.products
+      if candidate.tags contains 'men'
+        assign men_total = men_total | plus: 1
+      else
+        assign women_total = women_total | plus: 1
+      endif
+    endfor
+  endif
+
+  assign men_used = 0
+  assign women_used = 0
+  assign want_men = true
+%}
+
+{% if has_products %}
+  {% for slide in (1..slide_limit) %}
+    {% liquid
+      # Alternate, but switch sides early once one gender is exhausted.
+      assign take_men = want_men
+      if take_men
+        if men_used >= men_total
+          assign take_men = false
+        endif
+      else
+        if women_used >= women_total
+          assign take_men = true
+        endif
+      endif
+
+      if take_men
+        assign target_position = men_used
+      else
+        assign target_position = women_used
+      endif
+
+      assign slide_product = blank
+      assign seen = 0
+      for candidate in collection.products
+        assign candidate_is_men = false
+        if candidate.tags contains 'men'
+          assign candidate_is_men = true
+        endif
+        if candidate_is_men == take_men
+          if seen == target_position
+            assign slide_product = candidate
+            break
+          endif
+          assign seen = seen | plus: 1
+        endif
+      endfor
+
+      if slide_product != blank
+        if take_men
+          assign men_used = men_used | plus: 1
+        else
+          assign women_used = women_used | plus: 1
+        endif
+      endif
+
+      if want_men
+        assign want_men = false
+      else
+        assign want_men = true
+      endif
+    %}
+    {% if slide_product != blank %}
+      <div class="swiper-slide">
+        {% render 'veylique-home-product-card', variant: variant, product: slide_product %}
+      </div>
+    {% endif %}
+  {% endfor %}
+{% else %}
+  {% for i in (1..slide_limit) %}
+    <div class="swiper-slide">
+      {% render 'veylique-home-product-card', variant: variant, placeholder: true %}
+    </div>
+  {% endfor %}
+{% endif %}

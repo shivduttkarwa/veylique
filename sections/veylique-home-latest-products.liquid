@@ -13,27 +13,11 @@
   <div class="veylique-latest-slider-area" data-veylique-card-slider>
     <div class="swiper veylique-latest-swiper" tabindex="0" data-veylique-card-slider-viewport>
       <div class="swiper-wrapper veylique-latest-grid" data-veylique-card-slider-track>
-        {% liquid
-          assign products_to_show = section.settings.products_to_show
-          assign product_collection = section.settings.collection
-          assign has_products = false
-          if product_collection != blank and product_collection.products.size > 0
-            assign has_products = true
-          endif
+        {% render 'veylique-alternating-card-slides',
+          collection: section.settings.collection,
+          limit: section.settings.products_to_show,
+          variant: 'latest'
         %}
-        {% if has_products %}
-          {% for product in product_collection.products limit: products_to_show %}
-            <div class="swiper-slide">
-              {% render 'veylique-home-product-card', variant: 'latest', product: product %}
-            </div>
-          {% endfor %}
-        {% else %}
-          {% for i in (1..products_to_show) %}
-            <div class="swiper-slide">
-              {% render 'veylique-home-product-card', variant: 'latest', placeholder: true %}
-            </div>
-          {% endfor %}
-        {% endif %}
       </div>
     </div>
 
