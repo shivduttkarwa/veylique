@@ -1,7 +1,9 @@
 {% doc %}
   Renders a Veylique product card — clean, editorial, world-class layout.
 
-  Keeps the two-image hover swap (desktop only) and adds a floating wishlist,
+  Keeps the two-image hover swap (desktop only) — for real products the hover
+  frame is the third product image (the alternate model angle), falling back to
+  the second when a product has fewer images. Adds a floating wishlist,
   sale/sold-out badges, a hover "shop" action, and price with compare-at +
   discount. On touch devices it shows a single static image. Prefers real
   Shopify product data; falls back to merchant text/image, then a placeholder.
@@ -46,7 +48,10 @@
     assign card_link = product.url
     assign card_price = product.price | money
     assign card_image = product.featured_image
-    assign card_hover_image = product.images[1]
+    assign card_hover_image = product.images[2]
+    if card_hover_image == blank
+      assign card_hover_image = product.images[1]
+    endif
     assign card_vendor = product.vendor
     unless product.available
       assign sold_out = true
