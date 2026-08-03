@@ -1,12 +1,14 @@
 {% doc %}
-  Renders a Veylique product card — clean, editorial, world-class layout.
+  Renders a Veylique product card — editorial minimal: square edges, full-bleed
+  image, micro-caps labels and hairline rules.
 
   Keeps the two-image hover swap (desktop only) — for real products the hover
   frame is the third product image (the alternate model angle), falling back to
-  the second when a product has fewer images. Adds a floating wishlist,
-  sale/sold-out badges, a hover "shop" action, and price with compare-at +
-  discount. On touch devices it shows a single static image. Prefers real
-  Shopify product data; falls back to merchant text/image, then a placeholder.
+  the second when a product has fewer images. Carries a wishlist mark,
+  sale/sold-out badges, a hover "shop" or quick-add tray, and price with
+  compare-at + discount. On touch devices it shows a single static image and no
+  hover chrome. Prefers real Shopify product data; falls back to merchant
+  text/image, then a placeholder.
 
   @param {product} [product] - Shopify product. When set, its data wins.
   @param {boolean} [placeholder] - Render an onboarding placeholder card.
@@ -99,23 +101,15 @@
   assign secondary_fallback = hover_fallback | default: main_fallback
 %}
 
-<article class="veylique-pcard veylique-reveal-js veylique-reveal--static-js{% if show_brand %} veylique-pcard--rich{% endif %}">
+<article class="veylique-pcard veylique-reveal-js veylique-reveal--static-js">
   <div class="veylique-pcard__media-wrap">
     <a class="veylique-pcard__media-link" href="{{ card_link }}" aria-label="{{ card_title | escape }}">
       {% if sold_out %}
         <span class="veylique-pcard__badge veylique-pcard__badge--out">{{ 'products.sold_out' | t }}</span>
       {% elsif on_sale %}
-        <span class="veylique-pcard__badge">{% if discount > 0 %}{{ 'products.save_percent_html' | t: percent: discount }}{% else %}{{ 'products.badge_sale' | t }}{% endif %}</span>
+        <span class="veylique-pcard__badge veylique-pcard__badge--sale">{% if discount > 0 %}{{ 'products.save_percent_html' | t: percent: discount }}{% else %}{{ 'products.badge_sale' | t }}{% endif %}</span>
       {% elsif is_new %}
         <span class="veylique-pcard__badge veylique-pcard__badge--new">{{ 'products.badge_new' | t }}</span>
-      {% endif %}
-
-      {% if show_brand and rating_value > 0 %}
-        <span class="veylique-pcard__rating">
-          {{ rating_value }}
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          {% if rating_count > 0 %}<span class="veylique-pcard__rating-count">| {{ rating_count }}</span>{% endif %}
-        </span>
       {% endif %}
 
       <div class="veylique-pcard__media">
@@ -196,27 +190,27 @@
 
   <div class="veylique-pcard__info">
     {% if show_brand and card_vendor != blank %}
-      <div class="veylique-pcard__meta">
-        <p class="veylique-pcard__brand">{{ card_vendor | escape }}</p>
-        <h3 class="veylique-pcard__name"><a href="{{ card_link }}">{{ card_title }}</a></h3>
-      </div>
-      <div class="veylique-pcard__price veylique-pcard__price--rich">
-        <span class="veylique-pcard__price-now{% if on_sale %} is-sale{% endif %}">{{ card_price }}</span>
-        {% if card_compare != blank %}
-          <span class="veylique-pcard__price-old">{{ card_compare }}</span>
-        {% endif %}
-        {% if discount > 0 %}
-          <span class="veylique-pcard__discount">{{ 'products.save_percent_html' | t: percent: discount }}</span>
-        {% endif %}
-      </div>
-    {% else %}
-      <h3 class="veylique-pcard__title"><a href="{{ card_link }}">{{ card_title }}</a></h3>
-      <div class="veylique-pcard__price">
-        {% if card_compare != blank %}
-          <span class="veylique-pcard__price-old">{{ card_compare }}</span>
-        {% endif %}
-        <span class="veylique-pcard__price-now{% if on_sale %} is-sale{% endif %}">{{ card_price }}</span>
-      </div>
+      <p class="veylique-pcard__brand">{{ card_vendor | escape }}</p>
+    {% endif %}
+
+    <h3 class="veylique-pcard__title"><a href="{{ card_link }}">{{ card_title }}</a></h3>
+
+    <div class="veylique-pcard__price">
+      <span class="veylique-pcard__price-now{% if on_sale %} is-sale{% endif %}">{{ card_price }}</span>
+      {% if card_compare != blank %}
+        <span class="veylique-pcard__price-old">{{ card_compare }}</span>
+      {% endif %}
+      {% if discount > 0 %}
+        <span class="veylique-pcard__discount">{{ 'products.save_percent_html' | t: percent: discount }}</span>
+      {% endif %}
+    </div>
+
+    {% if show_brand and rating_value > 0 %}
+      <p class="veylique-pcard__rating">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <span class="veylique-pcard__rating-value">{{ rating_value }}</span>
+        {% if rating_count > 0 %}<span class="veylique-pcard__rating-count">({{ rating_count }})</span>{% endif %}
+      </p>
     {% endif %}
   </div>
 
@@ -236,6 +230,15 @@
 </article>
 
 {% stylesheet %}
+  /* ==========================================================================
+     Veylique product card — editorial minimal.
+
+     Square edges, full-bleed image, micro-caps labels and hairline rules. The
+     image carries the card; chrome stays out of the way until it's wanted.
+     Controls are hidden until hover on fine pointers and always present on
+     touch, where there is no hover to reveal them.
+     ========================================================================== */
+
   .veylique-pcard {
     display: flex;
     flex-direction: column;
@@ -243,10 +246,11 @@
     background: transparent;
   }
 
+  /* ---- Media ------------------------------------------------------------- */
+
   .veylique-pcard__media-wrap {
     position: relative;
     overflow: hidden;
-    border-radius: var(--veylique-radius-md, 0.75rem);
     background: var(--veylique-color-surface-alt, #faf6ec);
     aspect-ratio: 3 / 4;
   }
@@ -277,30 +281,27 @@
 
   .veylique-pcard__img--main {
     z-index: 1;
-    transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 1.6s var(--veylique-ease-standard, cubic-bezier(0.22, 1, 0.36, 1));
   }
 
+  /* A quiet cross-dissolve rather than a wipe: the second angle should arrive
+     without announcing itself. Gated on .is-loaded (set by the theme's card JS)
+     so a half-fetched image never fades in. */
   .veylique-pcard__img--hover {
     z-index: 2;
-    background: var(--veylique-color-surface-alt, #faf6ec);
-    -webkit-clip-path: inset(100% 0 0 0);
-    clip-path: inset(100% 0 0 0);
-    transform: scale(1.16);
-    transform-origin: 50% 80%;
+    opacity: 0;
+    transform: scale(1.04);
     transition:
-      -webkit-clip-path 0.85s cubic-bezier(0.83, 0, 0.17, 1),
-      clip-path 0.85s cubic-bezier(0.83, 0, 0.17, 1),
-      transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+      opacity 0.7s var(--veylique-ease-standard, cubic-bezier(0.22, 1, 0.36, 1)),
+      transform 1.6s var(--veylique-ease-standard, cubic-bezier(0.22, 1, 0.36, 1));
   }
 
-  /* Hover swap — desktop / fine-pointer only. Preserves the original animation. */
   @media (hover: hover) and (pointer: fine) {
-    .veylique-pcard__media-link:hover .veylique-pcard__img--main {
-      transform: scale(1.06);
+    .veylique-pcard__media-wrap:hover .veylique-pcard__img--main {
+      transform: scale(1.04);
     }
-    .veylique-pcard__media-link:hover .veylique-pcard__img--hover.is-loaded {
-      -webkit-clip-path: inset(0 0 0 0);
-      clip-path: inset(0 0 0 0);
+    .veylique-pcard__media-wrap:hover .veylique-pcard__img--hover.is-loaded {
+      opacity: 1;
       transform: scale(1);
     }
   }
@@ -310,267 +311,177 @@
     .veylique-pcard__img--hover { display: none; }
   }
 
+  /* ---- Badge ------------------------------------------------------------- */
+
+  /* Flush to the corner and unrounded — a printed tag, not a sticker. */
   .veylique-pcard__badge {
     position: absolute;
-    top: 0.75rem;
-    left: 0.75rem;
+    top: 0;
+    left: 0;
     z-index: 4;
-    padding: 0.3125rem 0.625rem;
-    border-radius: 999px;
-    background: var(--veylique-color-rose, #c58d80);
-    color: #fff;
+    padding: 0.4375rem 0.6875rem;
+    background: var(--veylique-color-surface, #fff);
+    color: var(--veylique-color-foreground, #241f1a);
     font-family: var(--veylique-font-body);
-    font-size: 0.625rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
+    font-size: 0.5625rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    line-height: 1;
     text-transform: uppercase;
+  }
+  .veylique-pcard__badge--sale {
+    color: var(--veylique-color-rose, #c58d80);
+  }
+  .veylique-pcard__badge--new {
+    color: var(--veylique-color-secondary, #6f7d68);
   }
   .veylique-pcard__badge--out {
     background: var(--veylique-color-foreground, #241f1a);
+    color: var(--veylique-color-surface, #fff);
   }
 
+  /* ---- Wishlist ---------------------------------------------------------- */
+
+  /* No chip or circle — just the mark, with a white halo so it stays legible
+     over a dark photograph. */
   .veylique-pcard__wish {
     position: absolute;
-    top: 0.625rem;
-    right: 0.625rem;
+    top: 0.25rem;
+    right: 0.25rem;
     z-index: 4;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2.75rem;
+    height: 2.75rem;
     padding: 0;
     border: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.85);
-    -webkit-backdrop-filter: blur(0.375rem);
-    backdrop-filter: blur(0.375rem);
+    background: none;
     color: var(--veylique-color-foreground, #241f1a);
     cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    filter: drop-shadow(0 0 0.1875rem rgba(255, 255, 255, 0.95));
+    transition:
+      opacity 0.3s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
   }
-  @media (hover: hover) {
-    .veylique-pcard__wish:hover { background: #fff; transform: scale(1.06); }
+
+  /* On a fine pointer the mark waits for hover — but a saved item always shows
+     its state, otherwise the card would silently forget it. */
+  @media (hover: hover) and (pointer: fine) {
+    .veylique-pcard__wish { opacity: 0; }
+    .veylique-pcard__media-wrap:hover .veylique-pcard__wish,
+    .veylique-pcard__wish:focus-visible,
+    .veylique-pcard__wish.is-wished { opacity: 1; }
+    .veylique-pcard__wish:hover { transform: scale(1.1); }
   }
+
   .veylique-pcard__wish.is-wished { color: var(--veylique-color-rose, #c58d80); }
   .veylique-pcard__wish.is-wished svg { fill: currentColor; }
 
-  /* Hover "shop" action — slides up on desktop; hidden on touch. */
-  .veylique-pcard__shop {
-    position: absolute;
-    left: 0.75rem;
-    right: 0.75rem;
-    bottom: 0.75rem;
-    z-index: 3;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    height: 2.75rem;
-    border-radius: var(--veylique-radius-sm, 0.5rem);
-    background: var(--veylique-color-foreground, #241f1a);
-    color: var(--veylique-color-surface, #fff);
-    font-family: var(--veylique-font-body);
-    font-size: 0.8125rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-decoration: none;
-    opacity: 0;
-    transform: translateY(0.75rem);
-    transition: opacity 0.3s ease, transform 0.3s var(--veylique-ease-standard, ease);
+  /* The theme's wishlist JS has always toggled .is-pulsing on tap; nothing ever
+     drew it, so the save landed with no feedback. */
+  .veylique-pcard__wish.is-pulsing svg {
+    animation: veylique-pcard-pulse 0.42s var(--veylique-ease-standard, ease);
   }
-  @media (hover: hover) and (pointer: fine) {
-    .veylique-pcard__shop { display: inline-flex; }
-    .veylique-pcard__media-wrap:hover .veylique-pcard__shop {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  @keyframes veylique-pcard-pulse {
+    0%   { transform: scale(1); }
+    45%  { transform: scale(1.28); }
+    100% { transform: scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .veylique-pcard__wish.is-pulsing svg { animation: none; }
   }
 
-  .veylique-pcard__info {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    padding-top: 0.875rem;
-  }
+  /* ---- Hover actions ----------------------------------------------------- */
 
-  .veylique-pcard__title {
-    margin: 0;
-    min-width: 0;
-    font-family: var(--veylique-font-heading, serif);
-    font-size: 1rem;
-    font-weight: 500;
-    line-height: 1.25;
-    letter-spacing: -0.01em;
-  }
-  .veylique-pcard__title a {
-    color: var(--veylique-color-foreground, #241f1a);
-    text-decoration: none;
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  @media (hover: hover) {
-    .veylique-pcard__title a:hover { color: var(--veylique-color-rose, #c58d80); }
-  }
-
-  .veylique-pcard__price {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: baseline;
-    gap: 0.5rem;
-    white-space: nowrap;
-  }
-  .veylique-pcard__price-old {
-    font-size: 0.8125rem;
-    color: var(--veylique-color-muted, #756b60);
-    text-decoration: line-through;
-  }
-  .veylique-pcard__price-now {
-    font-size: 0.9375rem;
-    font-weight: 500;
-    color: var(--veylique-color-foreground, #241f1a);
-  }
-  .veylique-pcard__price-now.is-sale {
-    color: var(--veylique-color-rose, #c58d80);
-  }
-
-  /* ---- Rich / PLP variant (show_brand) ---- */
-  .veylique-pcard__rating {
-    position: absolute;
-    left: 0.625rem;
-    bottom: 0.625rem;
-    z-index: 4;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: var(--veylique-radius-xs, 0.25rem);
-    background: rgba(255, 255, 255, 0.92);
-    -webkit-backdrop-filter: blur(0.25rem);
-    backdrop-filter: blur(0.25rem);
-    color: var(--veylique-color-foreground, #241f1a);
-    font-family: var(--veylique-font-body);
-    font-size: 0.6875rem;
-    font-weight: 700;
-    line-height: 1;
-  }
-  .veylique-pcard__rating svg { color: #1d9e5e; }
-  .veylique-pcard__rating-count {
-    color: var(--veylique-color-muted, #756b60);
-    font-weight: 500;
-  }
-
-  .veylique-pcard--rich .veylique-pcard__info {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.375rem;
-    padding-top: 0.75rem;
-  }
-  .veylique-pcard__meta { min-width: 0; }
-  .veylique-pcard__brand {
-    margin: 0;
-    font-family: var(--veylique-font-body);
-    font-size: 0.875rem;
-    font-weight: 700;
-    color: var(--veylique-color-foreground, #241f1a);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .veylique-pcard__name {
-    margin: 0.125rem 0 0;
-    font-family: var(--veylique-font-body);
-    font-size: 0.8125rem;
-    font-weight: 400;
-    line-height: 1.3;
-    color: var(--veylique-color-muted, #756b60);
-  }
-  .veylique-pcard__name a {
-    color: inherit;
-    text-decoration: none;
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  @media (hover: hover) {
-    .veylique-pcard__name a:hover { color: var(--veylique-color-foreground, #241f1a); }
-  }
-  .veylique-pcard__price--rich {
-    justify-content: flex-start;
-    align-items: baseline;
-    gap: 0.4rem;
-  }
-  .veylique-pcard__price--rich .veylique-pcard__price-now {
-    font-size: 0.9375rem;
-    font-weight: 700;
-    color: var(--veylique-color-foreground, #241f1a);
-  }
-  .veylique-pcard__discount {
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: var(--veylique-color-rose, #c58d80);
-  }
-
-  /* ---- Quick add (hover) ---- */
+  /* Both the plain "shop" link and the quick-add tray ride the bottom edge as a
+     full-bleed bar with a hairline above it. */
+  .veylique-pcard__shop,
   .veylique-pcard__qa {
     position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
     z-index: 3;
+    border-top: var(--veylique-border-width, 0.0625rem) solid var(--veylique-color-border, rgba(36, 31, 26, 0.14));
+    background: var(--veylique-color-surface, #fff);
+    transform: translateY(100%);
+    transition: transform 0.45s var(--veylique-ease-standard, cubic-bezier(0.22, 1, 0.36, 1));
+  }
+
+  .veylique-pcard__shop {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    height: 2.875rem;
+    color: var(--veylique-color-foreground, #241f1a);
+    font-family: var(--veylique-font-body);
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .veylique-pcard__qa {
     display: flex;
     flex-direction: column;
     align-items: stretch;
     gap: 0.5rem;
     padding: 0.75rem;
-    background: linear-gradient(to top, rgba(255, 255, 255, 0.96) 65%, rgba(255, 255, 255, 0));
-    transform: translateY(101%);
-    transition: transform 0.35s var(--veylique-ease-standard, ease);
   }
+
   @media (hover: hover) and (pointer: fine) {
+    .veylique-pcard__shop { display: inline-flex; }
+    .veylique-pcard__media-wrap:hover .veylique-pcard__shop,
     .veylique-pcard__media-wrap:hover .veylique-pcard__qa,
     .veylique-pcard__media-wrap:focus-within .veylique-pcard__qa {
       transform: translateY(0);
     }
   }
-  /* Touch: hide the hover quick add — tapping the card opens the product. */
+
+  /* Touch: hide the hover tray — tapping the card opens the product. */
   @media (hover: none), (pointer: coarse) {
     .veylique-pcard__qa { display: none; }
   }
+
   .veylique-pcard__qa-label {
     font-family: var(--veylique-font-body);
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
+    font-size: 0.5625rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--veylique-color-muted, #756b60);
     text-align: center;
   }
+
   .veylique-pcard__sizes {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 0.375rem;
+    gap: 0.25rem;
   }
+
   .veylique-pcard__size {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 2rem;
-    height: 2rem;
+    min-width: 2.125rem;
+    height: 2.125rem;
     padding: 0 0.5rem;
     border: var(--veylique-border-width, 0.0625rem) solid var(--veylique-color-border, rgba(36, 31, 26, 0.14));
-    border-radius: var(--veylique-radius-xs, 0.25rem);
     background: var(--veylique-color-surface, #fff);
     color: var(--veylique-color-foreground, #241f1a);
     font-family: var(--veylique-font-body);
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
     text-decoration: none;
-    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+    transition:
+      border-color 0.15s ease,
+      background-color 0.15s ease,
+      color 0.15s ease;
   }
   @media (hover: hover) {
     .veylique-pcard__size:hover {
@@ -584,58 +495,156 @@
     text-decoration: line-through;
     opacity: 0.6;
   }
+
   .veylique-pcard__add {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 2.75rem;
-    border-radius: var(--veylique-radius-sm, 0.5rem);
+    height: 2.625rem;
     background: var(--veylique-color-foreground, #241f1a);
     color: var(--veylique-color-surface, #fff);
     font-family: var(--veylique-font-body);
-    font-size: 0.8125rem;
+    font-size: 0.625rem;
     font-weight: 600;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
     text-decoration: none;
   }
-  @media (prefers-reduced-motion: reduce) {
-    .veylique-pcard__qa { transition: none; }
+
+  /* ---- Information ------------------------------------------------------- */
+
+  .veylique-pcard__info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3125rem;
+    padding-top: 1rem;
   }
 
-  /* ---- New badge ---- */
-  .veylique-pcard__badge--new {
-    background: var(--veylique-color-secondary, #6f7d68);
+  .veylique-pcard__brand {
+    margin: 0;
+    max-width: 100%;
+    font-family: var(--veylique-font-body);
+    font-size: 0.5625rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--veylique-color-muted, #756b60);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  /* ---- Color swatch dots ---- */
-  .veylique-pcard__colors {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    margin-top: 0.5rem;
-    text-decoration: none;
+  .veylique-pcard__title {
+    margin: 0;
+    max-width: 100%;
+    min-width: 0;
+    font-family: var(--veylique-font-heading, serif);
+    font-size: 1.0625rem;
+    font-weight: 400;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
   }
-  .veylique-pcard__dot {
-    width: 0.875rem;
-    height: 0.875rem;
-    border-radius: 50%;
-    border: 0.0625rem solid rgba(36, 31, 26, 0.18);
-    background-size: cover;
-    background-position: center;
-    box-shadow: inset 0 0 0 0.09375rem var(--veylique-color-surface, #fff);
-    transition: transform 0.2s var(--veylique-ease-standard, ease);
+
+  /* The rule is drawn in transparent and simply gains colour, so it tracks the
+     text rather than the full column width an ellipsised block would give. */
+  .veylique-pcard__title a {
+    display: block;
+    color: var(--veylique-color-foreground, #241f1a);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 0.0625rem;
+    text-underline-offset: 0.22em;
+    transition: text-decoration-color 0.35s ease;
   }
   @media (hover: hover) {
-    .veylique-pcard__colors:hover .veylique-pcard__dot { transform: scale(1.12); }
+    .veylique-pcard:hover .veylique-pcard__title a {
+      text-decoration-color: currentColor;
+    }
   }
-  .veylique-pcard__dot-more {
+
+  .veylique-pcard__price {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-family: var(--veylique-font-body);
+    font-variant-numeric: tabular-nums;
+  }
+  .veylique-pcard__price-now {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--veylique-color-foreground, #241f1a);
+  }
+  .veylique-pcard__price-now.is-sale {
+    color: var(--veylique-color-rose, #c58d80);
+  }
+  .veylique-pcard__price-old {
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: var(--veylique-color-muted, #756b60);
+    text-decoration: line-through;
+  }
+  .veylique-pcard__discount {
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--veylique-color-rose, #c58d80);
+  }
+
+  /* Rating sits with the copy instead of floating on the photograph. */
+  .veylique-pcard__rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin: 0.0625rem 0 0;
     font-family: var(--veylique-font-body);
     font-size: 0.6875rem;
-    font-weight: 600;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--veylique-color-foreground, #241f1a);
+  }
+  .veylique-pcard__rating svg { color: var(--veylique-color-secondary, #6f7d68); }
+  .veylique-pcard__rating-count {
+    font-weight: 400;
     color: var(--veylique-color-muted, #756b60);
   }
 
-  /* ---- Quick add busy / added states ---- */
+  /* ---- Colour swatches --------------------------------------------------- */
+
+  .veylique-pcard__colors {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3125rem;
+    margin-top: 0.625rem;
+    text-decoration: none;
+  }
+  .veylique-pcard__dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    border: 0.0625rem solid rgba(36, 31, 26, 0.2);
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.2s var(--veylique-ease-standard, ease);
+  }
+  @media (hover: hover) {
+    .veylique-pcard__colors:hover .veylique-pcard__dot { transform: scale(1.18); }
+  }
+  .veylique-pcard__dot-more {
+    font-family: var(--veylique-font-body);
+    font-size: 0.5625rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--veylique-color-muted, #756b60);
+  }
+
+  /* ---- Quick add busy / added states ------------------------------------- */
+
   .veylique-pcard__size.is-busy,
   .veylique-pcard__add.is-busy {
     opacity: 0.55;
@@ -648,6 +657,35 @@
   }
   .veylique-pcard__add.is-added {
     background: var(--veylique-color-secondary, #6f7d68);
+  }
+
+  /* ---- Focus ------------------------------------------------------------- */
+
+  .veylique-pcard__media-link:focus-visible,
+  .veylique-pcard__wish:focus-visible,
+  .veylique-pcard__shop:focus-visible,
+  .veylique-pcard__size:focus-visible,
+  .veylique-pcard__add:focus-visible,
+  .veylique-pcard__colors:focus-visible,
+  .veylique-pcard__title a:focus-visible {
+    outline: var(--veylique-focus-ring-width, 0.125rem) solid var(--veylique-focus-ring-color, #241f1a);
+    outline-offset: var(--veylique-focus-ring-offset, 0.1875rem);
+  }
+
+  /* ---- Reduced motion ---------------------------------------------------- */
+
+  @media (prefers-reduced-motion: reduce) {
+    .veylique-pcard__img--main,
+    .veylique-pcard__img--hover,
+    .veylique-pcard__shop,
+    .veylique-pcard__qa,
+    .veylique-pcard__wish,
+    .veylique-pcard__size,
+    .veylique-pcard__dot,
+    .veylique-pcard__title a {
+      transition: none;
+    }
+    .veylique-pcard__img--hover { transform: none; }
   }
 {% endstylesheet %}
 
