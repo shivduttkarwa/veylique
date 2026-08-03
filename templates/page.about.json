@@ -106,6 +106,7 @@
         "p2"
       ],
       "settings": {
+        "image": "shopify://shop_images/about-founder-2026.jpg",
         "fallback": "about-founder-2026.jpg",
         "badge_text": "Founded in Paris — 2018 — Founded in Paris — 2018 —",
         "founder_kicker": "Founder",
