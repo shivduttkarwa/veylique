@@ -1,0 +1,64 @@
+{% comment %}
+  Account activation — reached from the invitation email Shopify sends.
+
+  https://shopify.dev/docs/storefronts/themes/architecture/templates/customers-activate-account
+{% endcomment %}
+
+<section class="veylique-account veylique-page full-width" aria-labelledby="VeyliqueActivateTitle-{{ section.id }}">
+  <div class="veylique-container veylique-account__inner">
+    <div class="veylique-account__panel">
+      <h1 id="VeyliqueActivateTitle-{{ section.id }}" class="veylique-account__title">
+        {{ 'customers.activate_account.title' | t }}
+      </h1>
+      <p class="veylique-text veylique-account__lead">{{ 'customers.activate_account.subtext' | t }}</p>
+
+      {% form 'activate_customer_password' %}
+        {{ form.errors | default_errors }}
+
+        <div class="veylique-field">
+          <label class="veylique-field__label" for="ActivatePassword-{{ section.id }}">
+            {{ 'customers.activate_account.password' | t }}
+          </label>
+          <input
+            class="veylique-field__input"
+            type="password"
+            name="customer[password]"
+            id="ActivatePassword-{{ section.id }}"
+            autocomplete="new-password"
+            required
+          >
+        </div>
+
+        <div class="veylique-field">
+          <label class="veylique-field__label" for="ActivatePasswordConfirm-{{ section.id }}">
+            {{ 'customers.activate_account.password_confirm' | t }}
+          </label>
+          <input
+            class="veylique-field__input"
+            type="password"
+            name="customer[password_confirmation]"
+            id="ActivatePasswordConfirm-{{ section.id }}"
+            autocomplete="new-password"
+            required
+          >
+        </div>
+
+        <div class="veylique-account__actions">
+          <button type="submit" class="veylique-button veylique-button--solid">
+            {{ 'customers.activate_account.submit' | t }}
+          </button>
+          <button type="submit" name="decline" class="veylique-button veylique-button--ghost">
+            {{ 'customers.activate_account.decline' | t }}
+          </button>
+        </div>
+      {% endform %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.customers-activate-account.name",
+  "settings": []
+}
+{% endschema %}

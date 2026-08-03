@@ -1,0 +1,97 @@
+{% comment %}
+  Customer registration.
+
+  https://shopify.dev/docs/storefronts/themes/architecture/templates/customers-register
+{% endcomment %}
+
+<section class="veylique-account veylique-page full-width" aria-labelledby="VeyliqueRegisterTitle-{{ section.id }}">
+  <div class="veylique-container veylique-account__inner">
+    <div class="veylique-account__panel">
+      <h1 id="VeyliqueRegisterTitle-{{ section.id }}" class="veylique-account__title">
+        {{ 'customers.register.title' | t }}
+      </h1>
+      <p class="veylique-text veylique-account__lead">{{ 'customers.register.subtext' | t }}</p>
+
+      {% form 'create_customer' %}
+        {{ form.errors | default_errors }}
+
+        <div class="veylique-field-row">
+          <div class="veylique-field">
+            <label class="veylique-field__label" for="RegisterFirstName-{{ section.id }}">
+              {{ 'customers.register.first_name' | t }}
+            </label>
+            <input
+              class="veylique-field__input"
+              type="text"
+              name="customer[first_name]"
+              id="RegisterFirstName-{{ section.id }}"
+              value="{{ form.first_name }}"
+              autocomplete="given-name"
+            >
+          </div>
+
+          <div class="veylique-field">
+            <label class="veylique-field__label" for="RegisterLastName-{{ section.id }}">
+              {{ 'customers.register.last_name' | t }}
+            </label>
+            <input
+              class="veylique-field__input"
+              type="text"
+              name="customer[last_name]"
+              id="RegisterLastName-{{ section.id }}"
+              value="{{ form.last_name }}"
+              autocomplete="family-name"
+            >
+          </div>
+        </div>
+
+        <div class="veylique-field">
+          <label class="veylique-field__label" for="RegisterEmail-{{ section.id }}">
+            {{ 'customers.register.email' | t }}
+          </label>
+          <input
+            class="veylique-field__input"
+            type="email"
+            name="customer[email]"
+            id="RegisterEmail-{{ section.id }}"
+            value="{{ form.email }}"
+            autocomplete="email"
+            autocapitalize="off"
+            autocorrect="off"
+            required
+          >
+        </div>
+
+        <div class="veylique-field">
+          <label class="veylique-field__label" for="RegisterPassword-{{ section.id }}">
+            {{ 'customers.register.password' | t }}
+          </label>
+          <input
+            class="veylique-field__input"
+            type="password"
+            name="customer[password]"
+            id="RegisterPassword-{{ section.id }}"
+            autocomplete="new-password"
+            required
+          >
+        </div>
+
+        <button type="submit" class="veylique-button veylique-button--solid veylique-account__submit">
+          {{ 'customers.register.submit' | t }}
+        </button>
+
+        <p class="veylique-account__alt veylique-account__alt--divide">
+          {{ 'customers.register.has_account' | t }}
+          <a href="{{ routes.account_login_url }}">{{ 'customers.register.sign_in' | t }}</a>
+        </p>
+      {% endform %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.customers-register.name",
+  "settings": []
+}
+{% endschema %}

@@ -392,7 +392,7 @@
             "title_main": "Discover",
             "title_alt": "",
             "text": "Start with intention. Browse curated edits across dresses, ethnic wear, and everyday essentials - chosen for how they actually wear, not just how they photograph.",
-            "fallback": "method-1-discover.jpg"
+            "fallback": "style-ritual-1-discover-european-v3.webp"
           }
         },
         "ritual_2": {
@@ -401,7 +401,7 @@
             "title_main": "Fit",
             "title_alt": "& Size",
             "text": "Real sizing, real bodies. True-to-size cuts and an honest size guide help you find the fit that feels right, every time.",
-            "fallback": "method-2-analyse.jpg"
+            "fallback": "style-ritual-2-fit-european-v3.webp"
           }
         },
         "ritual_3": {
@@ -410,7 +410,7 @@
             "title_main": "Style",
             "title_alt": "& Pair",
             "text": "Mix with intention. Considered separates and easy layering pieces make it simple to build a look that's entirely yours.",
-            "fallback": "method-3-Curate.jpg"
+            "fallback": "style-ritual-3-pair-european-v3.webp"
           }
         },
         "ritual_4": {
@@ -419,7 +419,7 @@
             "title_main": "Wear",
             "title_alt": "& Move",
             "text": "Comfort that lasts all day. Breathable fabrics and considered construction mean you can wear it and forget it - in the best way.",
-            "fallback": "method-4-Glow.jpg"
+            "fallback": "style-ritual-4-move-european-v4.webp"
           }
         }
       },

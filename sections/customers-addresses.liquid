@@ -1,0 +1,81 @@
+{% comment %}
+  Customer addresses — list, add, edit and delete.
+
+  Add/edit forms sit inside native <details> disclosures so the page works with
+  JavaScript disabled; no country/province script is required because the
+  province field is a plain text input.
+
+  https://shopify.dev/docs/storefronts/themes/architecture/templates/customers-addresses
+{% endcomment %}
+
+<section class="veylique-account veylique-page full-width" aria-labelledby="VeyliqueAddressesTitle-{{ section.id }}">
+  <div class="veylique-container">
+    <p class="veylique-account__back">
+      <a href="{{ routes.account_url }}">{{ 'customers.addresses.back' | t }}</a>
+    </p>
+
+    <header class="veylique-account__head">
+      <h1 id="VeyliqueAddressesTitle-{{ section.id }}" class="veylique-account__title">
+        {{ 'customers.addresses.title' | t }}
+      </h1>
+    </header>
+
+    <details class="veylique-account__disclosure">
+      <summary class="veylique-button veylique-button--solid">{{ 'customers.addresses.add_new' | t }}</summary>
+      <div class="veylique-account__panel veylique-account__panel--flush">
+        {% form 'customer_address', customer.new_address %}
+          {{ form.errors | default_errors }}
+          {% render 'veylique-address-fields', form: form, section_id: section.id, scope: 'new' %}
+          <button type="submit" class="veylique-button veylique-button--solid veylique-account__submit">
+            {{ 'customers.addresses.add' | t }}
+          </button>
+        {% endform %}
+      </div>
+    </details>
+
+    {%- if customer.addresses.size > 0 -%}
+      <ul class="veylique-account__address-list" role="list">
+        {%- for address in customer.addresses -%}
+          <li class="veylique-account__address-card">
+            {%- if address == customer.default_address -%}
+              <p class="veylique-account__badge">{{ 'customers.addresses.default' | t }}</p>
+            {%- endif -%}
+
+            <address class="veylique-account__address">{{ address | format_address }}</address>
+
+            <div class="veylique-account__address-actions">
+              <details class="veylique-account__disclosure">
+                <summary class="veylique-button veylique-button--outline">{{ 'customers.addresses.edit' | t }}</summary>
+                <div class="veylique-account__panel veylique-account__panel--flush">
+                  {% form 'customer_address', address %}
+                    {{ form.errors | default_errors }}
+                    {% render 'veylique-address-fields', form: form, section_id: section.id, scope: address.id %}
+                    <button type="submit" class="veylique-button veylique-button--solid veylique-account__submit">
+                      {{ 'customers.addresses.update' | t }}
+                    </button>
+                  {% endform %}
+                </div>
+              </details>
+
+              <form method="post" action="{{ address.url }}">
+                <input type="hidden" name="_method" value="delete">
+                <button type="submit" class="veylique-button veylique-button--ghost">
+                  {{ 'customers.addresses.delete' | t }}
+                </button>
+              </form>
+            </div>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- else -%}
+      <p class="veylique-text">{{ 'customers.addresses.none' | t }}</p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.customers-addresses.name",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,119 @@
+{% comment %}
+  Customer order detail.
+
+  https://shopify.dev/docs/storefronts/themes/architecture/templates/customers-order
+{% endcomment %}
+
+<section class="veylique-account veylique-page full-width" aria-labelledby="VeyliqueOrderTitle-{{ section.id }}">
+  <div class="veylique-container">
+    <p class="veylique-account__back">
+      <a href="{{ routes.account_url }}">{{ 'customers.order.back' | t }}</a>
+    </p>
+
+    <header class="veylique-account__head">
+      <div>
+        <h1 id="VeyliqueOrderTitle-{{ section.id }}" class="veylique-account__title">
+          {{ 'customers.order.title' | t: name: order.name }}
+        </h1>
+        <p class="veylique-text">{{ 'customers.order.date' | t: date: order.created_at | date: format: 'date' }}</p>
+      </div>
+    </header>
+
+    {%- if order.cancelled -%}
+      <p class="veylique-account__notice">
+        {{ 'customers.order.cancelled' | t: date: order.cancelled_at | date: format: 'date' }}
+        {{ order.cancel_reason_label }}
+      </p>
+    {%- endif -%}
+
+    <div class="veylique-account__grid">
+      <div class="veylique-account__orders">
+        <div class="veylique-account__table-wrap">
+          <table class="veylique-account__table">
+            <caption class="visually-hidden">{{ 'customers.order.title' | t: name: order.name }}</caption>
+            <thead>
+              <tr>
+                <th scope="col">{{ 'customers.order.product' | t }}</th>
+                <th scope="col">{{ 'customers.order.sku' | t }}</th>
+                <th scope="col">{{ 'customers.order.price' | t }}</th>
+                <th scope="col">{{ 'customers.order.quantity' | t }}</th>
+                <th scope="col">{{ 'customers.order.total' | t }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {%- for line_item in order.line_items -%}
+                <tr>
+                  <td data-label="{{ 'customers.order.product' | t }}">
+                    <a href="{{ line_item.product.url }}">{{ line_item.title }}</a>
+                    {%- if line_item.fulfillment -%}
+                      <span class="veylique-account__meta">
+                        {{ 'customers.order.fulfilled_at' | t: date: line_item.fulfillment.created_at | date: format: 'date' }}
+                      </span>
+                    {%- endif -%}
+                  </td>
+                  <td data-label="{{ 'customers.order.sku' | t }}">{{ line_item.sku }}</td>
+                  <td data-label="{{ 'customers.order.price' | t }}">{{ line_item.price | money }}</td>
+                  <td data-label="{{ 'customers.order.quantity' | t }}">{{ line_item.quantity }}</td>
+                  <td data-label="{{ 'customers.order.total' | t }}">{{ line_item.line_price | money }}</td>
+                </tr>
+              {%- endfor -%}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row" colspan="4">{{ 'customers.order.subtotal' | t }}</th>
+                <td>{{ order.line_items_subtotal_price | money }}</td>
+              </tr>
+              {%- for discount_application in order.discount_applications -%}
+                <tr>
+                  <th scope="row" colspan="4">
+                    {{ 'customers.order.discount' | t }} ({{ discount_application.title }})
+                  </th>
+                  <td>-{{ discount_application.total_allocated_amount | money }}</td>
+                </tr>
+              {%- endfor -%}
+              {%- for shipping_method in order.shipping_methods -%}
+                <tr>
+                  <th scope="row" colspan="4">{{ 'customers.order.shipping' | t }} ({{ shipping_method.title }})</th>
+                  <td>{{ shipping_method.price | money }}</td>
+                </tr>
+              {%- endfor -%}
+              {%- for tax_line in order.tax_lines -%}
+                <tr>
+                  <th scope="row" colspan="4">
+                    {{ 'customers.order.tax' | t }} ({{ tax_line.title }} {{ tax_line.rate | times: 100 }}%)
+                  </th>
+                  <td>{{ tax_line.price | money }}</td>
+                </tr>
+              {%- endfor -%}
+              <tr>
+                <th scope="row" colspan="4">{{ 'customers.order.total' | t }}</th>
+                <td>{{ order.total_price | money_with_currency }}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <aside class="veylique-account__aside">
+        <h2 class="veylique-account__subtitle">{{ 'customers.order.billing_address' | t }}</h2>
+        <p class="veylique-account__meta">
+          {{ 'customers.order.payment_status' | t }}: {{ order.financial_status_label }}
+        </p>
+        <address class="veylique-account__address">{{ order.billing_address | format_address }}</address>
+
+        <h2 class="veylique-account__subtitle">{{ 'customers.order.shipping_address' | t }}</h2>
+        <p class="veylique-account__meta">
+          {{ 'customers.order.fulfillment_status' | t }}: {{ order.fulfillment_status_label }}
+        </p>
+        <address class="veylique-account__address">{{ order.shipping_address | format_address }}</address>
+      </aside>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.customers-order.name",
+  "settings": []
+}
+{% endschema %}

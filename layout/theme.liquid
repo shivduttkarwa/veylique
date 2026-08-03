@@ -56,11 +56,35 @@
     {% section 'veylique-cart-drawer' %}
 
     {% render 'veylique-back-to-top' %}
-    {% comment %} GSAP powers the scroll-driven ritual/hero/reveal animations; Swiper powers the carousels. Deferred scripts run in order, so all libraries are ready before veylique-theme.js initializes. {% endcomment %}
+    {% comment %}
+      GSAP powers the scroll-driven ritual/hero/reveal animations and is used by
+      every template, so it stays in the deferred chain ahead of
+      veylique-theme.js, which reads `typeof gsap` during its DOMContentLoaded
+      pass.
+
+      Swiper (155KB — the single largest asset) is only needed by the carousel
+      sections, so it is fetched at runtime and only on pages that actually
+      contain one. Both call sites in veylique-theme.js already bail on
+      `typeof Swiper === 'undefined'`, and re-firing shopify:section:load once
+      the library lands lets them initialise late; every init is guarded by a
+      `data-*-ready` flag, so the second pass is a no-op for everything else.
+    {% endcomment %}
     <script src="{{ 'gsap.min.js' | asset_url }}" defer></script>
     <script src="{{ 'ScrollTrigger.min.js' | asset_url }}" defer></script>
     <script src="{{ 'SplitText.min.js' | asset_url }}" defer></script>
-    <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
     <script src="{{ 'veylique-theme.js' | asset_url }}" defer></script>
+    <script>
+      (function () {
+        if (!document.querySelector('[data-veylique-card-slider], [data-veylique-category-carousel]')) return;
+
+        var script = document.createElement('script');
+        script.src = '{{ 'swiper-bundle.min.js' | asset_url }}';
+        script.async = false;
+        script.onload = function () {
+          document.dispatchEvent(new CustomEvent('shopify:section:load', { bubbles: true }));
+        };
+        document.head.appendChild(script);
+      })();
+    </script>
   </body>
 </html>

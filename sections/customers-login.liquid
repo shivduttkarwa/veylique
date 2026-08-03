@@ -1,0 +1,144 @@
+{% comment %}
+  Customer login — sign in, plus the password recovery form.
+
+  Both forms are always in the DOM. The recovery panel is revealed by the
+  `#recover` fragment via :target, so the toggle works with JavaScript disabled;
+  the script below only re-opens the panel when Shopify has posted a message
+  into it after a reload.
+
+  https://shopify.dev/docs/storefronts/themes/architecture/templates/customers-login
+{% endcomment %}
+
+<section class="veylique-account veylique-page full-width" aria-labelledby="VeyliqueLoginTitle-{{ section.id }}">
+  <div class="veylique-container veylique-account__inner">
+    <div class="veylique-account__panels" data-veylique-login>
+
+      {% comment %} Recovery first in source order so :target can hide the sign-in panel. {% endcomment %}
+      <div class="veylique-account__panel veylique-account__panel--recover" id="recover">
+        <h1 class="veylique-account__title">{{ 'customers.recover_password.title' | t }}</h1>
+        <p class="veylique-text veylique-account__lead">{{ 'customers.recover_password.subtext' | t }}</p>
+
+        {% form 'recover_customer_password' %}
+          {% if form.posted_successfully? %}
+            <p class="veylique-account__notice veylique-account__notice--success" tabindex="-1" data-veylique-login-message>
+              {{ 'customers.recover_password.success' | t }}
+            </p>
+          {% endif %}
+
+          {{ form.errors | default_errors }}
+
+          <div class="veylique-field">
+            <label class="veylique-field__label" for="RecoverEmail-{{ section.id }}">
+              {{ 'customers.recover_password.email' | t }}
+            </label>
+            <input
+              class="veylique-field__input"
+              type="email"
+              name="email"
+              id="RecoverEmail-{{ section.id }}"
+              autocomplete="email"
+              autocapitalize="off"
+              autocorrect="off"
+              required
+            >
+          </div>
+
+          <button type="submit" class="veylique-button veylique-button--solid veylique-account__submit">
+            {{ 'customers.recover_password.submit' | t }}
+          </button>
+
+          <p class="veylique-account__alt">
+            <a href="#login">{{ 'customers.recover_password.cancel' | t }}</a>
+          </p>
+        {% endform %}
+      </div>
+
+      <div class="veylique-account__panel veylique-account__panel--login" id="login">
+        <h1 id="VeyliqueLoginTitle-{{ section.id }}" class="veylique-account__title">
+          {{ 'customers.login.title' | t }}
+        </h1>
+        <p class="veylique-text veylique-account__lead">{{ 'customers.login.subtext' | t }}</p>
+
+        {% form 'customer_login' %}
+          {{ form.errors | default_errors }}
+
+          <div class="veylique-field">
+            <label class="veylique-field__label" for="LoginEmail-{{ section.id }}">
+              {{ 'customers.login.email' | t }}
+            </label>
+            <input
+              class="veylique-field__input"
+              type="email"
+              name="customer[email]"
+              id="LoginEmail-{{ section.id }}"
+              autocomplete="email"
+              autocapitalize="off"
+              autocorrect="off"
+              required
+            >
+          </div>
+
+          <div class="veylique-field">
+            <label class="veylique-field__label" for="LoginPassword-{{ section.id }}">
+              {{ 'customers.login.password' | t }}
+            </label>
+            <input
+              class="veylique-field__input"
+              type="password"
+              name="customer[password]"
+              id="LoginPassword-{{ section.id }}"
+              autocomplete="current-password"
+              required
+            >
+          </div>
+
+          <button type="submit" class="veylique-button veylique-button--solid veylique-account__submit">
+            {{ 'customers.login.submit' | t }}
+          </button>
+
+          <p class="veylique-account__alt">
+            <a href="#recover">{{ 'customers.login.forgot_password' | t }}</a>
+          </p>
+        {% endform %}
+
+        <p class="veylique-account__alt veylique-account__alt--divide">
+          {{ 'customers.login.no_account' | t }}
+          <a href="{{ routes.account_register_url }}">{{ 'customers.login.create_account' | t }}</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .veylique-account__panel--recover { display: none; }
+  .veylique-account__panel--recover:target { display: block; }
+  .veylique-account__panel--recover:target ~ .veylique-account__panel--login { display: none; }
+  .veylique-account__panel--recover.is-open { display: block; }
+  .veylique-account__panel--recover.is-open ~ .veylique-account__panel--login { display: none; }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    /* Shopify reloads the login page after a recovery request, which drops the
+       #recover fragment. Re-open the panel so the customer sees the result
+       instead of an apparently untouched sign-in form. */
+    document.querySelectorAll('[data-veylique-login]').forEach(function (root) {
+      var panel = root.querySelector('.veylique-account__panel--recover');
+      if (!panel) return;
+      var hasMessage = panel.querySelector('[data-veylique-login-message], .errors, .form__message');
+      if (!hasMessage) return;
+      panel.classList.add('is-open');
+      var focusTarget = panel.querySelector('[data-veylique-login-message]');
+      if (focusTarget) focusTarget.focus();
+    });
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.customers-login.name",
+  "settings": []
+}
+{% endschema %}

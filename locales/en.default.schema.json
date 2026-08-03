@@ -92,6 +92,27 @@
     }
   },
   "sections": {
+    "customers-login": {
+      "name": "Customer login"
+    },
+    "customers-register": {
+      "name": "Customer registration"
+    },
+    "customers-account": {
+      "name": "Customer account"
+    },
+    "customers-order": {
+      "name": "Customer order"
+    },
+    "customers-addresses": {
+      "name": "Customer addresses"
+    },
+    "customers-activate-account": {
+      "name": "Account activation"
+    },
+    "customers-reset-password": {
+      "name": "Password reset"
+    },
     "cart": {
       "settings": {
         "show_note": {

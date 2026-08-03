@@ -1,0 +1,185 @@
+{% doc %}
+  Renders the shared field set for a customer address form.
+
+  Used by both the "add address" and "edit address" forms so the two stay in
+  sync. `scope` keeps input ids unique when several address forms share a page.
+
+  @param {object} form - The `customer_address` form object.
+  @param {string} section_id - The parent section id, for unique input ids.
+  @param {string} scope - Extra id suffix ("new", or the address id).
+
+  @example
+  {% render 'veylique-address-fields', form: form, section_id: section.id, scope: 'new' %}
+{% enddoc %}
+
+{% liquid
+  assign uid = section_id | append: '-' | append: scope
+  assign address = form.address
+%}
+
+<div class="veylique-field-row">
+  <div class="veylique-field">
+    <label class="veylique-field__label" for="AddressFirstName-{{ uid }}">
+      {{ 'customers.addresses.first_name' | t }}
+    </label>
+    <input
+      class="veylique-field__input"
+      type="text"
+      name="address[first_name]"
+      id="AddressFirstName-{{ uid }}"
+      value="{{ address.first_name }}"
+      autocomplete="given-name"
+    >
+  </div>
+
+  <div class="veylique-field">
+    <label class="veylique-field__label" for="AddressLastName-{{ uid }}">
+      {{ 'customers.addresses.last_name' | t }}
+    </label>
+    <input
+      class="veylique-field__input"
+      type="text"
+      name="address[last_name]"
+      id="AddressLastName-{{ uid }}"
+      value="{{ address.last_name }}"
+      autocomplete="family-name"
+    >
+  </div>
+</div>
+
+<div class="veylique-field">
+  <label class="veylique-field__label" for="AddressCompany-{{ uid }}">
+    {{ 'customers.addresses.company' | t }}
+  </label>
+  <input
+    class="veylique-field__input"
+    type="text"
+    name="address[company]"
+    id="AddressCompany-{{ uid }}"
+    value="{{ address.company }}"
+    autocomplete="organization"
+  >
+</div>
+
+<div class="veylique-field">
+  <label class="veylique-field__label" for="AddressStreet1-{{ uid }}">
+    {{ 'customers.addresses.address1' | t }}
+  </label>
+  <input
+    class="veylique-field__input"
+    type="text"
+    name="address[address1]"
+    id="AddressStreet1-{{ uid }}"
+    value="{{ address.address1 }}"
+    autocomplete="address-line1"
+  >
+</div>
+
+<div class="veylique-field">
+  <label class="veylique-field__label" for="AddressStreet2-{{ uid }}">
+    {{ 'customers.addresses.address2' | t }}
+  </label>
+  <input
+    class="veylique-field__input"
+    type="text"
+    name="address[address2]"
+    id="AddressStreet2-{{ uid }}"
+    value="{{ address.address2 }}"
+    autocomplete="address-line2"
+  >
+</div>
+
+<div class="veylique-field-row">
+  <div class="veylique-field">
+    <label class="veylique-field__label" for="AddressCity-{{ uid }}">
+      {{ 'customers.addresses.city' | t }}
+    </label>
+    <input
+      class="veylique-field__input"
+      type="text"
+      name="address[city]"
+      id="AddressCity-{{ uid }}"
+      value="{{ address.city }}"
+      autocomplete="address-level2"
+    >
+  </div>
+
+  <div class="veylique-field">
+    <label class="veylique-field__label" for="AddressProvince-{{ uid }}">
+      {{ 'customers.addresses.province' | t }}
+    </label>
+    <input
+      class="veylique-field__input"
+      type="text"
+      name="address[province]"
+      id="AddressProvince-{{ uid }}"
+      value="{{ address.province }}"
+      autocomplete="address-level1"
+    >
+  </div>
+</div>
+
+<div class="veylique-field-row">
+  <div class="veylique-field">
+    <label class="veylique-field__label" for="AddressZip-{{ uid }}">
+      {{ 'customers.addresses.zip' | t }}
+    </label>
+    <input
+      class="veylique-field__input"
+      type="text"
+      name="address[zip]"
+      id="AddressZip-{{ uid }}"
+      value="{{ address.zip }}"
+      autocapitalize="characters"
+      autocomplete="postal-code"
+    >
+  </div>
+
+  <div class="veylique-field">
+    <label class="veylique-field__label" for="AddressCountry-{{ uid }}">
+      {{ 'customers.addresses.country' | t }}
+    </label>
+    {% comment %}
+      `all_country_option_tags` can't mark the saved country as selected, and the
+      usual fix is a script. Emitting the saved country as a selected option
+      first keeps editing correct with JavaScript disabled; the duplicate entry
+      further down the list is harmless.
+    {% endcomment %}
+    <select
+      class="veylique-field__input"
+      name="address[country]"
+      id="AddressCountry-{{ uid }}"
+      autocomplete="country"
+    >
+      {% if address.country != blank %}
+        <option value="{{ address.country | escape }}" selected>{{ address.country | escape }}</option>
+      {% endif %}
+      {{ all_country_option_tags }}
+    </select>
+  </div>
+</div>
+
+<div class="veylique-field">
+  <label class="veylique-field__label" for="AddressPhone-{{ uid }}">
+    {{ 'customers.addresses.phone' | t }}
+  </label>
+  <input
+    class="veylique-field__input"
+    type="tel"
+    name="address[phone]"
+    id="AddressPhone-{{ uid }}"
+    value="{{ address.phone }}"
+    autocomplete="tel"
+  >
+</div>
+
+<div class="veylique-field veylique-field--check">
+  <input
+    type="checkbox"
+    name="address[default]"
+    id="AddressDefault-{{ uid }}"
+    value="1"
+    {% if address.id == customer.default_address.id %}checked{% endif %}
+  >
+  <label for="AddressDefault-{{ uid }}">{{ 'customers.addresses.set_default' | t }}</label>
+</div>
